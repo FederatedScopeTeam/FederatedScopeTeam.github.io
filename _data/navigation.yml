@@ -1,0 +1,127 @@
+# example navigation
+foo:
+  - title: "Parent Link 1"
+    url: /parent-1-page-url/
+    children:
+      - title: "Child Link 1"
+        url: /child-1-page-url/
+      - title: "Child Link 2"
+        url: /child-2-page-url/
+  - title: "Parent Link 2"
+    url: /parent-2-page-url/
+    children:
+      - title: "Child Link 1"
+        url: /child-1-page-url/
+      - title: "Child Link 2"
+        url: /child-2-page-url/
+      - title: "Child Link 3"
+        url: /child-3-page-url/
+
+
+# main links
+main:
+  - title: "Tutorials"
+    url: /docs/quick-start/
+  - title: "Playground"
+    url: http://8.210.21.85/
+    target: _blank
+  - title: "API References"
+    url: /refs/index
+    target: _blank
+  - title: "Publications"
+    url: /year-archive/
+
+
+# documentation links
+docs:
+  - title: Beginner
+    children:
+      - title: "Quick Start"
+        url: /docs/quick-start/
+      - title: "Start Your Own Case"
+        url: /docs/own-case/
+      - title: "DataZoo"
+        url: /docs/datazoo/
+      - title: "ModelZoo"
+        url: /docs/modelzoo/
+      - title: "AlgoZoo"
+        url: /docs/algozoo/
+      - title: "Tuning Federated Learning"
+        url: /docs/use-hpo/
+  - title: Advanced
+    children:
+      - title: "Message-oriented Framework"
+        url: /docs/msg-oriented-framework/
+      - title: "New Types of Messages and Handlers"
+        url: /docs/new-type/
+      - title: "Privacy Protection for Message"
+        url: /docs/protected-msg/
+      - title: "Local Learning Abstraction: Trainer"
+        url: /docs/trainer/
+      - title: "Personalized FL"
+        url: /docs/pfl/
+      - title: "Cross-Device FL"
+        url: /docs/cross-device/
+      - title: "Cross-Silo FL"
+        url: /docs/cross-silo/
+      - title: "Accelerating Federated Hyperparameter Optimization"
+        url: /docs/improve-hpo/
+      - title: "Simulation and Deployment"
+        url: /docs/simulation-and-deployment/
+      - title: "Contributing to FederatedScope"
+        url: /docs/contributor/
+  - title: Applications
+    children:
+      - title: "Recommendation"
+        url: /docs/recommendation/
+      - title: "Differential Privacy"
+        url: /docs/dp/
+      - title: "Privacy Attacks"
+        url: /docs/privacy-attacks/
+      - title: "Graph"
+        url: /docs/graph/
+      - title: "NLP and Speech"
+        url: /docs/nlp-and-speech/
+
+# sidebar navigation list sample
+sidebar-sample:
+  - title: "Parent Page A"
+    children:
+      - title: "Child Page A1"
+        url: /
+      - title: "Child Page A2"
+        url: /
+      - title: "Child Page A3"
+        url: /
+      - title: "Child Page A4"
+        url: /
+  - title: "Parent Page B"
+    children:
+      - title: "Child Page B1"
+        url: /
+      - title: "Child Page B2"
+        url: /
+      - title: "Child Page B3"
+        url: /
+      - title: "Child Page B4"
+        url: /
+      - title: "Child Page B5"
+        url: /
+  - title: "Parent Page C"
+    children:
+      - title: "Child Page C1"
+        url: /
+      - title: "Child Page C2"
+        url: /
+      - title: "Child Page C3"
+        url: /
+      - title: "Child Page C4"
+        url: /
+      - title: "Child Page C5"
+        url: /
+  - title: "Parent Page D"
+    children:
+      - title: "Child Page D1"
+        url: /
+      - title: "Child Page D2"
+        url: /

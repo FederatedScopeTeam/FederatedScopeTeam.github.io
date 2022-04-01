@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flpackage.core.DAIL_fed_api &mdash; FLPackage 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> FLPackage
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gfl.html">Graph FL Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autotune.html">Auto-tuning Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FLPackage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>flpackage.core.DAIL_fed_api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for flpackage.core.DAIL_fed_api</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">from</span> <span class="nn">flpackage.core.worker</span> <span class="kn">import</span> <span class="n">Server</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">flpackage.core.gpu_manager</span> <span class="kn">import</span> <span class="n">GPUManager</span>
+<span class="kn">from</span> <span class="nn">flpackage.core.auxiliaries.model_builder</span> <span class="kn">import</span> <span class="n">get_model</span>
+
+
+<div class="viewcode-block" id="DAILFed"><a class="viewcode-back" href="../../../core.html#flpackage.core.DAIL_fed_api.DAILFed">[docs]</a><span class="k">class</span> <span class="nc">DAILFed</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used for building up the Federated Learning course</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">data</span><span class="p">,</span>
+                 <span class="n">server_class</span><span class="o">=</span><span class="n">Server</span><span class="p">,</span>
+                 <span class="n">client_class</span><span class="o">=</span><span class="n">Client</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_class</span> <span class="o">=</span> <span class="n">server_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_class</span> <span class="o">=</span> <span class="n">client_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpu_manager</span> <span class="o">=</span> <span class="n">GPUManager</span><span class="p">(</span><span class="n">gpu_available</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">use_gpu</span><span class="p">,</span>
+                                      <span class="n">specified_device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_for_standalone</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;distributed&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_for_distributed</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_setup_for_standalone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To set up server and client for standalone mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_server</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> \
+            <span class="s2">&quot;In standalone mode, self.cfg.federate.client_num should be non-zero. &quot;</span> \
+            <span class="s2">&quot;This is usually cased by using synthetic data and users not specify a non-zero value for client_num&quot;</span>
+
+        <span class="c1"># assume the client-wise data are consistent in their input&amp;output shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_client_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">share_local_model</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">[</span><span class="n">client_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_client</span><span class="p">(</span>
+                <span class="n">client_id</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span> <span class="n">client_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared_client_model</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_for_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To set up server or client for distributed mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">server_host</span><span class="p">,</span>
+            <span class="s1">&#39;port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">server_port</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;server&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_server</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;client&#39;</span><span class="p">:</span>
+            <span class="c1"># When we set up the client in the distributed mode, we assume the server has been set up and number with #0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">client_host</span><span class="p">,</span>
+                <span class="s1">&#39;port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">client_port</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_client</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DAILFed.run"><a class="viewcode-back" href="../../../core.html#flpackage.core.DAIL_fed_api.DAILFed.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To run an FL course, which is called after server/client has been set up</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span><span class="p">:</span>
+            <span class="c1"># trigger the FL course</span>
+            <span class="k">for</span> <span class="n">each_client</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">[</span><span class="n">each_client</span><span class="p">]</span><span class="o">.</span><span class="n">join_in</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">online_aggr</span><span class="p">:</span>
+                <span class="c1"># any broadcast operation would be executed client-by-client to avoid the existence of #clients messages at the same time.</span>
+                <span class="c1"># currently, only consider centralized topology</span>
+                <span class="k">def</span> <span class="nf">is_broadcast</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">receiver</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">sender</span> <span class="o">==</span> <span class="mi">0</span>
+
+                <span class="n">cached_bc_msgs</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">cur_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">is_broadcast</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+                            <span class="n">cached_bc_msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                            <span class="c1"># assume there is at least one client</span>
+                            <span class="n">msg</span> <span class="o">=</span> <span class="n">cached_bc_msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">rcv</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">receiver</span><span class="p">[</span><span class="n">cur_idx</span><span class="p">])</span>
+                            <span class="n">cur_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="k">if</span> <span class="n">cur_idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">receiver</span><span class="p">):</span>
+                                <span class="k">del</span> <span class="n">cached_bc_msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">cur_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cached_bc_msgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="n">cached_bc_msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">rcv</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">receiver</span><span class="p">[</span><span class="n">cur_idx</span><span class="p">])</span>
+                        <span class="n">cur_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">cur_idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">receiver</span><span class="p">):</span>
+                            <span class="k">del</span> <span class="n">cached_bc_msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="n">cur_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># finished</span>
+                        <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_handle_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">best_results</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;distributed&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;server&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">best_results</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;client&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">join_in</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">server_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">server_id</span><span class="p">]</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">server_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">server_data</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>  <span class="c1"># get the model according to client&#39;s data if the server does not own data</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shared_comm_queue&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;distributed&#39;</span><span class="p">:</span>
+            <span class="n">server_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                              <span class="n">server_data</span><span class="p">)</span>  <span class="c1">#TODO: server does not own data</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Mode </span><span class="si">{}</span><span class="s1"> is not provided&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_class</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_class</span><span class="p">(</span>
+                <span class="n">ID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">server_id</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">server_data</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">client_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span><span class="p">,</span>
+                <span class="n">total_round_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu_manager</span><span class="o">.</span><span class="n">auto_choice</span><span class="p">(),</span>
+                <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+            <span class="c1"># TODO: more appropriate</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">nbafl</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">flpackage.core.trainers.trainer_nbafl</span> <span class="kn">import</span> <span class="n">wrap_nbafl_server</span>
+                <span class="n">wrap_nbafl_server</span><span class="p">(</span><span class="n">server</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Server #</span><span class="si">{:d}</span><span class="s1"> has been set up ... &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server_id</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">server</span>
+
+    <span class="k">def</span> <span class="nf">_setup_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">client_model</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span><span class="p">:</span>
+            <span class="n">client_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">client_id</span><span class="p">]</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shared_comm_queue&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_comm_queue</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;distributed&#39;</span><span class="p">:</span>
+            <span class="n">client_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span>
+            <span class="n">kw</span><span class="p">[</span><span class="s1">&#39;server_host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+            <span class="n">kw</span><span class="p">[</span><span class="s1">&#39;server_port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Mode </span><span class="si">{}</span><span class="s1"> is not provided&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_class</span><span class="p">:</span>
+            <span class="n">client_specific_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="c1"># TODO: allow client-wise configurations for personalization</span>
+            <span class="c1"># e.g., client_specific_config.aabb.ccdd = &#39;xyz&#39;</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_class</span><span class="p">(</span>
+                <span class="n">ID</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span>
+                <span class="n">server_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">server_id</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">client_specific_config</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">client_data</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">client_model</span> <span class="ow">or</span> <span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">client_data</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu_manager</span><span class="o">.</span><span class="n">auto_choice</span><span class="p">(),</span>
+                <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
+        <span class="k">if</span> <span class="n">client_id</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client (address </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">) has been set up ... &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client has been set up ... &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_id</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">client</span>
+
+    <span class="k">def</span> <span class="nf">_handle_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">rcv</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To simulate the message handling process (used only for the standalone mode)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rcv</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># simulate broadcast one-by-one</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">[</span><span class="n">rcv</span><span class="p">]</span><span class="o">.</span><span class="n">msg_handlers</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">msg_type</span><span class="p">](</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">sender</span><span class="p">,</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">receiver</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="p">[</span><span class="n">receiver</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_receiver</span> <span class="ow">in</span> <span class="n">receiver</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">each_receiver</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">msg_handlers</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">msg_type</span><span class="p">](</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">[</span><span class="n">each_receiver</span><span class="p">]</span><span class="o">.</span><span class="n">msg_handlers</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">msg_type</span><span class="p">](</span><span class="n">msg</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

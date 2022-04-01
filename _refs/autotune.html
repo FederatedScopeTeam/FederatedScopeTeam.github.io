@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto-tuning Module References &mdash; FLPackage 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Graph FL Module References" href="gfl.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> FLPackage
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API References</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gfl.html">Graph FL Module References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Auto-tuning Module References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#flpackage-autotune-choice-types">flpackage.autotune.choice_types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flpackage-autotune-algos">flpackage.autotune.algos</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">FLPackage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Auto-tuning Module References</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/autotune.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="auto-tuning-module-references">
+<h1>Auto-tuning Module References<a class="headerlink" href="#auto-tuning-module-references" title="Permalink to this headline">¶</a></h1>
+<section id="flpackage-autotune-choice-types">
+<h2>flpackage.autotune.choice_types<a class="headerlink" href="#flpackage-autotune-choice-types" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-flpackage.autotune.choice_types"></span><dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.choice_types.Continuous">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.choice_types.</span></span><span class="sig-name descname"><span class="pre">Continuous</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/choice_types.html#Continuous"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.choice_types.Continuous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a continuous search space, e.g., in the range [0.001, 0.1].</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.choice_types.Continuous.grid">
+<span class="sig-name descname"><span class="pre">grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_cnt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/choice_types.html#Continuous.grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.choice_types.Continuous.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a given nunber of grids from this search space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>grid_cnt</strong> (<em>int</em>) – the number of grids.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the sampled value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.choice_types.Continuous.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/choice_types.html#Continuous.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.choice_types.Continuous.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample a value from this search space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the sampled value.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.choice_types.Discrete">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.choice_types.</span></span><span class="sig-name descname"><span class="pre">Discrete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/choice_types.html#Discrete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.choice_types.Discrete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a discrete search space, e.g., {‘abc’, ‘ijk’, ‘xyz’}.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.choice_types.Discrete.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/choice_types.html#Discrete.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.choice_types.Discrete.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample a value from this search space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the sampled value.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>depends on the original choices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flpackage.autotune.choice_types.discretize">
+<span class="sig-prename descclassname"><span class="pre">flpackage.autotune.choice_types.</span></span><span class="sig-name descname"><span class="pre">discretize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contd_choices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_bkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/choice_types.html#discretize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.choice_types.discretize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discretize a given continuous search space into the given number of buckets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contd_choices</strong> (<a class="reference internal" href="#flpackage.autotune.choice_types.Continuous" title="flpackage.autotune.choice_types.Continuous"><em>Continuous</em></a>) – continuous choices.</p></li>
+<li><p><strong>num_bkt</strong> (<em>int</em>) – number of buckets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>discritized choices.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flpackage.autotune.choice_types.Discrete" title="flpackage.autotune.choice_types.Discrete">Discrete</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="flpackage-autotune-algos">
+<h2>flpackage.autotune.algos<a class="headerlink" href="#flpackage-autotune-algos" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-flpackage.autotune.algos"></span><dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.BruteForce">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">BruteForce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#BruteForce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.BruteForce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#flpackage.autotune.algos.Scheduler" title="flpackage.autotune.algos.Scheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">flpackage.autotune.algos.Scheduler</span></code></a></p>
+<p>To attempt a collection of configurations exhaustively.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.BruteForce.optimize">
+<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#BruteForce.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.BruteForce.optimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>To optimize the hyperparameters, that is, executing the HPO algorithm and then returning the results.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.IterativeScheduler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">IterativeScheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#IterativeScheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.IterativeScheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#flpackage.autotune.algos.BruteForce" title="flpackage.autotune.algos.BruteForce"><code class="xref py py-class docutils literal notranslate"><span class="pre">flpackage.autotune.algos.BruteForce</span></code></a></p>
+<p>The base class for HPO algorithms that divide the whole optimization procedure into iterations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.IterativeScheduler.optimize">
+<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#IterativeScheduler.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.IterativeScheduler.optimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>To optimize the hyperparameters, that is, executing the HPO algorithm and then returning the results.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.PBT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">PBT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#PBT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.PBT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#flpackage.autotune.algos.IterativeScheduler" title="flpackage.autotune.algos.IterativeScheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">flpackage.autotune.algos.IterativeScheduler</span></code></a></p>
+<p>Population-based training tailored to FL setting, where, in each iteration, just a limited number of communication rounds are allowed for each trial (We will provide the asynchornous version later).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.Scheduler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">Scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#Scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.Scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The base class for describing HPO algorithms</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.Scheduler.optimize">
+<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#Scheduler.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.Scheduler.optimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>To optimize the hyperparameters, that is, executing the HPO algorithm and then returning the results.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.SuccessiveHalvingAlgo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">SuccessiveHalvingAlgo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#SuccessiveHalvingAlgo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.SuccessiveHalvingAlgo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#flpackage.autotune.algos.IterativeScheduler" title="flpackage.autotune.algos.IterativeScheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">flpackage.autotune.algos.IterativeScheduler</span></code></a></p>
+<p>Successive Halving Algorithm (SHA) tailored to FL setting, where, in each iteration, just a limited number of communication rounds are allowed for each trial.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.TrialExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">TrialExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#TrialExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.TrialExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></p>
+<p>This class is responsible for executing the FL procedure with a given trial configuration in another thread.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.TrialExecutor.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#TrialExecutor.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.TrialExecutor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.grid_search">
+<span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">grid_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#grid_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.grid_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>To produce a given nunber of configurations from a given (producted) search space with grid search strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search_space</strong> (<em>dict</em>) – key-value pairs corresponding to the fields and choices.</p></li>
+<li><p><strong>sample_size</strong> (<em>int</em>) – the number of candidates to be returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the sampled configurations to be executed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flpackage.autotune.algos.random_search">
+<span class="sig-prename descclassname"><span class="pre">flpackage.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">random_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/autotune/algos.html#random_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.autotune.algos.random_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>To produce a given nunber of configurations from a given (producted) search space with random search strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchs_space</strong> (<em>dict</em>) – key corresponds to config field, and value corresponds to the choices.</p></li>
+<li><p><strong>sample_size</strong> (<em>int</em>) – the number of candidates to be returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the sampled configurations to be executed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gfl.html" class="btn btn-neutral float-left" title="Graph FL Module References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

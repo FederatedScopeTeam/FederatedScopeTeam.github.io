@@ -1,0 +1,17 @@
+name: Jekyll site CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  jekyll:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # Specify the target branch (optional)
+    - uses: helaili/jekyll-action@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        target_branch: 'gh-pages'

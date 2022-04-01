@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flpackage.autotune.choice_types &mdash; FLPackage 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> FLPackage
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gfl.html">Graph FL Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autotune.html">Auto-tuning Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FLPackage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>flpackage.autotune.choice_types</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for flpackage.autotune.choice_types</h1><div class="highlight"><pre>
+<span></span><span class="c1">#import os</span>
+<span class="c1">#import sys</span>
+<span class="c1">#file_dir = os.path.join(os.path.dirname(__file__), &#39;../..&#39;)</span>
+<span class="c1">#sys.path.append(file_dir)</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">flpackage.config</span> <span class="kn">import</span> <span class="n">cfg</span>
+
+
+<div class="viewcode-block" id="discretize"><a class="viewcode-back" href="../../../autotune.html#flpackage.autotune.choice_types.discretize">[docs]</a><span class="k">def</span> <span class="nf">discretize</span><span class="p">(</span><span class="n">contd_choices</span><span class="p">,</span> <span class="n">num_bkt</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Discretize a given continuous search space into the given number of buckets.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        contd_choices (Continuous): continuous choices.</span>
+<span class="sd">        num_bkt (int): number of buckets.</span>
+<span class="sd">    :returns: discritized choices.</span>
+<span class="sd">    :rtype: Discrete</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">contd_choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="o">.</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">log_scale</span><span class="p">:</span>
+        <span class="n">loglb</span><span class="p">,</span> <span class="n">logub</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">contd_choices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">1e-8</span><span class="p">,</span>
+                    <span class="n">contd_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">contd_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">num_bkt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loglb</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">logub</span> <span class="o">-</span> <span class="n">loglb</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bkt_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">logub</span> <span class="o">-</span> <span class="n">loglb</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_bkt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loglb</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">bkt_size</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bkt</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">num_bkt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">contd_choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">contd_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">contd_choices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bkt_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">contd_choices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">contd_choices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_bkt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">contd_choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">bkt_size</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bkt</span><span class="p">)]</span>
+    <span class="n">disc_choices</span> <span class="o">=</span> <span class="n">Discrete</span><span class="p">(</span><span class="o">*</span><span class="n">choices</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">disc_choices</span></div>
+
+
+<div class="viewcode-block" id="Continuous"><a class="viewcode-back" href="../../../autotune.html#flpackage.autotune.choice_types.Continuous">[docs]</a><span class="k">class</span> <span class="nc">Continuous</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a continuous search space, e.g., in the range [0.001, 0.1].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">ub</span> <span class="o">&gt;=</span> <span class="n">lb</span><span class="p">,</span> <span class="s2">&quot;Invalid configuration where ub:</span><span class="si">{}</span><span class="s2"> is less than lb:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">[</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Continuous(</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="Continuous.sample"><a class="viewcode-back" href="../../../autotune.html#flpackage.autotune.choice_types.Continuous.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample a value from this search space.</span>
+
+<span class="sd">        :returns: the sampled value.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="o">.</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">log_scale</span><span class="p">:</span>
+            <span class="n">loglb</span><span class="p">,</span> <span class="n">logub</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">1e-8</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loglb</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">logub</span> <span class="o">-</span> <span class="n">loglb</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Continuous.grid"><a class="viewcode-back" href="../../../autotune.html#flpackage.autotune.choice_types.Continuous.grid">[docs]</a>    <span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_cnt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a given nunber of grids from this search space.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            grid_cnt (int): the number of grids.</span>
+<span class="sd">        :returns: the sampled value.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">discretized</span> <span class="o">=</span> <span class="n">discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_cnt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">discretized</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># TODO: also add representer according to the examples shown in https://pyyaml.org/wiki/PyYAMLDocumentation</span>
+
+
+<span class="k">def</span> <span class="nf">contd_constructor</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">construct_scalar</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Continuous</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)</span>
+
+
+<span class="n">yaml</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;!contd&#39;</span><span class="p">,</span> <span class="n">contd_constructor</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Discrete"><a class="viewcode-back" href="../../../autotune.html#flpackage.autotune.choice_types.Discrete">[docs]</a><span class="k">class</span> <span class="nc">Discrete</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a discrete search space, e.g., {&#39;abc&#39;, &#39;ijk&#39;, &#39;xyz&#39;}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Discrete(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Discrete.sample"><a class="viewcode-back" href="../../../autotune.html#flpackage.autotune.choice_types.Discrete.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample a value from this search space.</span>
+
+<span class="sd">        :returns: the sampled value.</span>
+<span class="sd">        :rtype: depends on the original choices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))]</span></div>
+
+    <span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_cnt</span><span class="p">):</span>
+        <span class="n">num_original</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">grid_cnt</span> <span class="o">&lt;=</span> <span class="n">num_original</span><span class="p">,</span> <span class="s2">&quot;There are only </span><span class="si">{}</span><span class="s2"> choices to produce grids, but </span><span class="si">{}</span><span class="s2"> required&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">num_original</span><span class="p">,</span> <span class="n">grid_cnt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grid_cnt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">optimistic_step_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_original</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">grid_cnt</span>
+            <span class="n">between_end_len</span> <span class="o">=</span> <span class="n">optimistic_step_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">grid_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">remainder</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_original</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">between_end_len</span>
+            <span class="n">one_side_remainder</span> <span class="o">=</span> <span class="n">remainder</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">remainder</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">remainder</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">one_side_remainder</span> <span class="o">&lt;=</span> <span class="n">optimistic_step_size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">step_size</span> <span class="o">=</span> <span class="n">optimistic_step_size</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">step_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_original</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">grid_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">covered_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">grid_cnt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">step_size</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">num_original</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">covered_range</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                    <span class="n">start_idx</span><span class="p">,</span>
+                    <span class="nb">min</span><span class="p">(</span><span class="n">start_idx</span> <span class="o">+</span>
+                        <span class="n">grid_cnt</span> <span class="o">*</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">num_original</span><span class="p">),</span> <span class="n">step_size</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="n">selected</span></div>
+
+
+<span class="c1"># TODO: also add representer according to the examples shown in https://pyyaml.org/wiki/PyYAMLDocumentation</span>
+
+
+<span class="k">def</span> <span class="nf">disc_constructor</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">construct_sequence</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Discrete</span><span class="p">(</span><span class="o">*</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="n">yaml</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;!disc&#39;</span><span class="p">,</span> <span class="n">disc_constructor</span><span class="p">)</span>
+
+<span class="c1">#if __name__==&quot;__main__&quot;:</span>
+<span class="c1">#    obj = Continuous(0.0, 0.01)</span>
+<span class="c1">#    print(obj.grid(1), obj.grid(2), obj.grid(3))</span>
+<span class="c1">#    for _ in range(3):</span>
+<span class="c1">#        print(obj.sample())</span>
+<span class="c1">#    cfg.merge_from_list([&#39;hpo.log_scale&#39;, &#39;True&#39;])</span>
+<span class="c1">#    print(obj.grid(1), obj.grid(2), obj.grid(3))</span>
+<span class="c1">#    for _ in range(3):</span>
+<span class="c1">#        print(obj.sample())</span>
+<span class="c1">#</span>
+<span class="c1">#    obj = Discrete(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)</span>
+<span class="c1">#    print(obj.grid(1), obj.grid(2), obj.grid(3))</span>
+<span class="c1">#    for _ in range(3):</span>
+<span class="c1">#        print(obj.sample())</span>
+<span class="c1">#    obj = Discrete(1, 2, 3, 4, 5)</span>
+<span class="c1">#    print(obj.grid(1), obj.grid(2), obj.grid(3), obj.grid(4), obj.grid(5))</span>
+<span class="c1">#    for _ in range(3):</span>
+<span class="c1">#        print(obj.sample())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
