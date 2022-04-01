@@ -4,6 +4,7 @@ permalink: /docs/improve-hpo/
 excerpt: "About improving HPO."
 last_modified_at: 2020-05-01T10:22:56-04:00
 toc: true
+layout: tuto
 ---
 
 In essence, hyperparameter optimization (HPO) is a trial-and-error procedure, where each trial often means an entire training course and then evaluation. Under the federated learning (FL) setting, each FL training course consists of hundereds of communication rounds, which makes it unaffordable to conduct such trials again and again.

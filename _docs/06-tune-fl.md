@@ -4,6 +4,7 @@ permalink: /docs/use-hpo/
 excerpt: "About using Federated HPO."
 last_modified_at: 2020-07-27
 toc: true
+layout: tuto
 ---
 
 It is well-known that deep neural networks are often sensitive to their hyperparameters, which need to be tuned carefully. When it comes to federated learning (FL), there are additional hyperparameters concerning the FL behaviors, which include the number of steps to make local update (`federate.local_update_steps`), the ratio of clients sampled at each round (`federate.sample_client_rate`), the coefficient of proximal regularization in FedProx (`fedprox.mu`), etc. Any poor choices for these hyperparameters would lead to unsatisfactory performances or even divergence.

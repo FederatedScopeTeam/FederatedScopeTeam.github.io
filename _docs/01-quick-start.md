@@ -6,6 +6,7 @@ last_modified_at: 2021-06-07T08:48:05-04:00
 redirect_from:
   - /theme-setup/
 toc: true
+layout: tuto
 ---
 
 Federated Learning (FL) is a learning paradigm for collaboratively learning models from isolated data without directly sharing privacy information, which helps to satisfy the requirements of privacy protection of the public. FederatedScope, a comprehensive platform for FL based on a message-oriented framework, aims to provide easy-used and flexible support for developers who want to quick start and custom task-specific FL procedures.

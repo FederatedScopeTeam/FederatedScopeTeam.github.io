@@ -30,11 +30,14 @@ body {
           flex-direction: column;
 }
 
-.initial-content {
+.initial-content,
+.search-content {
+  flex: 1 0 auto;
+}
+
+.eqtextwidth-content {
   text-align:justify;
   word-break:keep-all;
-}
-.search-content {
   flex: 1 0 auto;
 }
 

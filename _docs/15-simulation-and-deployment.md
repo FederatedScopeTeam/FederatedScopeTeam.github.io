@@ -4,6 +4,7 @@ permalink: /docs/simulation-and-deployment/
 excerpt: "About simulation and deployment"
 last_modified_at: 2018-11-25T19:46:43-05:00
 toc: true
+layout: tuto
 ---
 
 <a name="AJmyC"></a>
