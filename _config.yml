@@ -17,9 +17,9 @@ title_separator          : "-"
 subtitle                 : "Easy federated learning, safe knowledge sharing."
 name                     : &name "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy" # &name is a YAML anchor which can be *referenced later
 description              : &description "Easy Federated Learning, Safe Knowledge Sharing."
-url                      : https://federatedscopeteam.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : "/project_website" # the subpath of your site, e.g. "/blog"
-repository               : "FederatedScopeTeam/project_website"
+#url                      : https://federatedscopeteam.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+#baseurl                  : "/project_website" # the subpath of your site, e.g. "/blog"
+repository               : "FederatedScopeTeam/FederatedScopeTeam.github.io"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
