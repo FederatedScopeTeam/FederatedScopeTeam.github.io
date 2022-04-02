@@ -6,7 +6,7 @@ last_modified_at: 2019-08-20T21:36:18-04:00
 toc: true
 ---
 
-**FederatedScope** provides a rich collection of datasets for researchers, including images, texts, graphs, recommendation systems and speeches. Our `DataZoo` contains real federation datasets as well as simulated federation datasets with a different `splitter`. And more datasets are coming soon!
+FederatedScope provides a rich collection of datasets for researchers, including images, texts, graphs, recommendation systems and speeches. Our `DataZoo` contains real federation datasets as well as simulated federation datasets with a different `splitter`. And more datasets are coming soon!
 
 To use our `DataZoo`, set `cfg.data.type = DATASET_NAME`. Downloading and pre-processing of our datasets is automatic, and you do not need to perform additional operations. Please feel free to use it! For more dataset-related settings, please refer to each dataset.
 
@@ -123,7 +123,7 @@ data:
 ```
 
 <a name="Reference"></a>
-## Reference
+## References
 
 [1] Caldas, Sebastian, et al. "Leaf: A benchmark for federated settings." _arXiv_ 2018.
 
