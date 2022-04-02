@@ -68,7 +68,7 @@ Gradient clipping is preset in `flapackage/core/trainers/trainer.py`. When the f
         ctx.optimizer.step()
     ...
 ```
-Threshold of gradient clipping in `flpackage/config.py`.
+Threshold of gradient clipping in `federatedscope/config.py`.
 ```python
 # ------------------------------------------------------------------------ #
 # Optimizer related options
@@ -88,7 +88,7 @@ NbAFL [2] is a DP algorithm designed for federated learning, which protects both
 
 <a name="Ehipa"></a>
 ### Prepare DP Parameters
-Add parameters into `flpackage/config.py`. Note FederatedScope supports at most two levels of config, e.g., `cfg.data.type`. 
+Add parameters into `federatedscope/config.py`. Note FederatedScope supports at most two levels of config, e.g., `cfg.data.type`. 
 ```python
 # ------------------------------------------------------------------------ #
 # nbafl(dp) related options
@@ -204,7 +204,7 @@ def wrap_nbafl_trainer(
                                         insert_pos=-1)
     return base_trainer
 ```
-Finally, in `flpackage/core/auxiliaries/trainer_builder.py`, the function `get_trainer`wraps the basic trainer with NbAFL variables and functions. 
+Finally, in `federatedscope/core/auxiliaries/trainer_builder.py`, the function `get_trainer`wraps the basic trainer with NbAFL variables and functions. 
 ```python
 def get_trainer(model=None,
                 data=None,
@@ -215,7 +215,7 @@ def get_trainer(model=None,
     ...
     # differential privacy plug-in
     if config.nbafl.use:
-        from flpackage.core.trainers.trainer_nbafl import wrap_nbafl_trainer
+        from federatedscope.core.trainers.trainer_nbafl import wrap_nbafl_trainer
         trainer = wrap_nbafl_trainer(trainer)
     ...
 ```
@@ -224,7 +224,7 @@ def get_trainer(model=None,
 ## Run an Example
 Run the  following command to call NbAFL on the dataset Femnist.
 ```bash
-python flpackage/main.py --cfg flpackage/cv/baseline/fedavg_convnet2_on_femnist.yaml \
+python federatedscope/main.py --cfg federatedscope/cv/baseline/fedavg_convnet2_on_femnist.yaml \
   nbafl.mu 0.01 \
   nbafl.constant 1 \
   nbafl.w_clip 0.1 \
@@ -251,5 +251,5 @@ Take the dataset Femnist as an example, the accuracy with different $(\epsilon-\
 ---
 
 <a name="RpfyB"></a>
-## Reference
+## References
 [1] Cynthia Dwork, Aaron Roth. The Algorithmic Foundations of Differential Privacy. Foundations and Trends in Theoretical Computer Science. <br />[2] Kang Wei, Jun Li, Ming Ding, et al. Federated Learning With Differential Privacy: Algorithms and Performance Analysis. IEEE Transactions on Information Forensics and Security. 
