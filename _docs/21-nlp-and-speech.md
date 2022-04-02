@@ -4,6 +4,7 @@ permalink: /docs/nlp-and-speech/
 excerpt: "About NLP and Speech"
 last_modified_at: 2018-11-25T19:46:43-05:00
 toc: true
+layout: tuto
 ---
 
 <a name="bJdWk"></a>
@@ -11,7 +12,7 @@ toc: true
 
 Recently, privacy-preserving methods gain increasing attentions in machine learning (ML) applications using linguistic data  including text and audio, due to the fact that linguistic data can involve a wealth of information relating to an identified or identifiable natural person, such as the physiological, psychological, economic, cultural or social identity.
 
-Federated Learning (FL) methods show promising results for collaboratively training models from a large number of clients without sharing their private linguistic data. To facilitate FL research in linguistic data, **FederatedScope** provides several built-in linguistic datasets and supports various tasks such as language modeling and text classification with various FL algorithms.
+Federated Learning (FL) methods show promising results for collaboratively training models from a large number of clients without sharing their private linguistic data. To facilitate FL research in linguistic data, FederatedScope provides several built-in linguistic datasets and supports various tasks such as language modeling and text classification with various FL algorithms.
 
 <a name="Yzwrs"></a>
 ## Natural Language Processing (NLP)
@@ -28,7 +29,7 @@ We provide three popular text datasets for next-character prediction, next-word 
 <a name="eHVuQ"></a>
 ### Models
 
-We provide a LSTM model implementation in `flpackage/nlp/model`
+We provide a LSTM model implementation in `federatedscope/nlp/model`
 
 - **LSTM:** a type of RNN that solves the vanishing gradient problem through additional cells, input and output gates. (`cfg.model.type = 'lstm'`)
 
@@ -50,7 +51,7 @@ class LSTM(nn.Module):
 
 Next-character/word prediction is a classic NLP task as it can be applied in many consumer applications and appropriately be modeled by statistical language models, we show how to achieve next-character prediction in cross-device FL setting.
 
-- Here we implement a simple LSTM model for next-character prediction: taking an English characters sequence as input, the model learns to predict the next possible character. After registering the model, we can use it by specifying `cfg.model.type=lstm` and  hyper-parameters such as  `cfg.model.in_channels=80, cfg.model.out_channels=80, cfg.model.emd_size=8`.  Complete codes are in `flpackage/nlp/model/rnn.py` and `flpackage/nlp/model/model_builder.py`.
+- Here we implement a simple LSTM model for next-character prediction: taking an English characters sequence as input, the model learns to predict the next possible character. After registering the model, we can use it by specifying `cfg.model.type=lstm` and  hyper-parameters such as  `cfg.model.in_channels=80, cfg.model.out_channels=80, cfg.model.emd_size=8`.  Complete codes are in `federatedscope/nlp/model/rnn.py` and `federatedscope/nlp/model/model_builder.py`.
 
 ```python
 class LSTM(nn.Module):
@@ -88,7 +89,7 @@ class LSTM(nn.Module):
         return final_word
 ```
 
-- For the dataset, we use the Shakespeare dataset from [LEAF](https://leaf.cmu.edu/), which is built from _The Complete Works of William Shakespeare_,  and partitioned to ~1100 clients (speaking roles) from 422615.  We can specify the `cfg.dataset.type=shakespeare` and adjust the fraction of data subsample (`cfg.data.sub_sample=0.2`), and train/val/test ratio (``cfg.data.splits=[0.6,0.2,0.2]). Complete NLP data codes are in`flpackage/nlp/dataset`.
+- For the dataset, we use the Shakespeare dataset from [LEAF](https://leaf.cmu.edu/), which is built from _The Complete Works of William Shakespeare_,  and partitioned to ~1100 clients (speaking roles) from 422615.  We can specify the `cfg.dataset.type=shakespeare` and adjust the fraction of data subsample (`cfg.data.sub_sample=0.2`), and train/val/test ratio (``cfg.data.splits=[0.6,0.2,0.2]). Complete NLP data codes are in`federatedscope/nlp/dataset`.
 
 ```python
 class LEAF_NLP(LEAF):
@@ -117,34 +118,34 @@ class LEAF_NLP(LEAF):
         pass
 ```
 
-- To enable large-scale clients simulation, we provide online aggregator in standalone mode to save the memory, which  maintains only three model objects for the FL server aggregation. We can use this feature by specifying `cfg.federate.online_aggr = True` and `federate.share_local_model=True` , more details about this feature can be found in [the post "Simulation and Deployment"](link to be added).
-- To handle the non-i.i.d. challenge, **FederatedScope** supports several SOTA [personalization](post link) algorithms and easy extension.
+- To enable large-scale clients simulation, we provide online aggregator in standalone mode to save the memory, which  maintains only three model objects for the FL server aggregation. We can use this feature by specifying `cfg.federate.online_aggr = True` and `federate.share_local_model=True` , more details about this feature can be found in [the post "Simulation and Deployment"]({{ "/docs/simulation-and-deployment" | relative_url }}).
+- To handle the non-i.i.d. challenge, FederatedScope supports several SOTA [personalization]({{ "/docs/pfl" | relative_url }}) algorithms and easy extension.
 - To enable partial clients participation in each FL round, we provide clients sampling feature with various configuration manners: 1) `cfg.federate.sample_client_rate`, which is in the range (0, 1] and indicates selecting partial clients using random sampling with replacement; 2) `cfg.federate.sample_client_num` , which is an integer to indicate sample client number at each round.
 
 With these specification, we can run the experiment with
 
 ```python
- main.py --cfg flpackage/nlp/baseline/fedavg_lstm_on_shakespeare.yaml
+ main.py --cfg federatedscope/nlp/baseline/fedavg_lstm_on_shakespeare.yaml
 ```
 
 You will get the accuracy of FedAvg algorithm around `43.80%`.
 
-Other NLP related scripts to run the next-character prediction experiments can be found in `flpackage/nlp/baseline`.
+Other NLP related scripts to run the next-character prediction experiments can be found in `federatedscope/nlp/baseline`.
 
 <a name="MK5wA"></a>
 ### Customize your NLP task
 
-**FederatedScope** enables users to easily implement and register more NLP datasets and models.
+FederatedScope enables users to easily implement and register more NLP datasets and models.
 
 -  Implement and register your own NLP data 
 ```python
-# flpackage/contrib/data/my_nlp_data.py
+# federatedscope/contrib/data/my_nlp_data.py
 
 import torch
 import copy
 import numpy as np
 
-from flpackage.register import register_data
+from federatedscope.register import register_data
 
 def get_my_nlp_data(config):
     r"""
@@ -212,7 +213,7 @@ register_data("my_nlp_data", call_my_data)
 -  Implement and register your own NLP model 
 ```python
 import torch
-from flpackage.register import register_model
+from federatedscope.register import register_model
 
 
 class  KIM_CNN(nn.Module):

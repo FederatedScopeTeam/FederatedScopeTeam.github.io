@@ -4,6 +4,7 @@ permalink: /docs/trainer/
 excerpt: "About trainer."
 last_modified_at: 2020-08-30T21:27:40-04:00
 toc: true
+layout: tuto
 ---
 
 FederatedScope decouples the local learning process and details of FL communication and schedule, allowing users to freely customize local learning algorithm via the `trainer`. Each worker holds a `trainer` object to manage the details of local learning, such as the loss function, optimizer, training step, evaluation, etc. 
@@ -23,11 +24,11 @@ A typical machine learning process consists of the following procedures:
 3. Evaluation the quality of learned model on validation/evaluation datasets
 4. Saving, loading, and monitoring the model and intermediate results
 
-![undefined](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/226570/1647846107018-85df1a74-b53f-4b21-98d4-1d4eb15c3655.png) 
+![undefined](https://img.alicdn.com/imgextra/i4/O1CN01H8OEeS1tdhR38C4dK_!!6000000005925-2-tps-1504-874.png) 
 
 As the figure shows, in FederatedScope `Trainer`,  these above procedures are provided with high-level `routines` abstraction, which are made up of `Context` class and several pluggable `Hooks`.
 
-- The `Context` class is used to holds learning-related attributes, including data, model, optimizer and etc. We will introduce more details in [next Section](#trainer-context).
+- The `Context` class is used to holds learning-related attributes, including data, model, optimizer and etc. We will introduce more details in [next Section]({{ "/docs/trainer/#trainer-context" | relative_url }}).
 ```python
 self.ctx = Context(model,
                    self.cfg,
@@ -35,7 +36,7 @@ self.ctx = Context(model,
                    device,
                    init_dict=self.parse_data(data))
 ```
-- The `Hooks` represent fine-grained learning behaviors at different point-in-times, which provides a simple yet powerful way to customize learning behaviors with a few modifications and easy re-use of fruitful default hooks. More details about the behavior customization are in [following Section](#trainer-behaviors).
+- The `Hooks` represent fine-grained learning behaviors at different point-in-times, which provides a simple yet powerful way to customize learning behaviors with a few modifications and easy re-use of fruitful default hooks. More details about the behavior customization are in [following Section]({{ "/docs/trainer/#trainer-behaviors" | relative_url }}).
 ```python
 HOOK_TRIGGER = [
         "on_fit_start", "on_epoch_start", "on_batch_start", "on_batch_forward",
@@ -98,7 +99,7 @@ self.register_default_hooks_eval()
     ```
 
 ### Hooks 
-  - We implement fruitful default hooks to support various training/evaluation processes, such as [personalized FL behaviors](), [graph-task related behaviors](), [privacy-preserving behaviors](). 
+  - We implement fruitful default hooks to support various training/evaluation processes, such as [personalized FL behaviors]({{ "/docs/pfl/#demonstration" | relative_url }}), [graph-task related behaviors]({{ "/docs/graph/#develop-federated-gnn-algorithms" | relative_url }}), [privacy-preserving behaviors]({{ "/docs/privacy-attacks/#2-usage-of-attack-module" | relative_url }}). 
 
   - Each hook takes the learning `context` as input and performs the learning actions such as 
 

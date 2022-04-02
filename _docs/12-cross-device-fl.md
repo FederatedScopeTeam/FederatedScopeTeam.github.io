@@ -4,6 +4,7 @@ permalink: /docs/cross-device/
 excerpt: "About cross-device FL."
 last_modified_at: 2016-11-03T11:13:12-04:00
 toc: true
+layout: tuto
 ---
 
 <a name="yLclt"></a>
@@ -18,7 +19,7 @@ The cross-device FL setting usually contains the following charateristics:
 - limited client-end resources: the client devices usually have limited hardware and communication resources that are much weaker than cloud servers. Low latency and low costs in storage, computation, and communication are much-needed in cross-device FL applications.
 
 
-As the following figure shows, a typical cross-device FL process adopts a centralized network topology and involves the following repeated steps:<br />![image.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/226570/1648441901160-31876fba-5158-4b8f-90a9-d577075b56f0.png#clientId=uf62381e4-1cb6-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=448&id=ua920a474&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1120&originWidth=1328&originalType=binary&ratio=1&rotation=0&showTitle=false&size=171063&status=done&style=none&taskId=u8a285c1c-9501-43ca-a582-5b4ac399d87&title=&width=531.2)
+As the following figure shows, a typical cross-device FL process adopts a centralized network topology and involves the following repeated steps:<br />![image.png](https://img.alicdn.com/imgextra/i2/O1CN01UdMdbC1FwrNHCj9MM_!!6000000000552-2-tps-1328-1120.png)
 
 1. Server **broadcasts** the intermediate exchange information (usually the global model weights) and (optional) the clients-end FL program to selected clients.
 1. The selected clients download the information from the server, and execute **local learning** based on the private local data, the FL programs, and the messages from the server.
@@ -32,7 +33,7 @@ Next we show how to run a cross-device FL simulation for next-character/word pre
 
 Next-character/word prediction is a classic NLP task as it can be applied in many consumer applications and appropriately be modeled by statistical language models, we show how to achieve the cross-device FL simulation for this task.
 
-- Here we implement a simple LSTM model for next-character prediction: taking an English-character sequence as input, the model learns to predict the next possible character. After registering the modela we can use it by specifying `cfg.model.type=lstm` and  hyper-parameters such as  `cfg.model.in_channels=80, cfg.model.out_channels=80, cfg.model.emd_size=8`.  Complete codes are in `flpackage/nlp/model/rnn.py` and `flpackage/nlp/model/model_builder.py`.
+- Here we implement a simple LSTM model for next-character prediction: taking an English-character sequence as input, the model learns to predict the next possible character. After registering the modela we can use it by specifying `cfg.model.type=lstm` and  hyper-parameters such as  `cfg.model.in_channels=80, cfg.model.out_channels=80, cfg.model.emd_size=8`.  Complete codes are in `federatedscope/nlp/model/rnn.py` and `federatedscope/nlp/model/model_builder.py`.
 
 ```python
 class LSTM(nn.Module):
@@ -70,7 +71,7 @@ class LSTM(nn.Module):
         return final_word
 ```
 
-- For the dataset, we use the Shakespeare dataset from [LEAF](https://leaf.cmu.edu/), which is built from _The Complete Works of William Shakespeare_,  and partitioned to ~1100 clients (speaking roles) from 422615.  We can specify the `cfg.dataset.type=shakespeare` and adjust the fraction of data subsample (`cfg.data.sub_sample=0.2`), and train/val/test ratio (`cfg.data.splits=[0.6,0.2,0.2`). Complete NLP data codes are in `flpackage/nlp/dataset`.
+- For the dataset, we use the Shakespeare dataset from [LEAF](https://leaf.cmu.edu/), which is built from _The Complete Works of William Shakespeare_,  and partitioned to ~1100 clients (speaking roles) from 422615.  We can specify the `cfg.dataset.type=shakespeare` and adjust the fraction of data subsample (`cfg.data.sub_sample=0.2`), and train/val/test ratio (`cfg.data.splits=[0.6,0.2,0.2`). Complete NLP data codes are in `federatedscope/nlp/dataset`.
 
 ```python
 class LEAF_NLP(LEAF):
@@ -98,10 +99,10 @@ class LEAF_NLP(LEAF):
             target_transform=None):
 ```
 
-- To enable large-scale clients simulation, we provide online aggregator in standalone mode to save the memory, which  maintains only three model objects for the FL server aggregation. We can use this feature by specifying `cfg.federate.online_aggr = True` and `federate.share_local_model=True` , more details about this feature can be found in [the post "Simulation and Deployment"](link to be added).
-- To handle the non-i.i.d. challenge, **FederatedScope** supports several SOTA [personalization](post link) algorithms and easy extension.
+- To enable large-scale clients simulation, we provide online aggregator in standalone mode to save the memory, which  maintains only three model objects for the FL server aggregation. We can use this feature by specifying `cfg.federate.online_aggr = True` and `federate.share_local_model=True` , more details about this feature can be found in [the post "Simulation and Deployment"]({{ "/docs/simulation-and-deployment" | relative_url }}).
+- To handle the non-i.i.d. challenge, FederatedScope supports several SOTA [personalization]({{ "/docs/pfl" | relative_url }}) algorithms and easy extension.
 - To enable partial clients participation in each FL round, we provide clients sampling feature with various configuration manners: 1) `cfg.federate.sample_client_rate`, which is in the range (0, 1] and indicates selecting partial clients using random sampling with replacement; 2) `cfg.federate.sample_client_num` , which is an integer to indicate sample client number at each round.
-- With these specification, we can run the experiment with `python main.py --cfg flpackage/nlp/baseline/fedavg_lstm_on_shakespeare.yaml` . Other NLP related scripts to run the next-character prediction experiments can be found in `flpackage/nlp/baseline`.
+- With these specification, we can run the experiment with `python main.py --cfg federatedscope/nlp/baseline/fedavg_lstm_on_shakespeare.yaml` . Other NLP related scripts to run the next-character prediction experiments can be found in `federatedscope/nlp/baseline`.
 
 <a name="QrELc"></a>
 ## References
