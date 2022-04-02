@@ -18,7 +18,7 @@ We provide `register` function to help build your own federated learning workflo
 <a name="SmCQW"></a>
 ## <span id="data">Load a dataset</span>
 
-We provide a function `flpackage.register.register_data` to make your dataset available with three steps:
+We provide a function `federatedscope.register.register_data` to make your dataset available with three steps:
 
 -  Step1: set up your data in the following format (standalone):<br />**Note**: This function returns a `dict`, where the `key` is the client's id, and the `value` is the data `dict` of each client with 'train', 'test' or 'val'.  You can also modify the config here. 
 ```python
@@ -88,7 +88,7 @@ def load_my_data(config):
 
 -  Step2: register your data with a keyword, such as `"mydata"`.
 ```python
-from flpackage.register import register_data
+from federatedscope.register import register_data
 
 def call_my_data(config):
     if config.data.type == "mydata":
@@ -99,14 +99,14 @@ register_data("mydata", call_my_data)
 ```
 
 
--  Step3: put this `.py` file in the `flpackage/contrib/data/` folder, and set `cfg.data.type = "mydata"` to use it. 
+-  Step3: put this `.py` file in the `federatedscope/contrib/data/` folder, and set `cfg.data.type = "mydata"` to use it. 
 
-Also,  you can modify the source code to make the FederatedScope support your dataset. Please see [flpackage.core.auxiliaries.data_builder](flpackage/core/auxiliaries/data_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
+Also,  you can modify the source code to make the FederatedScope support your dataset. Please see [federatedscope.core.auxiliaries.data_builder](federatedscope/core/auxiliaries/data_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
 
 <a name="AgRA6"></a>
 ## <span id="model">Build a model</span>
 
-We provide a function `flpackage.register.register_model` to make your model available with three steps: (we take `ConvNet2` as an example)
+We provide a function `federatedscope.register.register_model` to make your model available with three steps: (we take `ConvNet2` as an example)
 
 -  Step1: build your model with Pytorch or Tensorflow and instantiate your model class with config and data. 
 ```python
@@ -154,7 +154,7 @@ def load_my_net(model_config, local_data):
 
 -  Step2: register your model with a keyword, such as `"mynet"`.
 ```python
-from flpackage.register import register_model
+from federatedscope.register import register_model
 
 def call_my_net(model_config, local_data):
     if model_config.type == "mynet":
@@ -165,19 +165,19 @@ register_model("mynet", call_my_net)
 ```
 
 
--  Step3: put this `.py` file in the `flpackage/contrib/model/` folder, and set `cfg.model.type = "mynet"` to use it. 
+-  Step3: put this `.py` file in the `federatedscope/contrib/model/` folder, and set `cfg.model.type = "mynet"` to use it. 
 
-Also,  you can modify the source code to make the FederatedScope support your model. Please see [flpackage.core.auxiliaries.model_builder](/flpackage/core/auxiliaries/model_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
+Also,  you can modify the source code to make the FederatedScope support your model. Please see [federatedscope.core.auxiliaries.model_builder](/federatedscope/core/auxiliaries/model_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
 
 <a name="l3cbN"></a>
 
 ## <span id="trainer">Create a trainer</span>
 
-FederatedScope decouples the local learning process and details of FL communication and schedule, allowing users to freely customize the local learning algorithms via the `Trainer`. We recommend user build trainer by inheriting `flpackage.core.trainers.trainer.GeneralTrainer`, for more details, please see [Trainer](xxxxxx). Similarly, we provide `flpackage.register.register_trainer` to make your customized trainer available:
+FederatedScope decouples the local learning process and details of FL communication and schedule, allowing users to freely customize the local learning algorithms via the `Trainer`. We recommend user build trainer by inheriting `federatedscope.core.trainers.trainer.GeneralTrainer`, for more details, please see [Trainer](https://federatedscope.io/docs/trainer/). Similarly, we provide `federatedscope.register.register_trainer` to make your customized trainer available:
 
--  Step1: build your trainer by inheriting `GeneralTrainer`. Our `GeneralTrainer` already supports many different usages, for the advanced user, please see flpackage.core.trainers.trainer.GeneralTrainer for more details. 
+-  Step1: build your trainer by inheriting `GeneralTrainer`. Our `GeneralTrainer` already supports many different usages, for the advanced user, please see federatedscope.core.trainers.trainer.GeneralTrainer for more details. 
 ```python
-from flpackage.core.trainers.trainer import GeneralTrainer
+from federatedscope.core.trainers.trainer import GeneralTrainer
 
 class MyTrainer(GeneralTrainer):
     pass
@@ -186,7 +186,7 @@ class MyTrainer(GeneralTrainer):
 
 -  Step2: register your trainer with a keyword, such as `"mytrainer"`. 
 ```python
-from flpackage.register import register_trainer
+from federatedscope.register import register_trainer
 
 def call_my_trainer(trainer_type):
     if trainer_type == 'mytrainer':
@@ -197,19 +197,19 @@ register_trainer('mytrainer', call_my_trainer)
 ```
 
 
--  Step3: put this `.py` file in the `flpackage/contrib/trainer/` folder, and set `cfg.trainer.type = "mytrainer"` to use it. 
+-  Step3: put this `.py` file in the `federatedscope/contrib/trainer/` folder, and set `cfg.trainer.type = "mytrainer"` to use it. 
 
-Also,  you can modify the source code to make the FederatedScope support your model. Please see `flpackage/core/auxiliaries/trainer_builder.py` , and you can add an `elif` to skip `Step2` and `Step3` above.
+Also,  you can modify the source code to make the FederatedScope support your model. Please see `federatedscope/core/auxiliaries/trainer_builder.py` , and you can add an `elif` to skip `Step2` and `Step3` above.
 
 <a name="Z43Cb"></a>
 
 ## <span id="metric">Introduce more evaluation metrics</span>
 
-We provide a number of metrics to monitor the entire federal learning process. You just need to list the name of the metric you want in `cfg.eval.metrics`. We currently support metrics such as loss, accuracy, etc. (See [flpackage.core.evaluator](flpackage/core/evaluator.py) for more details).
+We provide a number of metrics to monitor the entire federal learning process. You just need to list the name of the metric you want in `cfg.eval.metrics`. We currently support metrics such as loss, accuracy, etc. (See [federatedscope.core.evaluator](federatedscope/core/evaluator.py) for more details).
 
-We also provide a function `flpackage.register.register_metric` to make your evaluation metrics available with three steps:
+We also provide a function `federatedscope.register.register_metric` to make your evaluation metrics available with three steps:
 
--  Step1: build your metric (see [flpackage.core.context](flpackage/core/context.py) for more about `ctx`) 
+-  Step1: build your metric (see [federatedscope.core.context](federatedscope/core/context.py) for more about `ctx`) 
 ```python
 def cal_my_metric(ctx, **kwargs):
   	...
@@ -219,7 +219,7 @@ def cal_my_metric(ctx, **kwargs):
 
 -  Step2: register your metric with a keyword, such as `"mymetric"` 
 ```python
-from flpackage.register import register_metric
+from federatedscope.register import register_metric
 
 def call_my_metric(types):
     if "mymetric" in types:
@@ -230,4 +230,4 @@ register_metric("mymetric", call_my_metric)
 ```
 
 
--  Step3: put this `.py` file in the `flpackage/contrib/metircs/` folder, and add `"mymetric"` to `cfg.eval.metric` activate it. 
+-  Step3: put this `.py` file in the `federatedscope/contrib/metircs/` folder, and add `"mymetric"` to `cfg.eval.metric` activate it. 

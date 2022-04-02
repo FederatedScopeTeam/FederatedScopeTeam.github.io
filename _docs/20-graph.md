@@ -23,7 +23,7 @@ In this tutorial, you will learn:
 - Benchmarkcketing Federated GNN [[click]](#benchmark)
 
 <a name="015787ec"></a>
-## Quick start
+## <span id="start">Quick start</span>
 
 Let's start with a two-layer GCN on (fed) Cora to familiarize you with FederatedScope.
 
@@ -104,7 +104,7 @@ eval:
 If the `yaml` file is named as `example.yaml`, just run:
 
 ```python
-python flpackage/main.py --cfg example.yaml
+python federatedscope/main.py --cfg example.yaml
 ```
 
 Then, the FedAVG performance is around `0.87`.
@@ -116,15 +116,15 @@ FederatedScope also provides `register` function to set up the FL procedure. Her
 
 -  Load Cora dataset and split into 5 subgraph 
 ```python
-# flpackage/contrib/data/my_cora.py
+# federatedscope/contrib/data/my_cora.py
 
 import torch
 import copy
 import numpy as np
 
 from torch_geometric.datasets import Planetoid
-from flpackage.gfl.dataset.splitter import LouvainSplitter
-from flpackage.register import register_data
+from federatedscope.gfl.dataset.splitter import LouvainSplitter
+from federatedscope.register import register_data
 
 
 def my_cora(config=None):
@@ -158,7 +158,7 @@ register_data("mycora", call_my_data)
 
 -  Build a two-layer GCN 
 ```python
-# flpackage/contrib/model/my_gcn.py
+# federatedscope/contrib/model/my_gcn.py
 
 import torch
 import torch.nn.functional as F
@@ -166,7 +166,7 @@ import torch.nn.functional as F
 from torch.nn import Parameter, Linear, ModuleList
 from torch_geometric.data import Data
 from torch_geometric.nn import GCNConv
-from flpackage.register import register_model
+from federatedscope.register import register_model
 
 
 class MyGCN(torch.nn.Module):
@@ -221,35 +221,35 @@ register_model("mygcn", call_my_net)
 
 -  Run with following command to start: 
 ```bash
-python flpackage/main.py --cfg example.yaml data.type mycora model.type mygcn
+python federatedscope/main.py --cfg example.yaml data.type mycora model.type mygcn
 ```
 
 
 <a name="e69435f3"></a>
-## Reproduce the main experimental results 
+## <span id="reproduce">Reproduce the main experimental results </span>
 
-We also provide configuration files to help you easily reproduce the results in our `EasyFGL` paper. All the `yaml` files are in `flpackage/gfl/baseline`.
+We also provide configuration files to help you easily reproduce the results in our `EasyFGL` paper. All the `yaml` files are in `federatedscope/gfl/baseline`.
 
 -  Train two-layer GCN with Node-level task dataset Cora 
 ```bash
-python flpackage/main.py --cfg flpackage/gfl/baseline/fedavg_gnn_node_fullbatch_citation.yaml
+python federatedscope/main.py --cfg federatedscope/gfl/baseline/fedavg_gnn_node_fullbatch_citation.yaml
 ```
 <br />Then, the FedAVG performance is around `0.87`. 
 
 -  Train two-layer GCN with Link-level task dataset WN18 
 ```bash
-python flpackage/main.py --cfg flpackage/gfl/baseline/fedavg_gcn_minibatch_on_kg.yaml
+python federatedscope/main.py --cfg federatedscope/gfl/baseline/fedavg_gcn_minibatch_on_kg.yaml
 ```
 <br />Then, the FedAVG performance is around `hits@1: 0.30`, `hits@5: 0.79`, `hits@10: 0.96`. 
 
 -  Train two-layer GCN with Graph-level task dataset HIV 
 ```bash
-python flpackage/main.py --cfg flpackage/gfl/baseline/fedavg_gcn_minibatch_on_hiv.yaml
+python federatedscope/main.py --cfg federatedscope/gfl/baseline/fedavg_gcn_minibatch_on_hiv.yaml
 ```
 <br />Then, the FedAVG performance is around `accuracy: 0.96` and `roc_aucs: 0.62`. 
 
 <a name="4fb9498c"></a>
-## DataZoo
+## <span id="dataset">DataZoo</span>
 
 FederatedScope provides a rich collection of datasets for graph learning researchers, including real federation datasets as well as simulated federation datasets split by some sampling or clustering algorithms. The dataset statistics are shown in the table and **more datasets are coming soon**:
 
@@ -423,8 +423,8 @@ Data(x=[19, 9], edge_index=[2, 40], edge_attr=[40, 3], y=[1, 1], smiles='CCC1=[O
 Data(x=[37, 9], edge_index=[2, 80], edge_attr=[80, 3], y=[1, 1], smiles='CCCCCC=C(c1cc(Cl)c(OC)c(-c2nc(C)no2)c1)c1cc(Cl)c(OC)c(-c2nc(C)no2)c1')
 ```
 
-
 <a name="Dataloader"></a>
+
 ### Dataloader
 
 For node-level and link-level tasks, we use full-batch training by default. However, some large graphs can not be adopted to full-batch training due to the video memory limitation. Fortunately, we also provide some graph sampling algorithms, like `GraphSAGE` and `GraphSAINT` which are subclasses of `torch_geometric.loader`.
@@ -448,7 +448,7 @@ cfg.trainer.type = 'linkminibatch_trainer'
 <a name="Splitter"></a>
 ### Splitter
 
-Existing graph datasets are a valuable source to meet the need for more FL datasets. Under the federated learning setting, the dataset is decentralized. To simulate federated graph datasets by existing standalone ones, our `DataZoo` integrates a rich collection of `flpackage.gfl.dataset.splitter`.  Except for `meta_splitter` which comes from the meta information of datasets, we have the following splitters:
+Existing graph datasets are a valuable source to meet the need for more FL datasets. Under the federated learning setting, the dataset is decentralized. To simulate federated graph datasets by existing standalone ones, our `DataZoo` integrates a rich collection of `federatedscope.gfl.dataset.splitter`.  Except for `meta_splitter` which comes from the meta information of datasets, we have the following splitters:
 
 -  Node-level task 
    -  `community_splitter`: **Split by cluster** `cfg.data.splitter = 'louvain'`<br />Community detection algorithms such as Louvain are at first applied to partition a graph into several clusters. Then these clusters are assigned to the clients, optionally with the objective of balancing the number of nodes in each client. 
@@ -460,12 +460,12 @@ Existing graph datasets are a valuable source to meet the need for more FL datas
    -  `multi_task_splitter`: **Split by dataset **`cfg.data.splitter = 'louvain'`<br />Different clients have different tasks. 
 
 <a name="e832f847"></a>
-## ModelZoo
+## <span id="model">ModelZoo</span>
 
 <a name="GNN"></a>
 ### GNN
 
-We implemented GCN [9], GraphSAGE [10], GAT [11], GIN [12], and GPR-GNN [13] on different levels of tasks in `flpackage.gfl.model`, respectively. In order to run your FL procedure with these models, set `cfg.model.task` to `node`, `link` or `graph`, and all models can be instantiated automatically based on the data provided. More GNN models are coming soon!
+We implemented GCN [9], GraphSAGE [10], GAT [11], GIN [12], and GPR-GNN [13] on different levels of tasks in `federatedscope.gfl.model`, respectively. In order to run your FL procedure with these models, set `cfg.model.task` to `node`, `link` or `graph`, and all models can be instantiated automatically based on the data provided. More GNN models are coming soon!
 
 <a name="Trainer"></a>
 ### Trainer
@@ -488,11 +488,11 @@ We provide several `Trainers` for different models and for different tasks.
    - For graph-level tasks.
 
 <a name="3ac63a45"></a>
-## Develop federated GNN algorithms
+## <span id="fedgnn">Develop federated GNN algorithms</span>
 
 FederatedScope provides comprehensive support to help you develop federated GNN algorithms. Here we will go through `FedSage+` [14] and `GCFL+` [15] as examples.
 
--  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `flpackage/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. Based on our message-oriented framework, we need to define new message types and the corresponding handler functions. 
+-  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. Based on our message-oriented framework, we need to define new message types and the corresponding handler functions. 
 ```python
 # FedSagePlusServer
 self.register_handlers('clf_para', self.callback_funcs_model_para)
@@ -501,10 +501,10 @@ self.register_handlers('gradient', self.callback_funcs_gradient)
 ```
  <br />Because FedSage+ has multiple stages, please carefully deal with the `msg_buffer` in `check_and_move_on()` in different states. 
 
--  GCFL+, [_Federated Graph Classification over Non-IID Graphs_](https://arxiv.org/pdf/2106.13423v5.pdf)_, NeurIPS_ 2021<br />GCFL+ clusters clients according to the sequence of the gradients of each local model, and those with a similar sequence of the gradients share the same model parameters.<br />We implemented GCFL+ in `flpackage/gfl/gcflplus` with `FedSagePlusServer` and `FedSagePlusClient`. Since no more messages are involved, we can implement GCFL+ by simply defining how to clustering clients and adding gradients to message `model_para`. 
+-  GCFL+, [_Federated Graph Classification over Non-IID Graphs_](https://arxiv.org/pdf/2106.13423v5.pdf)_, NeurIPS_ 2021<br />GCFL+ clusters clients according to the sequence of the gradients of each local model, and those with a similar sequence of the gradients share the same model parameters.<br />We implemented GCFL+ in `federatedscope/gfl/gcflplus` with `FedSagePlusServer` and `FedSagePlusClient`. Since no more messages are involved, we can implement GCFL+ by simply defining how to clustering clients and adding gradients to message `model_para`. 
 
 <a name="05a3809d"></a>
-## Enable build-in Federated Algorithms
+## <span id="fedalgo">Enable build-in Federated Algorithms</span>
 
 FederatedScope provides many built-in FedOptimize, PersonalizedFL and FedHPO algorithms. You can adapt them to graph learning by simply turning on the switch.
 
@@ -515,7 +515,7 @@ For more details, see:
 - FedHPO
 
 <a name="732de0f8"></a>
-## Benchmarks
+## <span id="benchmark">Benchmarks</span>
 
 We've conducted extensive experiments to build the benchmarks of FedGraph, which simultaneously gains<br />many valuable insights for the community.
 
