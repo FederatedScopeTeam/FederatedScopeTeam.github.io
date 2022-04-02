@@ -4,6 +4,7 @@ permalink: /docs/cross-silo/
 excerpt: "About cross-silo FL."
 last_modified_at: 2018-03-20T16:00:02-04:00
 toc: true
+layout: tuto
 ---
 
 In the cross-silo scenario where several departments or companies that own a large amount of data and computation resources want to jointly train a global model, vertical federated learning is a widespread learning paradigm. Vertical federated learning refers to the scenario where participants share the same sample ID scape but different feature spaces. For example, several companies want to federal learn global user profiles with their app data, which have a large amount of overlapped users but different user behaviors.

@@ -4,6 +4,7 @@ permalink: /docs/new-type/
 excerpt: "About defining new stuffs."
 last_modified_at: 2021-05-11T10:22:55-04:00
 toc: true
+layout: tuto
 ---
 
 with the help of the [message-oriented framework]({{ "/docs/msg-oriented-framework/" | relative_url }}), FederatedScope allows developers to customize FL applications via introducing new types of  messages and the corresponding handling functions. Here we provide the implementation details.

@@ -4,6 +4,7 @@ permalink: /docs/msg-oriented-framework/
 excerpt: "The message-oriented framework used in FederatedScope."
 last_modified_at: 2021-05-11T10:40:42-04:00
 toc: true
+layout: tuto
 ---
 
 Before introducing more details about how to develop customized FL procedures for various real-world applications with FederatedScope, it is necessary to present the message-oriented framework for you. On the one hand, our design philosophy can provide users with another perspective for federated learning, which is different from the widely-adopted sequential process and might bring benefits for customizing. On the other hand, the introduction of the message-oriented framework can help users to know how to implement using provided rich functional components or extending fancy features with FederatedScope conveniently and effortlessly.

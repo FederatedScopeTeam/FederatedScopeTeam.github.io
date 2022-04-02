@@ -4,6 +4,7 @@ permalink: /docs/protected-msg/
 excerpt: "About protecting messages."
 last_modified_at: 2018-09-10T12:33:24-04:00
 toc: true
+layout: tuto
 ---
 
 In order to satisfy different requirements of message privacy protection,  several technologies, including Differential Privacy, Encryption, Multi-Party Computation, etc., are applied in an FL course to enhance the strength of protection.
