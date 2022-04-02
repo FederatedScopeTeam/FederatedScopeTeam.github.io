@@ -71,34 +71,35 @@ python federatedscaope/main.py --cfg federatedscope/cv/baseline/fedavg_convnet2_
 We also encourage contributions about accelerating FL simulation, which must be very helpful for both research and application.
 
 <a name="dUZ3r"></a>
+
 ## From simulation to deployment
-FederatedScope provides a unified interface for both standalone simulation and distributed deployment. Therefore, to transfer from simulation to deployment, developers only need to:
 
-- Modify the configurations, such as data_path, mode, role, and communication address;
-- Run multiple FL procedures, each denotes a participant, to build up an FL course.
+FederatedScope provides a unified interface for both standalone simulation and distributed deployment. Therefore, to transfer from simulation to deployment, users only need to:
 
-An example can be found in xxx.
+- Modify the configurations, add data_path, role, and communication address;
+- Run multiple FL procedures, each denotes a participant, to build an FL course.
 
-We aim to provide more support for data storage,  running on various software/hardware environments,  distributed systems scheduling in the future.
+An example can be found in [Distributed Mode]({{ "/docs/quick-start/#distributed-mode" | relative_url }}).
 
-<a name="lXX4d"></a>
-## Cross ML backend
-One of the biggest challenges when applying federated learning in practice is to compat different ML backends. Considering a situation that, some participants perform local training based on Tensorflow while others used Pytorch, and these participants want to build up an FL course.<br />![image.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/218841/1648192056562-c9bf0eda-f036-47ba-b58b-f4994b55e168.png#clientId=ude571f01-ed62-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=251&id=u901a5dc6&name=image.png&originHeight=251&originWidth=950&originalType=binary&ratio=1&rotation=0&showTitle=false&size=93933&status=done&style=none&taskId=ua0b6d9c7-639a-4ce1-8912-f3294fbf732&title=&width=950)
+We aim to provide more support for different data storage,  various software/hardware environments,  distributed systems scheduling in the future.
+
+## Cross ML backends
+
+One of the biggest challenges when applying federated learning in practice is to be compatible with different ML backends. Considering the situation that some participants perform local training based on Tensorflow while others use Pytorch, and these participants want to build up an FL course.
+![](https://img.alicdn.com/imgextra/i1/O1CN01bw6qmA1ouZx51CAJq_!!6000000005285-0-tps-1617-433.jpg)
 
 The most straightforward solution is to force all the participants to use the same ML backend. It can be feasible for some cross-device scenarios such as Gboard [4], where exists a powerful manager to unify the types of software and hardware environments. However, for cross-silo scenarios where each participant (usually a department or company) has already built up a large and complete system for local training, it is not practical and economical to unify the backends. 
 
-Another solution is getting help from intermedia representation, such as ONNX[5] and TensorRT[6], which transfers the original program into a defined intermedia representation, and further interprets into the target language during the runtime. 
+Another solution is getting help from intermedia representation, such as ONNX [5] and TensorRT [6], which transfers the original program into a defined intermedia representation, and further interprets into the target language during the runtime. 
 
-In order to compat different ML backend, FederatedScope decouples the federal behaviors and training behaviors (Reader can refer to xxx for more details). The participants hold a trainer/aggregator object to encapsulate their training behaviors that might be related to the ML backend, and only care about the high-level behaviors such as train or eval. For example, a client uses `trainer.train(model, data, configuration)`to perform local training but ignores what the backend used behind.
+In order to be compatible with different ML backends, FederatedScope decouples the federal behaviors and training behaviors. The participants hold a trainer/aggregator object to encapsulate their training behaviors that might be related to their ML backends. Thus they can only care about high-level behaviors such as train or eval. For example, a client uses `trainer.train(model, data, configuration)`to perform local training but ignores what is the backend used behind.
 
-In summary, if developers want to build up an FL task that involves participants with different ML backends, developers might need to:
+In summary, if developers want to build up an FL course that involves participants with different ML backends, developers might need to:
 
 - Customize backend-specific Trainers accordingly;
 - A transformation to match the computation graph described in different backends.
 
-We aim to provide more Trainers to compat widely-used ML backends in the future. 
-
----
+We aim to provide more Trainers to support more widely-used ML backends in the future. 
 
 <a name="Ou1RE"></a>
 ## Reference
