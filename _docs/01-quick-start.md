@@ -24,7 +24,7 @@ python setup.py install
 ## Prepare datasets & models
 
 To run an FL course, firstly you should prepare datasets for FL. The [DataZoo]({{ "/docs/datazoo/" | relative_url }}) provided in FederatedScope can help to automatically download and preprocess widely-used public datasets from various FL applications, including computer vision, natural language processing, graph learning, recommendation, etc. Users can conveniently conduct experiments on the provided dataset via specifying `cfg.data.type = DATASET_NAME`in the configuration.  
-We also support users to adopt customized datasets, please refer to xx for more details about the provided datasets in DataZoo, and refer to xx for introducing custom datasets in FederatedScope.
+We also support users to adopt customized datasets, please refer to [DataZoo]({{ "/docs/datazoo/" | relative_url }}) for more details about the provided datasets, and refer to [Customized Datasets]({{ "/docs/own-case/#load-a-dataset" | relative_url }}) for introducing custom datasets in FederatedScope.
 
 Secondly, you should specify the model architecture that will be federally trained, such as ConvNet or LSTM. FederatedScope includes the ModelZoo to provide the implementation of famous model architectures for various FL applications. Users can set up `cfg.model.type = MODEL_NAME` to apply a specific model architecture in FL tasks. We allow users to use custom models via registering without caring about the federated process. You can refer to [DataZoo]({{ "/docs/datazoo/" | relative_url }}) for more details about how to customize models.
 

@@ -41,7 +41,7 @@ The message is one of the key objects to describe and drive an FL course in the 
 
 Users can define various types of messages according to the unique requirements of customized FL courses, and, at the same time, describe the handling functions of servers and clients to handle these received messages. Thus, a customized FL course can be implemented by adding new types of messages and the corresponding handling functions.
 
-The detailed implementation of adding new types of exchanged messages and behaviors of servers and clients can be found in xxx.
+The detailed implementation of adding new types of exchanged messages and behaviors of servers and clients can be found in [New Types of Messages and Handlers]({{ "/docs/new-type/" | relative_url }}).
 
 **Communicator**  
 The communicator is used for participants to exchange messages with each other, which can be regarded as a black box viewed by servers and clients, since only high-level interfaces (such as *send* and *receive*) are exposed to them. The communicator hides the low-level implementation of backends so that it can provide a unified view for both standalone simulation and distributed deployment.
