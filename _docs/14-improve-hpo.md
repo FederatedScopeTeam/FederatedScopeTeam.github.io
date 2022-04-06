@@ -11,7 +11,6 @@ In essence, hyperparameter optimization (HPO) is a trial-and-error procedure, wh
 
 Hence, FederatedScope has provided functionalities to conduct low-fidelity HPO, which allows users to trade evaluation precision for efficiency.
 
-<a name="e038721e"></a>
 ## Achieving low-fidelity HPO under the federated learning setting
 
 We encourage users to try low-fidelity HPO with our provided toy example:
@@ -27,14 +26,14 @@ where Successive Halving Algorithm (SHA) [2] is employed as our HPO scheduler. A
 
 where, in this example, `hpo.sha.elim_round_num=3` and `hpo.sha.elim_rate=3`. Thus, the scheduler begins with `3**3=27` initial candidate configurations randomly sampled from the declared search space. As we have introduced in the [primary HPO tutorial]({{ "/docs/use-hpo/" | relative_url }}), SHA iteratively filters the maintained candidates round-by-round untill only one configuration remaining. According to the settings for elimination rate, the number of elimination rounds, and the budgets (i.e., `hpo.sha.budgets`), the scheduler proceeds as follow:
 
-> 1st iteration: Each of the 27 candidates will be trained for 1 round.
+- 1st iteration: Each of the 27 candidates will be trained for 1 round.
 
-2nd iteration: Each of the 9 candidates outstanding from last iteration will be trained for 3 rounds
+- 2nd iteration: Each of the 9 candidates outstanding from last iteration will be trained for 3 rounds
 
-3rd iteration: Each of the 3 candidates outstanding from last iteration will be trained for 9 rounds
+- 3rd iteration: Each of the 3 candidates outstanding from last iteration will be trained for 9 rounds
 
 
-As your can see, by controlling the resource allocation (here the assigned number of training rounds), the winning configuratioin enjoys the most resource---1+3+9=13 training rounds, while we didn't waste much resource on those poor configurations. The total resource consumed is 27 _ 1 + 9 _ 3 + 3 _ 9 = 81 training rounds. In contrast, the SHA example presented in our primary HPO tutorial has not specified the budget and consumes (27 + 9 + 3) _ 20 = 780 training rounds. Although insufficient training rounds may lead to configuration rankings that are less correlated with the ground-truth rankings, training round provides us an aspect to control the fidelity to trade-off between accuracy and efficiency.
+As your can see, by controlling the resource allocation (here the assigned number of training rounds), the winning configuratioin enjoys the most resource---$1+3+9=13$ training rounds, while we didn't waste much resource on those poor configurations. The total resource consumed is $27 \times 1 + 9 \times 3 + 3 \times 9 = 81$ training rounds. In contrast, the SHA example presented in our primary HPO tutorial has not specified the budget and consumes $(27 + 9 + 3) \times 20 = 780$ training rounds. Although insufficient training rounds may lead to configuration rankings that are less correlated with the ground-truth rankings, training round provides us an aspect to control the fidelity to trade-off between accuracy and efficiency.
 
 The eventual results of the above example are as follow:
 
@@ -44,7 +43,6 @@ where the test loss cannot be minimized as small as that of the SHA example pres
 
 Another aspect that enables to control the fidelity is the ratio of clients sampled in each training round. FederatedScope allows users to specify either the sample rate (via `federate.sample_client_rate`) or the number of sampled client (via `federate.sample_client_num`), with the former prioritized. If none of them has been set, all clients would be involved in each training round.
 
-<a name="hb47h"></a>
 ## Empirical study
 
 We evaluate the effectiveness of SHA with low-fidelity on a case where graph convolutional network (GCN) is to be trained on the citation network Cora. In this experiment, we use the same setting as the above example, and thus there are 81 training rounds in total can be consumed. For the purpose of comparison, we adopt random search (RS) algorithm [4] as our baselines, where sample size of 81, 27, and 9 are considered, with training rounds per trial 1, 3, and 9, respectively.
@@ -83,7 +81,6 @@ With different combinations of the them, we conduct HPO with different fideiliti
 
 where, as expected, higher fidelity leads to better configuration for both kinds of graph neural network models. At first, we want to remind our readers that the left-upper region in each grid table corresponds to extremely low-fidelity HPO. Although their performances cannot be comparable to those in the other regions, they have successfully eliminated a considerable fraction of poor configurations. Meanwhile, increasing fidelity through the two aspects, i.e., client sampling rate and the number of training rounds, reveal comparable efficiency in improving the quality of searched configurations. This property provides valuable flexibility for practitioners to keep a fixed fidelity while trade-off between these two aspects according to their system status (e.g., network latency and how the dragger behaves) [3].
 
-<a name="cSb9N"></a>
 ## Weight-sharing and personalized HPO
 
 In general, the hyperparameters of an FL algorithm can be classified into two categories:
@@ -100,21 +97,23 @@ To utilize this idea, FexEx [1] makes an analogy to the weight-sharing trick wid
 FederatedScope has provided flexible interfaces to instantiate such an idea into Federated HPO algorithm (more details can be found at this [post]({{ "/docs/new-type/" | relative_url }})). For instance, implementing FedEx can be sketched as the following steps:
 
 1. To inherit the base server class and integrate your implementation of the controller into the server;
-1. To augment the parameter broadcast method, including the sampled client-side configuration in the message;
-1. To inherit the base client class and extend the handler---initializing the local model with received parameters and reset hyperparameters by the received choices;
-1. To extend the handler of server, that is, updating the controller w.r.t. received performances.
+2. To augment the parameter broadcast method, including the sampled client-side configuration in the message;
+3. To inherit the base client class and extend the handler---initializing the local model with received parameters and reset hyperparameters by the received choices;
+4. To extend the handler of server, that is, updating the controller w.r.t. received performances.
 
 We will provide an implementation of FedEx later, and we encourage users to contribute more latest federated HPO algorithms to FederatedScope.
 
-It is worth noting that the bandits sampled in each round are _different_ due to the non-i.i.d.ness of client-wise data distributions. Thus, a promising future direction is to explore the [personalization functionalities]({{ "/docs/pfl/" | relative_url }}) to achieve personalized HPO.
+It is worth noting that the bandits sampled in each round are different due to the non-i.i.d.ness of client-wise data distributions. Thus, a promising future direction is to explore the [personalization functionalities]({{ "/docs/pfl/" | relative_url }}) to achieve personalized HPO.
 
----
 
-<a name="Reference"></a>
-## Reference
+## References
 
-- [1] Khodak, Mikhail, et al. "Federated hyperparameter tuning: Challenges, baselines, and connections to weight-sharing." Advances in Neural Information Processing Systems 34 (2021).
-- [2] Li, Lisha, et al. "Hyperband: A novel bandit-based approach to hyperparameter optimization." The Journal of Machine Learning Research 18.1 (2017): 6765-6816.
-- [3] Zhang, Huanle, et al. "Automatic Tuning of Federated Learning Hyper-Parameters from System Perspective." arXiv preprint arXiv:2110.03061 (2021).
-- [4] Bergstra, James, and Yoshua Bengio. "Random search for hyper-parameter optimization." Journal of machine learning research 13.2 (2012).
-- [5] Asad, Muhammad, Ahmed Moustafa, and Takayuki Ito. "FedOpt: Towards communication efficiency and privacy preservation in federated learning." Applied Sciences 10.8 (2020): 2864.
+[1] Khodak, Mikhail, et al. "Federated hyperparameter tuning: Challenges, baselines, and connections to weight-sharing." Advances in Neural Information Processing Systems 34 (2021).
+
+[2] Li, Lisha, et al. "Hyperband: A novel bandit-based approach to hyperparameter optimization." The Journal of Machine Learning Research 18.1 (2017): 6765-6816.
+
+[3] Zhang, Huanle, et al. "Automatic Tuning of Federated Learning Hyper-Parameters from System Perspective." arXiv preprint arXiv:2110.03061 (2021).
+
+[4] Bergstra, James, and Yoshua Bengio. "Random search for hyper-parameter optimization." Journal of machine learning research 13.2 (2012).
+
+[5] Asad, Muhammad, Ahmed Moustafa, and Takayuki Ito. "FedOpt: Towards communication efficiency and privacy preservation in federated learning." Applied Sciences 10.8 (2020): 2864.

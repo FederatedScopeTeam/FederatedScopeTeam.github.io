@@ -4,9 +4,10 @@ permalink: /docs/pfl/
 excerpt: "About personalized FL."
 last_modified_at: 2018-03-20T15:59:57-04:00
 toc: true
+layout: tuto
 ---
 
-**FederatedScope**  is a flexible FL framework, which enables users to implement complex FL algorithms simply and intuitively. In this tutorial, we will show how to implement diverse personalized FL algorithms.
+FederatedScope  is a flexible FL framework, which enables users to implement complex FL algorithms simply and intuitively. In this tutorial, we will show how to implement diverse personalized FL algorithms.
 
 ## Background
 
@@ -23,7 +24,7 @@ It is challenging to make full use of local data considering such systematical h
 - Client-end behaviors such as regularization and multi-model interaction
 - Server-end behaviors such as model interpolation
 
-We will demonstrate several implementations for state-of-the-art (SOTA) pFL methods  to meet the above requirements and show how  powerful and flexible the **FederatedScope** framework to implement pFL extensions.
+We will demonstrate several implementations for state-of-the-art (SOTA) pFL methods  to meet the above requirements and show how  powerful and flexible the FederatedScope framework to implement pFL extensions.
 
 
 
@@ -31,7 +32,7 @@ We will demonstrate several implementations for state-of-the-art (SOTA) pFL meth
 
 ### Personalized model sub-modules - FedBN
 
-[FedBN](https://arxiv.org/abs/2102.07623) [1] is a simple yet effective approach to address feature shift non-iid, in which the client BN parameters are trained locally, without communication and aggregation via server. **FederatedScope** provides simple configuration to implement FedBN and other variants that need to keep parameters of some model sub-modules local.
+[FedBN](https://arxiv.org/abs/2102.07623) [1] is a simple yet effective approach to address feature shift non-iid, in which the client BN parameters are trained locally, without communication and aggregation via server. FederatedScope provides simple configuration to implement FedBN and other variants that need to keep parameters of some model sub-modules local.
 
 - By specifying the local parameter names as follows, the clients and server will filter out the sub-modules contains the given names in the model parameter `update` function.
   ```python
@@ -44,7 +45,7 @@ We will demonstrate several implementations for state-of-the-art (SOTA) pFL meth
 ```python
 # trainer.print_trainer_meta_info()
 
-Model meta-info: <class 'flpackage.cv.model.cnn.ConvNet2'>.
+Model meta-info: <class 'federatedscope.cv.model.cnn.ConvNet2'>.
 Num of original para names: 18.
 Num of original trainable para names: 12.
 Num of preserved para names in local update: 8.
@@ -55,7 +56,7 @@ Filtered para names in local update: {'bn2.weight', 'bn2.num_batches_tracked', '
 
 ### Personalized regularization - Ditto
 
-[Ditto](https://arxiv.org/abs/2012.04221) [2] is a SOTA pFL approach that improves fairness and robustness of FL via training local personalized model and global model simultaneously, in which the local model update is based on regularization to global model parameters. **FederatedScope** provides built-in Ditto implementation and users can easily extends to other pFL methods by re-using the model-para regularization. More details can be found in `flpackage/core/trainers/trainer_Ditto.py`.
+[Ditto](https://arxiv.org/abs/2012.04221) [2] is a SOTA pFL approach that improves fairness and robustness of FL via training local personalized model and global model simultaneously, in which the local model update is based on regularization to global model parameters. FederatedScope provides built-in Ditto implementation and users can easily extends to other pFL methods by re-using the model-para regularization. More details can be found in `federatedscope/core/trainers/trainer_Ditto.py`.
 
 - To preserve distinct local models in trainer, we can simply use another model object in trainer's context
 
@@ -109,7 +110,7 @@ Filtered para names in local update: {'bn2.weight', 'bn2.num_batches_tracked', '
 
 ### Personalized multi-model interaction - FedEM
 
-[FedEM](https://arxiv.org/abs/2108.10252) [3] is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. **FederatedScope** provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in `flpackage/core/trainers/trainer_FedEM.py`.
+[FedEM](https://arxiv.org/abs/2108.10252) [3] is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. FederatedScope provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in `federatedscope/core/trainers/trainer_FedEM.py`.
 
 - The `FedEMTrainer` is derived from `GeneralMultiModelTrainer`. We can easily add FedEM-specific attributes and behaviors via context and hooks register functions
 
@@ -185,7 +186,7 @@ Filtered para names in local update: {'bn2.weight', 'bn2.num_batches_tracked', '
 FedEM can be generalized to many **clustering ** based methods &  **multi-task modeling** based methods (see details inSection 2.3 in [3]) and we can extend `FedEMTrainer` to more multi-model based pFL methods.
 
 ## Evaluation Results
-To facilitate rapid and reproducible pFL research, we provide the experimental results and corresponding scripts to benchmark  pFL performance for several SOTA pFL methods via **FederatedScope**.  We will continue to add more algorithm implementations and experimental results in different scenarios.
+To facilitate rapid and reproducible pFL research, we provide the experimental results and corresponding scripts to benchmark  pFL performance for several SOTA pFL methods via FederatedScope.  We will continue to add more algorithm implementations and experimental results in different scenarios.
 
 ### FedBN
 
@@ -201,7 +202,7 @@ We provide some evaluation results for FedBN on different tasks as follows, in w
 ### pFedMe
 
 [pFedMe](https://arxiv.org/abs/2006.08848) [4] is an effective pFL approach to address data heterogeneity, in which
-the personalized model and global model are decoupled with Moreau envelops. **FederatedScope** implements pFedMe in `flpackage/core/trainers/trainer_pFedMe.py` and `ServerClientsInterpolateAggregator` in `flpackage/core/aggregator.py`.
+the personalized model and global model are decoupled with Moreau envelops. FederatedScope implements pFedMe in `federatedscope/core/trainers/trainer_pFedMe.py` and `ServerClientsInterpolateAggregator` in `federatedscope/core/aggregator.py`.
 
 We provide some evaluation results for pFedMe on different tasks as follows. Complete results, config files and running scripts can be found in `scripts/personalization_exp_scripts/pfedme`.
 
@@ -224,7 +225,7 @@ We provide some evaluation results for Ditto on different tasks as follows. Comp
 | Next-character Prediction | Shakespeare |   45.14   |
 ### FedEM
 
-[FedEM](https://arxiv.org/abs/2108.10252) is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. **FederatedScope** provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in `flpackage/core/trainers/trainer_FedEM.py`.
+[FedEM](https://arxiv.org/abs/2108.10252) is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. FederatedScope provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in `federatedscope/core/trainers/trainer_FedEM.py`.
 
 We provide some evaluation results for FedBN on different tasks as follows. Complete results, config files and running scripts can be found in `scripts/personalization_exp_scripts/fedem`.
 
