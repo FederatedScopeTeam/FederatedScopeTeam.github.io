@@ -4,6 +4,7 @@ permalink: /docs/dp/
 excerpt: "About Differential Privacy."
 last_modified_at: 2016-11-03T11:13:12-04:00
 toc: true
+layout: tuto
 ---
 
 <a name="VfJFz"></a>
@@ -252,4 +253,5 @@ Take the dataset Femnist as an example, the accuracy with different $(\epsilon-\
 
 <a name="RpfyB"></a>
 ## References
-[1] Cynthia Dwork, Aaron Roth. The Algorithmic Foundations of Differential Privacy. Foundations and Trends in Theoretical Computer Science. <br />[2] Kang Wei, Jun Li, Ming Ding, et al. Federated Learning With Differential Privacy: Algorithms and Performance Analysis. IEEE Transactions on Information Forensics and Security. 
+[1] Dwork C, Roth A. "The Algorithmic Foundations of Differential Privacy". Foundations and Trends in Theoretical Computer Science, 2014, 9(3-4): 211-407.
+[2] Wei K, Li J, Ding M, et al. "Federated Learning With Differential Privacy: Algorithms and Performance Analysis". IEEE Transactions on Information Forensics and Security, 2020, 15: 3454-3469. 

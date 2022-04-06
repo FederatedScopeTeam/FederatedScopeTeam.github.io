@@ -4,6 +4,7 @@ permalink: /docs/recommendation/
 excerpt: "Federated Recommendation."
 last_modified_at: 2018-03-20T15:59:57-04:00
 toc: true
+layout: tuto
 ---
 
 <a name="U7cD5"></a>
@@ -422,4 +423,6 @@ The evaluation results of HFL-SGDMF on the dataset MovieLens1M are shown as foll
 
 <a name="DHOTy"></a>
 ### References
-[1] Hao Ma, Haixuan Yang, Michael R. Lyu, et al. SoRec: social recommendation using probabilistic matrix factorization. Proceedings of the ACM Conference on Information and Knowledge Management, 2008.<br />[2] Mohsen Jamali, Martin Ester. A matrix factorization technique with trust propagation for recommendation in social networks. Proceedings of the ACM Conference on Recommender Systems, 2010.<br />[3] Zitao Li, Bolin Ding, Ce Zhang, et al. Federated Matrix Factorization with Privacy Guarantee. Proceedings of the VLDB Endowment, 2022.
+[1] Ma H, Yang H, Lyu M R, et al. "SoRec: social recommendation using probabilistic matrix factorization". Proceedings of the ACM Conference on Information and Knowledge Management, 2008.
+[2] Jamali M, Ester M. "A matrix factorization technique with trust propagation for recommendation in social networks". Proceedings of the ACM Conference on Recommender Systems, 2010.
+[3] Li Z, Ding B, Zhang C, et al. "Federated matrix factorization with privacy guarantee". Proceedings of the VLDB Endowment, 2022.

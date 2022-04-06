@@ -263,5 +263,11 @@ Most combinations of the buildin methods have been tested. When implementing you
 
 <a name="Gy7PK"></a>
 # References
-[1] Brendan McMahan, Eider Moore, Daniel Ramage, et al. Communication-Efficient Learning of Deep Networks from Decentralized Data. Proceedings of the International Conference on Artificial Intelligence and Statistics, 2017. <br />[2] Sashank J. Reddi, Zachary Charles, Manzil Zaheer, et al. Adaptive Federated Optimization. Proceedings of Intertional Conference on Learning Representations, 2021.<br />[3] Tian Li, Anit Kumar Sahu, Manzil Zaheer, et al. Federated Optimization in Heterogeneous Networks. Proceedings of Machine Learning and Systems, 2020. <br />[4] Li, Xiaoxiao, et al. "Fedbn: Federated learning on non-iid features via local batch normalization." arXiv preprint arXiv:2102.07623 (2021).<br />[5] T Dinh, Canh, Nguyen Tran, and Josh Nguyen. "Personalized federated learning with moreau envelopes." Advances in Neural Information Processing Systems 33 (2020): 21394-21405.<br />[6] Li, Tian, et al. "Ditto: Fair and robust federated learning through personalization." International Conference on Machine Learning. PMLR, 2021.<br />[7] Marfoq, Othmane, et al. "Federated multi-task learning under a mixture of distributions." Advances in Neural Information Processing Systems 34 (2021).<br /> 
+[1] McMahan B, Moore E, Ramage D, et al. "Communication-efficient learning of deep networks from decentralized data". International Conference on Artificial Intelligence and Statistics, 2017. 
+[2] Reddi S J, Charles Z, Zaheer M, et al. "Adaptive federated optimization". Intertional Conference on Learning Representations, 2021.
+[3] Li T, Sahu A K, Zaheer M, et al. "Federated optimization in heterogeneous networks". Proceedings of Machine Learning and Systems, 2020. 
+[4] Li X, Jiang M, Zhang X, et al. "Fedbn: Federated learning on non-iid features via local batch normalization". arXiv preprint arXiv:2102.07623 (2021).
+[5] Dinh C T, Tran N H, and Nguyen T D. "Personalized federated learning with moreau envelopes". Advances in Neural Information Processing Systems 33 (2020): 21394-21405.
+[6] Li T, Hu S, Beirami A, et al. "Ditto: Fair and robust federated learning through personalization". International Conference on Machine Learning. PMLR, 2021.
+[7] Marfoq O, Neglia G, Bellet A, et al. "Federated multi-task learning under a mixture of distributions". Advances in Neural Information Processing Systems 34 (2021).
 
