@@ -4,6 +4,7 @@ permalink: /docs/graph/
 excerpt: "About graph."
 last_modified_at: 2020-05-01T10:22:56-04:00
 toc: true
+layout: tuto
 ---
 
 <a name="cE1xp"></a>

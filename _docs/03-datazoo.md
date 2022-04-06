@@ -4,6 +4,7 @@ permalink: /docs/datazoo/
 excerpt: "About DataZoo."
 last_modified_at: 2019-08-20T21:36:18-04:00
 toc: true
+layout: tuto
 ---
 
 FederatedScope provides a rich collection of datasets for researchers, including images, texts, graphs, recommendation systems and speeches. Our `DataZoo` contains real federation datasets as well as simulated federation datasets with a different `splitter`. And more datasets are coming soon!

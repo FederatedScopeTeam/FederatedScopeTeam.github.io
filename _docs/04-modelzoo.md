@@ -4,6 +4,7 @@ permalink: /docs/modelzoo/
 excerpt: "About ModelZoo."
 last_modified_at: 2021-06-23T08:15:34-04:00
 toc: true
+layout: tuto
 ---
 
 FederatedScope provides many built-in models in different deep learning fields, including Computer Vision, Natural Language Processing, Graph, Recommendation Systems, and Speech. Furthermore, more models are on the way!

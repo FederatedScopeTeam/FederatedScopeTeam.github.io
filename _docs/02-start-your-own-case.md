@@ -4,6 +4,7 @@ permalink: /docs/own-case/
 excerpt: "Start your own cases."
 last_modified_at: 2018-03-20T15:19:22-04:00
 toc: true
+layout: tuto
 ---
 
 In addition to the rich collcetion of datasets, models and evaluation metrics, FederatedScope also allows to create your own or introduce more to our package.
