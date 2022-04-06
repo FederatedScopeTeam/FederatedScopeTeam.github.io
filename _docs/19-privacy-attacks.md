@@ -45,7 +45,7 @@ According to the attacker's actions, the privacy attacks can be divided into pas
 
 ## 2. Usage of Attack Module
 ### 2.1 Preliminary
-Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer [quick start]({{"/docs/quick-start/"}}) and [start your own case]({{"/docs/own-case/"}}). 
+Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer [quick start]({{"/docs/quick-start/" | relative_url }}) and [start your own case]({{"/docs/own-case/" | relative_url }}). 
 
 The attack module provides several attack methods for directly using. The users only need to set the corresponding hyper-parameters in the configuration to call the corresponding method and add the prior knowledge to the attacker.
 
@@ -274,7 +274,7 @@ The following is an example in a property inference attack where the attacker (s
 ### 3.3 Client as the attacker
 When the attacker is one of the clients:
 * If the attack actions only happen in the local training procedure, users only need to define the wrapping function to wrap the trainer and add the attack actions. 
-* If the attack actions also happen at the end of the FL training, users need to overload the client class and modify its'callback_funcs_for_finish` function. 
+* If the attack actions also happen at the end of the FL training, users need to overload the client class and modify its `callback_funcs_for_finish` function. 
 
 After setting the trainer wrapping function, it should be added to the function `get_trainer` in `flpackage/core/auxiliaries/trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `flpackage/core/auxiliaries/worker_builder.py`.
 
@@ -362,7 +362,7 @@ def hook_on_data_injection_sav_data(ctx):
 
 
 ## 4. Contribute Your Attacker to FederatedScope
-Users are welcome to contribute their own attack methods to FederatedScope. Please refer [Contributing to FederatedScope]({{"/docs/contributor/"}}) for more details. 
+Users are welcome to contribute their own attack methods to FederatedScope. Please refer [Contributing to FederatedScope]({{ "/docs/contributor/" | relative_url }}) for more details. 
 
 
 
