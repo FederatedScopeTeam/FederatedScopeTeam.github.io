@@ -45,7 +45,7 @@ According to the attacker's actions, the privacy attacks can be divided into pas
 
 ## 2. Usage of Attack Module
 ### 2.1 Preliminary
-Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer [quick start]({{"/docs/quick-start/" | relative_url }}) and [start your own case]({{"/docs/own-case/" | relative_url }}). 
+Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer [quick start]({{ "/docs/quick-start/" | relative_url }}) and [start your own case]({{ "/docs/own-case/" | relative_url }}). 
 
 The attack module provides several attack methods for directly using. The users only need to set the corresponding hyper-parameters in the configuration to call the corresponding method and add the prior knowledge to the attacker.
 
