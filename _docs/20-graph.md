@@ -7,7 +7,6 @@ toc: true
 layout: tuto
 ---
 
-<a name="cE1xp"></a>
 ## Background
 ![image.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/320363/1648440825677-28730162-d69a-4f25-85c1-f936b67c37f0.png#clientId=u74d07bf1-4c20-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4035381f&name=image.png&originHeight=2310&originWidth=3760&originalType=url&ratio=1&rotation=0&showTitle=false&size=520449&status=done&style=none&taskId=ub49659ec-839f-469c-a4ac-e0eddf274de&title=)<br />For privacy reasons, there are many graphs in scenarios that are split into different subgraphs in different clients, which leads to missing of the cross-client edges and data non.i.i.d., etc.
 
@@ -23,12 +22,10 @@ In this tutorial, you will learn:
 - How to enable FedOptimizer, PersonalizedFL and FedHPO [[click]](#fedalgo)
 - Benchmarkcketing Federated GNN [[click]](#benchmark)
 
-<a name="015787ec"></a>
 ## <span id="start">Quick start</span>
 
 Let's start with a two-layer GCN on (fed) Cora to familiarize you with FederatedScope.
 
-<a name="54425689"></a>
 ### Start with built-in functions
 
 You can easily run through a `yaml` file:
@@ -110,12 +107,12 @@ python federatedscope/main.py --cfg example.yaml
 
 Then, the FedAVG performance is around `0.87`.
 
-<a name="f5bce3a4"></a>
 ### Start with customized functions
 
 FederatedScope also provides `register` function to set up the FL procedure. Here we only provide an example about two-layer GCN on (fed) Cora, please refer to Start with your own case for details.
 
 -  Load Cora dataset and split into 5 subgraph 
+
 ```python
 # federatedscope/contrib/data/my_cora.py
 
@@ -157,7 +154,8 @@ register_data("mycora", call_my_data)
 ```
 
 
--  Build a two-layer GCN 
+-  Build a two-layer GCN
+
 ```python
 # federatedscope/contrib/model/my_gcn.py
 
@@ -220,30 +218,33 @@ register_model("mygcn", call_my_net)
 ```
 
 
--  Run with following command to start: 
+-  Run with following command to start:
+
 ```bash
 python federatedscope/main.py --cfg example.yaml data.type mycora model.type mygcn
 ```
 
 
-<a name="e69435f3"></a>
 ## <span id="reproduce">Reproduce the main experimental results </span>
 
 We also provide configuration files to help you easily reproduce the results in our `EasyFGL` paper. All the `yaml` files are in `federatedscope/gfl/baseline`.
 
--  Train two-layer GCN with Node-level task dataset Cora 
+-  Train two-layer GCN with Node-level task dataset Cora
+
 ```bash
 python federatedscope/main.py --cfg federatedscope/gfl/baseline/fedavg_gnn_node_fullbatch_citation.yaml
 ```
 <br />Then, the FedAVG performance is around `0.87`. 
 
--  Train two-layer GCN with Link-level task dataset WN18 
+-  Train two-layer GCN with Link-level task dataset WN18
+
 ```bash
 python federatedscope/main.py --cfg federatedscope/gfl/baseline/fedavg_gcn_minibatch_on_kg.yaml
 ```
 <br />Then, the FedAVG performance is around `hits@1: 0.30`, `hits@5: 0.79`, `hits@10: 0.96`. 
 
--  Train two-layer GCN with Graph-level task dataset HIV 
+-  Train two-layer GCN with Graph-level task dataset HIV
+
 ```bash
 python federatedscope/main.py --cfg federatedscope/gfl/baseline/fedavg_gcn_minibatch_on_hiv.yaml
 ```
@@ -401,21 +402,24 @@ FederatedScope provides a rich collection of datasets for graph learning researc
 
 Let's start `Dataset` with `torch_geometric.data`. Our `DataZoo` contains three levels of tasks which are node-level, link-level and graph-level. Different levels of data have different attributes:
 
--  Node-level dataset<br />Node-level dataset contains one `torch_geometric.data` with attributes: `x` represents the node attribute, `y` represents the node label, `edge_index` represents the edges of the graph, `edge_attr`  represents the edge attribute which is optional, and `train_mask`, `val_mask`,`test_mask` are the node mask of each splits. 
+-  Node-level dataset<br />Node-level dataset contains one `torch_geometric.data` with attributes: `x` represents the node attribute, `y` represents the node label, `edge_index` represents the edges of the graph, `edge_attr`  represents the edge attribute which is optional, and `train_mask`, `val_mask`,`test_mask` are the node mask of each splits.
+
 ```python
 # Cora
 Data(x=[2708, 1433], edge_index=[2, 10556], y=[2708], train_mask=[2708], val_mask=[2708], test_mask=[2708])
 ```
 
 
--  Link-level dataset<br />Link-level dataset contains one `torch_geometric.data` with attributes: `x` represents the node attribute, `edge_index` represents the edges of the graph, `edge_type` represents the link label, `edge_attr`  represents the edge attribute which is optional, `train_edge_mask`, `valid_edge_mask`,`test_edge_mask` are the link mask of each splits, and `input_edge_index` is optional if the input is `edge_index.T[train_edge_mask].T`. 
+-  Link-level dataset<br />Link-level dataset contains one `torch_geometric.data` with attributes: `x` represents the node attribute, `edge_index` represents the edges of the graph, `edge_type` represents the link label, `edge_attr`  represents the edge attribute which is optional, `train_edge_mask`, `valid_edge_mask`,`test_edge_mask` are the link mask of each splits, and `input_edge_index` is optional if the input is `edge_index.T[train_edge_mask].T`.
+
 ```python
 # WN18
 Data(x=[40943, 1], edge_index=[2, 151442], edge_type=[151442], num_nodes=40943, train_edge_mask=[151442], valid_edge_mask=[151442], test_edge_mask=[151442], input_edge_index=[2, 282884])
 ```
 
 
--  Graph-level dataset<br />Graph-level dataset contains several `torch_geometric.data`, and the task is to predict the label of each graph. 
+-  Graph-level dataset<br />Graph-level dataset contains several `torch_geometric.data`, and the task is to predict the label of each graph.
+
 ```python
 # HIV[0]
 Data(x=[19, 9], edge_index=[2, 40], edge_attr=[40, 3], y=[1, 1], smiles='CCC1=[O+][Cu-3]2([O+]=C(CC)C1)[O+]=C(CC)CC(CC)=[O+]2')
@@ -424,13 +428,13 @@ Data(x=[19, 9], edge_index=[2, 40], edge_attr=[40, 3], y=[1, 1], smiles='CCC1=[O
 Data(x=[37, 9], edge_index=[2, 80], edge_attr=[80, 3], y=[1, 1], smiles='CCCCCC=C(c1cc(Cl)c(OC)c(-c2nc(C)no2)c1)c1cc(Cl)c(OC)c(-c2nc(C)no2)c1')
 ```
 
-<a name="Dataloader"></a>
 
 ### Dataloader
 
 For node-level and link-level tasks, we use full-batch training by default. However, some large graphs can not be adopted to full-batch training due to the video memory limitation. Fortunately, we also provide some graph sampling algorithms, like `GraphSAGE` and `GraphSAINT` which are subclasses of `torch_geometric.loader`.
 
--  In node-level task, you should set: 
+-  In node-level task, you should set:
+
 ```python
 cfg.data.loader = 'graphsaint-rw' # or `neighbor`
 cfg.model.type = 'sage'
@@ -438,7 +442,8 @@ cfg.trainer.type = 'nodeminibatch_trainer'
 ```
 
 
--  In link-level task, you should set: 
+-  In link-level task, you should set:
+
 ```python
 cfg.data.loader = 'graphsaint-rw'
 cfg.model.type = 'sage'
@@ -446,7 +451,6 @@ cfg.trainer.type = 'linkminibatch_trainer'
 ```
 
 
-<a name="Splitter"></a>
 ### Splitter
 
 Existing graph datasets are a valuable source to meet the need for more FL datasets. Under the federated learning setting, the dataset is decentralized. To simulate federated graph datasets by existing standalone ones, our `DataZoo` integrates a rich collection of `federatedscope.gfl.dataset.splitter`.  Except for `meta_splitter` which comes from the meta information of datasets, we have the following splitters:
@@ -460,15 +464,15 @@ Existing graph datasets are a valuable source to meet the need for more FL datas
    -  `instance_space_splitter`: **Split by index **`cfg.data.splitter = 'scaffold' or 'rand_chunk'`<br />It is responsible for creating feature distribution skew (i.e., covariate shift). To realize this, we sort the graphs based on their values of a certain aspect. 
    -  `multi_task_splitter`: **Split by dataset **`cfg.data.splitter = 'louvain'`<br />Different clients have different tasks. 
 
-<a name="e832f847"></a>
+
 ## <span id="model">ModelZoo</span>
 
-<a name="GNN"></a>
+
 ### GNN
 
 We implemented GCN [9], GraphSAGE [10], GAT [11], GIN [12], and GPR-GNN [13] on different levels of tasks in `federatedscope.gfl.model`, respectively. In order to run your FL procedure with these models, set `cfg.model.task` to `node`, `link` or `graph`, and all models can be instantiated automatically based on the data provided. More GNN models are coming soon!
 
-<a name="Trainer"></a>
+
 ### Trainer
 
 We provide several `Trainers` for different models and for different tasks.
@@ -488,12 +492,12 @@ We provide several `Trainers` for different models and for different tasks.
 - `GraphMiniBatchTrainer` 
    - For graph-level tasks.
 
-<a name="3ac63a45"></a>
 ## <span id="fedgnn">Develop federated GNN algorithms</span>
 
 FederatedScope provides comprehensive support to help you develop federated GNN algorithms. Here we will go through `FedSage+` [14] and `GCFL+` [15] as examples.
 
--  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. Based on our message-oriented framework, we need to define new message types and the corresponding handler functions. 
+-  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. Based on our message-oriented framework, we need to define new message types and the corresponding handler functions.
+
 ```python
 # FedSagePlusServer
 self.register_handlers('clf_para', self.callback_funcs_model_para)
@@ -504,7 +508,6 @@ self.register_handlers('gradient', self.callback_funcs_gradient)
 
 -  GCFL+, [_Federated Graph Classification over Non-IID Graphs_](https://arxiv.org/pdf/2106.13423v5.pdf)_, NeurIPS_ 2021<br />GCFL+ clusters clients according to the sequence of the gradients of each local model, and those with a similar sequence of the gradients share the same model parameters.<br />We implemented GCFL+ in `federatedscope/gfl/gcflplus` with `FedSagePlusServer` and `FedSagePlusClient`. Since no more messages are involved, we can implement GCFL+ by simply defining how to clustering clients and adding gradients to message `model_para`. 
 
-<a name="05a3809d"></a>
 ## <span id="fedalgo">Enable build-in Federated Algorithms</span>
 
 FederatedScope provides many built-in FedOptimize, PersonalizedFL and FedHPO algorithms. You can adapt them to graph learning by simply turning on the switch.
@@ -515,12 +518,10 @@ For more details, see:
 - PersonalizedFL
 - FedHPO
 
-<a name="732de0f8"></a>
 ## <span id="benchmark">Benchmarks</span>
 
 We've conducted extensive experiments to build the benchmarks of FedGraph, which simultaneously gains<br />many valuable insights for the community.
 
-<a name="3b659c1c"></a>
 ### Node-level task
 
 - Results on representative node classification datasets with `random_splitter` Mean accuracy (%) ± standard deviation.  
@@ -768,7 +769,6 @@ We've conducted extensive experiments to build the benchmarks of FedGraph, which
   </tbody>
   </table>
 
-<a name="d627a12f"></a>
 
 ### Link-level task
 
@@ -964,7 +964,6 @@ We've conducted extensive experiments to build the benchmarks of FedGraph, which
   </tbody>
   </table>
 
-<a name="3f2e0958"></a>
 
 ### Graph-level task
 
@@ -1094,7 +1093,6 @@ We've conducted extensive experiments to build the benchmarks of FedGraph, which
   </table>
 
 
-<a name="References"></a>
 ## References
 
 [1] McCallum, Andrew Kachites, et al. "Automating the construction of internet portals with machine learning." _Information Retrieval_ 2000
