@@ -23,7 +23,7 @@ main:
   - title: "Tutorials"
     url: /docs/quick-start/
   - title: "Playground"
-    url: http://8.210.21.85/
+    url: https://try.federatedscope.io/
     target: _blank
   - title: "API References"
     url: /refs/index
