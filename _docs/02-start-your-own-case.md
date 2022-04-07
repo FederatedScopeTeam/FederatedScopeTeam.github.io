@@ -16,7 +16,7 @@ We provide `register` function to help build your own federated learning workflo
 1. [Create a trainer](#trainer)
 1. [Introduce more evaluation metrics](#metric)
 
-<a name="SmCQW"></a>
+
 ## <span id="data">Load a dataset</span>
 
 We provide a function `federatedscope.register.register_data` to make your dataset available with three steps:
@@ -40,8 +40,7 @@ def load_my_data(config):
     return data_dict, config	
 ```
 
-* We take `torchvision.datasets.MNIST`, which is split and assigned to two clients, as an example:
-
+* We take `torchvision.datasets.MNIST`, which is split and assigned to two clients, as an example: 
 ```python
 def load_my_data(config):
     import numpy as np
@@ -87,7 +86,7 @@ def load_my_data(config):
 ```
 
 
--  Step2: register your data with a keyword, such as `"mydata"`.
+-  Step2: register your data with a keyword, such as `"mydata"`. 
 ```python
 from federatedscope.register import register_data
 
@@ -104,7 +103,7 @@ register_data("mydata", call_my_data)
 
 Also,  you can modify the source code to make the FederatedScope support your dataset. Please see [federatedscope.core.auxiliaries.data_builder](federatedscope/core/auxiliaries/data_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
 
-<a name="AgRA6"></a>
+
 ## <span id="model">Build a model</span>
 
 We provide a function `federatedscope.register.register_model` to make your model available with three steps: (we take `ConvNet2` as an example)
@@ -153,7 +152,7 @@ def load_my_net(model_config, local_data):
 ```
 
 
--  Step2: register your model with a keyword, such as `"mynet"`.
+-  Step2: register your model with a keyword, such as `"mynet"`. 
 ```python
 from federatedscope.register import register_model
 
@@ -170,7 +169,6 @@ register_model("mynet", call_my_net)
 
 Also,  you can modify the source code to make the FederatedScope support your model. Please see [federatedscope.core.auxiliaries.model_builder](/federatedscope/core/auxiliaries/model_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
 
-<a name="l3cbN"></a>
 
 ## <span id="trainer">Create a trainer</span>
 
@@ -202,7 +200,6 @@ register_trainer('mytrainer', call_my_trainer)
 
 Also,  you can modify the source code to make the FederatedScope support your model. Please see `federatedscope/core/auxiliaries/trainer_builder.py` , and you can add an `elif` to skip `Step2` and `Step3` above.
 
-<a name="Z43Cb"></a>
 
 ## <span id="metric">Introduce more evaluation metrics</span>
 
