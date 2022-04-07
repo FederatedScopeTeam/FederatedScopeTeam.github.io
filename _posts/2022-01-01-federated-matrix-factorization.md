@@ -2,8 +2,8 @@
 title: "Federated Matrix Factorization with Privacy Guarantee"
 excerpt: "Matrix factorization method for recommender system with both horizontal and vertical federated settings."
 excerptheader:
-  image: "/assets/images/unsplash-image-4.jpg"
-  caption: "Photo credit: [**Unsplash**](https://unsplash.com)"
+  image: "/assets/images/fed-vldb22.jpg"
+  caption: "Matrix factorization in different federated settings."
 categories:
   - "federated learning"
   - "recommender system"
