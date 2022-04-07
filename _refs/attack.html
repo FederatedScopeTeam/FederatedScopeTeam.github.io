@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to FederatedScope’s documentation! &mdash; federatedscope 0.0.1 documentation</title>
+  <title>Attack Module References &mdash; federatedscope 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Core Module References" href="core.html" /> 
+    <link rel="prev" title="Auto-tuning Module References" href="autotune.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -26,7 +26,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="#" class="icon icon-home"> federatedscope
+            <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
                 0.0.1
@@ -40,13 +40,18 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">References</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cv.html">Federated Computer Vision  Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nlp.html">Federated Natural Language Processing  Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gfl.html">Federated Graph Learning  Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Attack Module References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-attack-models">federatedscope.attack.models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-attack-dataset">federatedscope.attack.dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-attack-privacy-attacks">federatedscope.attack.privacy_attacks</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -55,17 +60,17 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">federatedscope</a>
+          <a href="index.html">federatedscope</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>Welcome to FederatedScope’s documentation!</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Attack Module References</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/attack.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -73,29 +78,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-federatedscope-s-documentation">
-<h1>Welcome to FederatedScope’s documentation!<a class="headerlink" href="#welcome-to-federatedscope-s-documentation" title="Permalink to this headline">¶</a></h1>
-<embed>
-  <a href="https://github.com/alibaba/FederatedScope"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitLab" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-</embed><p><em>FederatedScope is a python package for federated learning research and applications.</em></p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">References</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cv.html">Federated Computer Vision  Module References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="nlp.html">Federated Natural Language Processing  Module References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gfl.html">Federated Graph Learning  Module References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
-</ul>
-</div>
+  <section id="attack-module-references">
+<h1>Attack Module References<a class="headerlink" href="#attack-module-references" title="Permalink to this headline">¶</a></h1>
+<section id="federatedscope-attack-models">
+<h2>federatedscope.attack.models<a class="headerlink" href="#federatedscope-attack-models" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.attack.models"></span></section>
+<section id="federatedscope-attack-dataset">
+<h2>federatedscope.attack.dataset<a class="headerlink" href="#federatedscope-attack-dataset" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.attack.trainer"></span></section>
+<section id="federatedscope-attack-privacy-attacks">
+<h2>federatedscope.attack.privacy_attacks<a class="headerlink" href="#federatedscope-attack-privacy-attacks" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.attack.privacy_attacks"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="core.html" class="btn btn-neutral float-right" title="Core Module References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="autotune.html" class="btn btn-neutral float-left" title="Auto-tuning Module References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
