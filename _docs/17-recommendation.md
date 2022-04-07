@@ -4,6 +4,7 @@ permalink: /docs/recommendation/
 excerpt: "Federated Recommendation."
 last_modified_at: 2018-03-20T15:59:57-04:00
 toc: true
+layout: tuto
 ---
 
 <a name="U7cD5"></a>
@@ -270,10 +271,10 @@ class MFTrainer(GeneralTrainer):
 ### Start an Example
 Taking the combination of dataset `MovieLen1M`and VFL setting as an example, the running command is as follows.
 ```bash
-python main.py --cfg flpackage/mf/baseline/fedavg_vfl_fedavg_standalone_on_movielens1m.yaml
+python main.py --cfg federatedscope/mf/baseline/fedavg_vfl_fedavg_standalone_on_movielens1m.yaml
 ```
 
-More running scripts can be found in `flpackage/scripts`. Partial experimental results are shown as follows.
+More running scripts can be found in `federatedscope/scripts`. Partial experimental results are shown as follows.
 
 | Federated setting | Dataset | Number of clients | Loss |
 | --- | --- | --- | --- |
@@ -301,7 +302,7 @@ cfg.sgdmf.constant = 1.  # constant
 cfg.sgdmf.theta = -1     # -1 means per-rating privacy, otherwise per-user privacy
 ```
 
-VFL-SGDMF is implemented as plug-in in `flpackage/mf/trainer/trainer_sgdmf.py`. Similar with the other plug-in algorithms, it initializes and registers hook functions in the function`wrap_MFTrainer`.
+VFL-SGDMF is implemented as plug-in in `federatedscope/mf/trainer/trainer_sgdmf.py`. Similar with the other plug-in algorithms, it initializes and registers hook functions in the function`wrap_MFTrainer`.
 ```python
 def wrap_MFTrainer(base_trainer: Type[MFTrainer]) -> Type[MFTrainer]:
     """Build `SGDMFTrainer` with a plug-in manner, by registering new functions into specific `MFTrainer`
@@ -358,13 +359,13 @@ def hook_on_batch_backward(ctx):
 ##### Start an Example
 Similarly, taking `MovieLens1M` as an example, the running script is shown as follows. 
 ```bash
-python flpackage/main.py --cfg flpackage/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
+python federatedscope/main.py --cfg federatedscope/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
 ```
 <a name="xwxxt"></a>
 #### 
 <a name="ow9gP"></a>
 ##### Evaluation
-Take the dataset `MovieLens1M` as an example, the detailed settings are listed in `flpackage/mf/baseline/vfl_fedavg_standalone_on_movielens1m.yaml` and `flpackage/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml`. VFL-SGDMF is evaluated as follows.
+Take the dataset `MovieLens1M` as an example, the detailed settings are listed in `federatedscope/mf/baseline/vfl_fedavg_standalone_on_movielens1m.yaml` and `federatedscope/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml`. VFL-SGDMF is evaluated as follows.
 
 | Algo | $\epsilon$ | $\delta$ | Loss |
 | --- | --- | --- | --- |
@@ -400,7 +401,7 @@ cfg.sgdmf.theta = -1     # -1 means per-rating privacy, otherwise per-user priva
 ##### Start and Example
 Run an example of HFL-SGDMF by the following command. 
 ```bash
-python flpackage/main.py --cfg flpackage/mf/baseline/hfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
+python federatedscope/main.py --cfg federatedscope/mf/baseline/hfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
 ```
 
 <a name="GjjQv"></a>
@@ -421,5 +422,7 @@ The evaluation results of HFL-SGDMF on the dataset MovieLens1M are shown as foll
 ---
 
 <a name="DHOTy"></a>
-### Reference
-[1] Hao Ma, Haixuan Yang, Michael R. Lyu, et al. SoRec: social recommendation using probabilistic matrix factorization. Proceedings of the ACM Conference on Information and Knowledge Management, 2008.<br />[2] Mohsen Jamali, Martin Ester. A matrix factorization technique with trust propagation for recommendation in social networks. Proceedings of the ACM Conference on Recommender Systems, 2010.<br />[3] Zitao Li, Bolin Ding, Ce Zhang, et al. Federated Matrix Factorization with Privacy Guarantee. Proceedings of the VLDB Endowment, 2022.
+### References
+[1] Ma H, Yang H, Lyu M R, et al. "SoRec: social recommendation using probabilistic matrix factorization". Proceedings of the ACM Conference on Information and Knowledge Management, 2008.
+[2] Jamali M, Ester M. "A matrix factorization technique with trust propagation for recommendation in social networks". Proceedings of the ACM Conference on Recommender Systems, 2010.
+[3] Li Z, Ding B, Zhang C, et al. "Federated matrix factorization with privacy guarantee". Proceedings of the VLDB Endowment, 2022.

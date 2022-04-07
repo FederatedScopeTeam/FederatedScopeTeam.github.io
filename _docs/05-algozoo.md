@@ -7,7 +7,7 @@ toc: true
 layout: tuto
 ---
 
-FederatedScope has built in various advanced federated learning algorithms. All of them are implemented as plug-ins, which means they are detachable and combinable. 
+FederatedScope has built in various advanced federated learning algorithms. All of them are implemented as plug-ins, which are detachable and combinable. 
 
 - Detachable: only the activated code will participate in the operation, 
 - Combinable: different algorithms can be combined.
@@ -22,7 +22,7 @@ To tackle the challenge of statistical heterogeneity, we implement the following
 
 <a name="xJfCS"></a>
 #### FedAvg
-`FedAvg`[1] is a basic distributed optimization method in federated learning. During federated training, it broadcasts the initialized model to all clients, and aggregates the updated weights collected from several clients. FederatedScope implements it with a fedavg aggregator. More details can be found in `federatedscope/core/aggregator.py`.
+FedAvg [1] is a basic distributed optimization method in federated learning. During federated training, it broadcasts the initialized model to all clients, and aggregates the updated weights collected from several clients. FederatedScope implements it with a fedavg aggregator. More details can be found in `federatedscope/core/aggregator.py`.
 
 We provide some evaluation results for fedavg on different tasks as follows. 
 
@@ -45,9 +45,9 @@ python federatedscope/main.py --cfg federatedscope/nlp/baseline/fedavg_lstm_on_s
 ```
 <a name="r0M1W"></a>
 #### FedOpt
-`FedOpt`[2] is an advanced distributed optimization method in federated learning. Compare with `FedAvg`, it permits the server to update weights rather than simply averaging the collected weights. More details can be found in `federatedscope/core/aggregator.py`.
+FedOpt [2] is an advanced distributed optimization method in federated learning. Compare with FedAvg, it permits the server to update weights rather than simply averaging the collected weights. More details can be found in `federatedscope/core/aggregator.py`.
 
-Similar with `FedAvg`, we perform some evaluation of `FedAvg`on different tasks.
+Similar with FedAvg, we perform some evaluation of FedAvg on different tasks.
 
 | Task | Data | Learning rate (Server) | Accuracy(%) |
 | --- | --- | --- | --- |
@@ -58,7 +58,7 @@ Similar with `FedAvg`, we perform some evaluation of `FedAvg`on different tasks.
 
 <a name="VrjwR"></a>
 #### FedProx
-`FedProx`[3] is designed to solve the problem of heterogeneity, which updates model with a proximal regularizer. FederatedScope provides build-in `FedProx` implementation and it can easily be combined with other algorithms. More details can be found in `federatedscope/core/trainer/federatedscope/core/trainers/trainer_fedprox.py`.
+FedProx [3] is designed to solve the problem of heterogeneity, which updates model with a proximal regularizer. FederatedScope provides build-in FedProx implementation and it can easily be combined with other algorithms. More details can be found in `federatedscope/core/trainer/flpackage/core/trainers/trainer_fedprox.py`.
 
 The evaluation results are presented as follows. 
 
@@ -140,11 +140,11 @@ In FederatedScope, there are three steps to implement a new federated algorithm:
 
 <a name="yVJzz"></a>
 ### Example (Fedprox)
-Let's take `FedProx` as an example to show how to implement a new federated algorithm. 
+Let's take FedProx as an example to show how to implement a new federated algorithm. 
 
 <a name="M3wrE"></a>
 #### Prepare parameters
-First, `FedProx` requires to set proximal regularizer and its factor `ctx.regularizer.mu`. 
+First, FedProx requires to set proximal regularizer and its factor `ctx.regularizer.mu`. 
 ```python
 # ------------------------------------------------------------------------ #
 # Init variables for FedProx algorithm
@@ -181,7 +181,7 @@ def del_initialization(ctx):
 
 <a name="WGCeG"></a>
 #### Assemble algorithm
-After preparing parameters and hook functions, we assemble `FedProx`within the function `wrap_fedprox_trainer` in two steps:
+After preparing parameters and hook functions, we assemble FedProx within the function `wrap_fedprox_trainer` in two steps:
 
 - initialize parameters (call function`init_fedprox_ctx`)
 - register hook functions for the given trainer
@@ -216,7 +216,7 @@ def wrap_fedprox_trainer(
     return base_trainer
 ```
 
-Finally, add`FedProx`into the function `get_trainer`(`federatedscope/core/auxiliaries/trainer_builder.py`). 
+Finally, add FedProx into the function `get_trainer`(`federatedscope/core/auxiliaries/trainer_builder.py`). 
 ```python
 def get_trainer(model=None,
                 data=None,
@@ -262,6 +262,12 @@ Most combinations of the buildin methods have been tested. When implementing you
 ---
 
 <a name="Gy7PK"></a>
-# Reference
-[1] Brendan McMahan, Eider Moore, Daniel Ramage, et al. Communication-Efficient Learning of Deep Networks from Decentralized Data. Proceedings of the International Conference on Artificial Intelligence and Statistics, 2017. <br />[2] Sashank J. Reddi, Zachary Charles, Manzil Zaheer, et al. Adaptive Federated Optimization. Proceedings of Intertional Conference on Learning Representations, 2021.<br />[3] Tian Li, Anit Kumar Sahu, Manzil Zaheer, et al. Federated Optimization in Heterogeneous Networks. Proceedings of Machine Learning and Systems, 2020. <br />[4] Li, Xiaoxiao, et al. "Fedbn: Federated learning on non-iid features via local batch normalization." arXiv preprint arXiv:2102.07623 (2021).<br />[5] T Dinh, Canh, Nguyen Tran, and Josh Nguyen. "Personalized federated learning with moreau envelopes." Advances in Neural Information Processing Systems 33 (2020): 21394-21405.<br />[6] Li, Tian, et al. "Ditto: Fair and robust federated learning through personalization." International Conference on Machine Learning. PMLR, 2021.<br />[7] Marfoq, Othmane, et al. "Federated multi-task learning under a mixture of distributions." Advances in Neural Information Processing Systems 34 (2021).<br /> 
+# References
+[1] McMahan B, Moore E, Ramage D, et al. "Communication-efficient learning of deep networks from decentralized data". International Conference on Artificial Intelligence and Statistics, 2017. 
+[2] Reddi S J, Charles Z, Zaheer M, et al. "Adaptive federated optimization". Intertional Conference on Learning Representations, 2021.
+[3] Li T, Sahu A K, Zaheer M, et al. "Federated optimization in heterogeneous networks". Proceedings of Machine Learning and Systems, 2020. 
+[4] Li X, Jiang M, Zhang X, et al. "Fedbn: Federated learning on non-iid features via local batch normalization". arXiv preprint arXiv:2102.07623 (2021).
+[5] Dinh C T, Tran N H, and Nguyen T D. "Personalized federated learning with moreau envelopes". Advances in Neural Information Processing Systems 33 (2020): 21394-21405.
+[6] Li T, Hu S, Beirami A, et al. "Ditto: Fair and robust federated learning through personalization". International Conference on Machine Learning. PMLR, 2021.
+[7] Marfoq O, Neglia G, Bellet A, et al. "Federated multi-task learning under a mixture of distributions". Advances in Neural Information Processing Systems 34 (2021).
 
