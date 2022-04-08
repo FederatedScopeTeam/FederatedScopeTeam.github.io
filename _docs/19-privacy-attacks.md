@@ -272,8 +272,6 @@ class PassivePIAServer(Server):
                                                device=device,
                                                strategy=strategy,
                                                **kwargs)
-
-        # self.offline_reconstruct = offline_reconstruct
         self.atk_method = self._cfg.attack.attack_method
         self.pia_attacker = PassivePropertyInference(
             classier=self._cfg.attack.classifier_PIA,
@@ -287,8 +285,6 @@ class PassivePIAServer(Server):
             fl_lr=self._cfg.optimizer.lr,
             batch_size=100)
 
-        # self.optimizer = get_optimizer(type=self._cfg.fedopt.type_optimizer, model=self.model,lr=self._cfg.fedopt.lr_server)
-        # print(self.optimizer)
     def callback_funcs_model_para(self, message: Message):
         round, sender, content = message.state, message.sender, message.content
         # For a new round
