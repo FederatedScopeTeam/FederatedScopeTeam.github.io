@@ -241,9 +241,54 @@ When the attacker is the server, it requires an overload of the Server class of 
 
 After overloading the server class, you should add it the function `get_server_cls` in `flpackage/core/auxiliaries/worker_builder.py` .
 
+#### 3.2.1 Example of developing property inference attack
 The following is an example in a property inference attack where the attacker (server) performs attack actions both during and after the FL training. The attacker collects the received parameter updates during the FL training and generates the training data for PIA classifier based on the current model. After the FL training, the attacker trains the PIA classifier, and then infers the property based on the collected parameter updates. 
 
+In the following code, the original Server's ``callback_funcs_model_para`` function is rewritten to perform the above attack actions. 
 ```python
+class PassivePIAServer(Server):
+    '''
+    The implementation of the batch property classifier, the algorithm 3 in paper: Exploiting Unintended Feature Leakage in Collaborative Learning
+
+    References:
+    Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706
+    '''
+    def __init__(self,
+                 ID=-1,
+                 state=0,
+                 data=None,
+                 model=None,
+                 client_num=5,
+                 total_round_num=10,
+                 device='cpu',
+                 strategy=None,
+                 **kwargs):
+        super(PassivePIAServer, self).__init__(ID=ID,
+                                               state=state,
+                                               data=data,
+                                               model=model,
+                                               client_num=client_num,
+                                               total_round_num=total_round_num,
+                                               device=device,
+                                               strategy=strategy,
+                                               **kwargs)
+
+        # self.offline_reconstruct = offline_reconstruct
+        self.atk_method = self._cfg.attack.attack_method
+        self.pia_attacker = PassivePropertyInference(
+            classier=self._cfg.attack.classifier_PIA,
+            fl_model_criterion=get_criterion(self._cfg.criterion.type,
+                                             device=self.device),
+            device=self.device,
+            grad_clip=self._cfg.optimizer.grad_clip,
+            dataset_name=self._cfg.data.type,
+            fl_local_update_num=self._cfg.federate.local_update_steps,
+            fl_type_optimizer=self._cfg.fedopt.type_optimizer,
+            fl_lr=self._cfg.optimizer.lr,
+            batch_size=100)
+
+        # self.optimizer = get_optimizer(type=self._cfg.fedopt.type_optimizer, model=self.model,lr=self._cfg.fedopt.lr_server)
+        # print(self.optimizer)
     def callback_funcs_model_para(self, message: Message):
         round, sender, content = message.state, message.sender, message.content
         # For a new round
@@ -252,32 +297,49 @@ The following is an example in a property inference attack where the attacker (s
 
         self.msg_buffer['train'][round][sender] = content
 
-        # collect the updates
-        self.pia_attacker.collect_updates(previous_para= self.model.state_dict(),
-                                          updated_parameter=content[1],
-                                          round=round,
-                                          client_id=sender)
-        self.pia_attacker.get_data_for_dataset_prop_classifier(model=self.model)
+        # PIA: collect the parameter updates 
+        self.pia_attacker.collect_updates(
+            previous_para=self.model.state_dict(),
+            updated_parameter=content[1],
+            round=round,
+            client_id=sender)
+        # PIA: generate the training data for inference classifier training based on the auxiliary dataset 
+        self.pia_attacker.get_data_for_dataset_prop_classifier(
+            model=self.model)
 
         if self._cfg.federate.online_aggr:
-            # TODO: put this line to `check_and_move_on`
-            # currently, no way to know the latest `sender`
             self.aggregator.inc(content)
         self.check_and_move_on()
 
         if self.state == self.total_round_num:
+            # PIA: Property inference classifier training
             self.pia_attacker.train_property_classifier()
+            # PIA: Property inference classifier infer the property based on the colloected parameter updates 
             self.pia_results = self.pia_attacker.infer_collected()
             print(self.pia_results)
 ```
+
+The final step is to add the class ``PassivePIAServer`` into ``get_server_cls`` in ``flpackage/core/auxiliaries/worker_builder.py``.
+
+```python
+def get_server_cls(cfg):
+    if cfg.attack.attack_method.lower() in ['dlg', 'ig']:
+        from flpackage.attack.worker_as_attacker.server_attacker import PassiveServer
+        return PassiveServer
+    elif cfg.attack.attack_method.lower() in ['passivepia']:
+        from flpackage.attack.worker_as_attacker.server_attacker import PassivePIAServer
+        return PassivePIAServer
+```
+
 
 ### 3.3 Client as the attacker
 When the attacker is one of the clients:
 * If the attack actions only happen in the local training procedure, users only need to define the wrapping function to wrap the trainer and add the attack actions. 
 * If the attack actions also happen at the end of the FL training, users need to overload the client class and modify its `callback_funcs_for_finish` function. 
 
-After setting the trainer wrapping function, it should be added to the function `get_trainer` in `flpackage/core/auxiliaries/trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `flpackage/core/auxiliaries/worker_builder.py`.
+After setting the trainer wrapping function, it should be added to the function `wrap_attacker_trainer` in `flpackage/attack/auxiliary/attack_trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `flpackage/core/auxiliaries/worker_builder.py`.
 
+#### 3.3.1 Example of developing class representative attack
 The following is an example of wrapping the trainer in the implementation of the class representative attack in [[2]](#2). In this method, the attacker holds a local GAN, and at each FL training round, it will first update the GAN's discriminator with the received paramters, and then local trains GAN's generator so that its generated data can be classified as the target class. After that, the client labels the generated data as the class other than the target class and injects them into the training batch to perform the regular local training. 
 
 The following code shows the wrapping function that adds the above procedures to the trainer. The wrapping function takes the trainer instance as the input. 
@@ -334,11 +396,11 @@ def hood_on_fit_start_generator(ctx):
 
 def hook_on_batch_forward_injected_data(ctx):
     # inject the generated data into training batch loss
-    x, label = [_.to(ctx.device) for _ in ctx.data_batch]
+    x, label = [_.to(ctx.device) for _ in ctx.injected_data]
     pred = ctx.model(x)
     if len(label.size()) == 0:
         label = label.unsqueeze(0)
-    ctx.loss_batch += ctx.criterion(pred, label)
+    ctx.loss_task += ctx.criterion(pred, label)
     ctx.y_true_injected = label
     ctx.y_prob_injected = pred
 
@@ -359,7 +421,21 @@ def hook_on_data_injection_sav_data(ctx):
     ctx.gan_cra.generate_and_save_images()
 ```
 
+After defining the trainer wrapping function, the following code adds the ``wrap_GANTrainer`` into ``wrap_attacker_trainer`` in ``flpackage/attack/auxiliary/attack_trainer_builder.py``.
 
+```python
+def wrap_attacker_trainer(base_trainer, config):
+    if config.attack.attack_method.lower() == 'gan_attack':
+        from flpackage.attack.trainer.GAN_trainer import wrap_GANTrainer
+        return wrap_GANTrainer(base_trainer)
+    elif config.attack.attack_method.lower() == 'gradascent':
+        from flpackage.attack.trainer.MIA_invert_gradient_trainer import wrap_GradientAscentTrainer
+        return wrap_GradientAscentTrainer(base_trainer)
+
+    else:
+        raise ValueError('Trainer {} is not provided'.format(
+            config.attack.attack_method))
+```
 
 ## 4. Contribute Your Attacker to FederatedScope
 Users are welcome to contribute their own attack methods to FederatedScope. Please refer [Contributing to FederatedScope]({{ "/docs/contributor/" | relative_url }}) for more details. 
