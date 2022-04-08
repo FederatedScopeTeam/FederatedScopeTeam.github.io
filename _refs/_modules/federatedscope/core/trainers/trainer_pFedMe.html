@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.trainer_pFedMe &mdash; federatedscope 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>federatedscope.core.trainers.trainer_pFedMe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.trainer_pFedMe</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.trainer</span> <span class="kn">import</span> <span class="n">GeneralTorchTrainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.optimizer</span> <span class="kn">import</span> <span class="n">wrap_regularized_optimizer</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
+
+
+<div class="viewcode-block" id="wrap_pFedMeTrainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.wrap_pFedMeTrainer">[docs]</a><span class="k">def</span> <span class="nf">wrap_pFedMeTrainer</span><span class="p">(</span>
+        <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTorchTrainer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTorchTrainer</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a `pFedMeTrainer` with a plug-in manner, by registering new functions into specific `BaseTrainer`</span>
+
+<span class="sd">    The pFedMe implementation, &quot;Personalized Federated Learning with Moreau Envelopes (NeurIPS 2020)&quot;</span>
+<span class="sd">    is based on the Algorithm 1 in their paper and official codes: https://github.com/CharlieDinh/pFedMe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ---------------- attribute-level plug-in -----------------------</span>
+    <span class="n">init_pFedMe_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+
+    <span class="c1"># ---------------- action-level plug-in -----------------------</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_fit_start_set_local_para_tmp</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_start&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_epoch_end_update_local</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_epoch_end&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_fit_end_update_local</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># for &quot;on_batch_start&quot; trigger: replace the original hooks into new ones of pFedMe</span>
+    <span class="c1"># 1) cache the original hooks for &quot;on_batch_start&quot;</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">original_hook_on_batch_start_train</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">[</span>
+        <span class="s2">&quot;on_batch_start&quot;</span><span class="p">]</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">original_hook_on_batch_start_eval</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="o">.</span><span class="n">hooks_in_eval</span><span class="p">[</span>
+        <span class="s2">&quot;on_batch_start&quot;</span><span class="p">]</span>
+    <span class="c1"># 2) reset the original hooks for &quot;on_batch_start&quot;</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">reset_hook_in_train</span><span class="p">(</span><span class="n">target_trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">reset_hook_in_eval</span><span class="p">(</span><span class="n">target_trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">)</span>
+    <span class="c1"># 2) insert the new hooks for &quot;on_batch_start&quot;</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_batch_start_init_pfedme</span><span class="p">,</span> <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_batch_start_init_pfedme</span><span class="p">,</span> <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base_trainer</span></div>
+
+
+<span class="k">def</span> <span class="nf">init_pFedMe_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    init necessary attributes used in pFedMe,</span>
+<span class="sd">    some new attributes will be with prefix `pFedMe` optimizer to avoid namespace pollution</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="o">.</span><span class="n">ctx</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="o">.</span><span class="n">cfg</span>
+
+    <span class="c1"># pFedMe finds approximate model with K steps using the same data batch</span>
+    <span class="c1"># the complexity of each pFedMe client is K times the one of FedAvg</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_K</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">K</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch</span> <span class="o">*=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_K</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_approx_fit_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># the local_model_tmp is used to be the referenced parameter when finding the approximate \theta in paper</span>
+    <span class="c1"># will be copied from model every run_routine</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># the optimizer used in pFedMe is based on Moreau Envelopes regularization</span>
+    <span class="c1"># besides, there are two distinct lr for the approximate model and base model</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">wrap_regularized_optimizer</span><span class="p">(</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">regular_weight</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
+        <span class="n">g</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">lr</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_outer_lr</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_fit_start_set_local_para_tmp</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+    <span class="c1"># set the compared model data, then the optimizer will find approximate model using trainer.cfg.personalization.lr</span>
+    <span class="n">compared_global_model_para</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+    <span class="p">}]</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">set_compared_para_group</span><span class="p">(</span><span class="n">compared_global_model_para</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_batch_start_init_pfedme</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># refresh data every K step</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_approx_fit_counter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">original_hook_on_batch_start_train</span><span class="p">:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">original_hook_on_batch_start_eval</span><span class="p">:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch_cache</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># reuse the data_cache since the original hook `_hook_on_batch_end` will clean `data_batch`</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data_batch_cache</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_approx_fit_counter</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_approx_fit_counter</span> <span class="o">+</span>
+                                     <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_K</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_epoch_end_update_local</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># update local weight after finding approximate theta</span>
+    <span class="k">for</span> <span class="n">client_param</span><span class="p">,</span> <span class="n">local_para_tmp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span><span class="o">.</span><span class="n">parameters</span><span class="p">()):</span>
+        <span class="n">local_para_tmp</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">local_para_tmp</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">regular_weight</span> <span class="o">*</span> \
+                              <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_outer_lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">local_para_tmp</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">client_param</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># set the compared model data, then the optimizer will find approximate model using trainer.cfg.personalization.lr</span>
+    <span class="n">compared_global_model_para</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+    <span class="p">}]</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">set_compared_para_group</span><span class="p">(</span><span class="n">compared_global_model_para</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_fit_end_update_local</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">local_para_tmp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+                                     <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span><span class="o">.</span><span class="n">parameters</span><span class="p">()):</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">local_para_tmp</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="k">del</span> <span class="n">ctx</span><span class="o">.</span><span class="n">pFedMe_local_model_tmp</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
