@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Graph FL Module References &mdash; FLPackage 0.0.1 documentation</title>
+  <title>Federated Graph Learning Module References &mdash; federatedscope 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Auto-tuning Module References" href="autotune.html" />
-    <link rel="prev" title="Core Module References" href="core.html" /> 
+    <link rel="prev" title="Federated Natural Language Processing Module References" href="nlp.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> FLPackage
+            <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
                 0.0.1
@@ -40,16 +40,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">API References</span></p>
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core Module References</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Graph FL Module References</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-flpackage.gfl.dataset">flpackage.gfl.dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-flpackage.gfl.trainer">flpackage.gfl.trainer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-flpackage.gfl.model">flpackage.gfl.model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Federated Graph Learning  Module References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-dataset">federatedscope.gfl.dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">federatedscope.gfl.dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-model">federatedscope.gfl.model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-trainer">federatedscope.gfl.trainer</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
 </ul>
 
         </div>
@@ -58,7 +62,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">FLPackage</a>
+          <a href="index.html">federatedscope</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -66,7 +70,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Graph FL Module References</li>
+      <li>Federated Graph Learning  Module References</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/gfl.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,22 +80,126 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="graph-fl-module-references">
-<h1>Graph FL Module References<a class="headerlink" href="#graph-fl-module-references" title="Permalink to this headline">¶</a></h1>
-<section id="module-flpackage.gfl.dataset">
-<span id="flpackage-gfl-dataset"></span><h2>flpackage.gfl.dataset<a class="headerlink" href="#module-flpackage.gfl.dataset" title="Permalink to this headline">¶</a></h2>
+  <section id="federated-graph-learning-module-references">
+<h1>Federated Graph Learning  Module References<a class="headerlink" href="#federated-graph-learning-module-references" title="Permalink to this headline">¶</a></h1>
+<section id="federatedscope-gfl-dataset">
+<h2>federatedscope.gfl.dataset<a class="headerlink" href="#federatedscope-gfl-dataset" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.gfl.dataloader"></span><dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.gfl.dataloader.load_graphlevel_dataset">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_graphlevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_graph.html#load_graphlevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.dataloader.load_graphlevel_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>{</dt><dd><dl>
+<dt>‘client_id’: {</dt><dd><p>‘train’: DataLoader(),
+‘val’: DataLoader(),
+‘test’: DataLoader()</p>
+<blockquote>
+<div><p>}</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>data_local_dict (Dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.gfl.dataloader.load_linklevel_dataset">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_linklevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_link.html#load_linklevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.dataloader.load_linklevel_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>data_local_dict (Dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.gfl.dataloader.load_nodelevel_dataset">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_nodelevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_node.html#load_nodelevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.dataloader.load_nodelevel_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>data_local_dict (Dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="module-flpackage.gfl.trainer">
-<span id="flpackage-gfl-trainer"></span><h2>flpackage.gfl.trainer<a class="headerlink" href="#module-flpackage.gfl.trainer" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h2>federatedscope.gfl.dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-0"></span><dl class="py function">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_graphlevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_graph.html#load_graphlevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>{</dt><dd><dl>
+<dt>‘client_id’: {</dt><dd><p>‘train’: DataLoader(),
+‘val’: DataLoader(),
+‘test’: DataLoader()</p>
+<blockquote>
+<div><p>}</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>data_local_dict (Dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_linklevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_link.html#load_linklevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>data_local_dict (Dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_nodelevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_node.html#load_nodelevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>data_local_dict (Dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="module-flpackage.gfl.model">
-<span id="flpackage-gfl-model"></span><h2>flpackage.gfl.model<a class="headerlink" href="#module-flpackage.gfl.model" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.FedSage_Plus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">FedSage_Plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#flpackage.gfl.model.LocalSage_Plus" title="flpackage.gfl.model.fedsageplus.LocalSage_Plus"><span class="pre">flpackage.gfl.model.fedsageplus.LocalSage_Plus</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/fedsageplus.html#FedSage_Plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.FedSage_Plus" title="Permalink to this definition">¶</a></dt>
+<section id="federatedscope-gfl-model">
+<h2>federatedscope.gfl.model<a class="headerlink" href="#federatedscope-gfl-model" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.gfl.model"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.model.FedSage_Plus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">FedSage_Plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#federatedscope.gfl.model.LocalSage_Plus" title="federatedscope.gfl.model.fedsageplus.LocalSage_Plus"><span class="pre">federatedscope.gfl.model.fedsageplus.LocalSage_Plus</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#FedSage_Plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.FedSage_Plus" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.FedSage_Plus.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/fedsageplus.html#FedSage_Plus.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.FedSage_Plus.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.FedSage_Plus.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#FedSage_Plus.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.FedSage_Plus.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -106,13 +214,23 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GAT_Net">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GAT_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gat.html#GAT_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GAT_Net" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://arxiv.org/abs/1710.10903">https://arxiv.org/abs/1710.10903</a>
-GAT model from the “Graph Attention Networks” paper, in ICLR’18</p>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GAT_Net">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GAT_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gat.html#GAT_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GAT_Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>GAT model from the “Graph Attention Networks” paper, in ICLR’18</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – dimension of input.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – dimension of output.</p></li>
+<li><p><strong>hidden</strong> (<em>int</em>) – dimension of hidden units, default=64.</p></li>
+<li><p><strong>max_depth</strong> (<em>int</em>) – layers of GNN, default=2.</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout ratio, default=.0.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GAT_Net.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gat.html#GAT_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GAT_Net.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GAT_Net.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gat.html#GAT_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GAT_Net.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -127,13 +245,23 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GCN_Net">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GCN_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gcn.html#GCN_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GCN_Net" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://arxiv.org/abs/1609.02907">https://arxiv.org/abs/1609.02907</a>
-GCN model from the “Semi-supervised Classification with Graph Convolutional Networks” paper, in ICLR’17</p>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GCN_Net">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GCN_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gcn.html#GCN_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GCN_Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>GCN model from the “Semi-supervised Classification with Graph Convolutional Networks” paper, in ICLR’17.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – dimension of input.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – dimension of output.</p></li>
+<li><p><strong>hidden</strong> (<em>int</em>) – dimension of hidden units, default=64.</p></li>
+<li><p><strong>max_depth</strong> (<em>int</em>) – layers of GNN, default=2.</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout ratio, default=.0.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GCN_Net.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gcn.html#GCN_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GCN_Net.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GCN_Net.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gcn.html#GCN_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GCN_Net.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -148,13 +276,23 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GIN_Net">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GIN_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gin.html#GIN_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GIN_Net" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://arxiv.org/pdf/1810.00826v3.pdf">https://arxiv.org/pdf/1810.00826v3.pdf</a>
-Graph Isomorphism Network model from the “How Powerful are Graph Neural Networks?” paper, in ICLR’19</p>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GIN_Net">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GIN_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gin.html#GIN_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GIN_Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graph Isomorphism Network model from the “How Powerful are Graph Neural Networks?” paper, in ICLR’19</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – dimension of input.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – dimension of output.</p></li>
+<li><p><strong>hidden</strong> (<em>int</em>) – dimension of hidden units, default=64.</p></li>
+<li><p><strong>max_depth</strong> (<em>int</em>) – layers of GNN, default=2.</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout ratio, default=.0.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GIN_Net.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gin.html#GIN_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GIN_Net.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GIN_Net.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gin.html#GIN_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GIN_Net.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -169,8 +307,8 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GNN_Net_Graph">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GNN_Net_Graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gnn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gcn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/graph_level.html#GNN_Net_Graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GNN_Net_Graph" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GNN_Net_Graph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GNN_Net_Graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gnn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gcn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/graph_level.html#GNN_Net_Graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GNN_Net_Graph" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>GNN model with pre-linear layer, pooling layer</dt><dd><p>and output layer for graph classification tasks.</p>
 </dd>
@@ -189,8 +327,8 @@ registered hooks while the latter silently ignores them.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GNN_Net_Graph.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/graph_level.html#GNN_Net_Graph.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GNN_Net_Graph.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GNN_Net_Graph.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/graph_level.html#GNN_Net_Graph.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GNN_Net_Graph.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -205,11 +343,11 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GNN_Net_Link">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GNN_Net_Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gnn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gcn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/link_level.html#GNN_Net_Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GNN_Net_Link" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GNN_Net_Link">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GNN_Net_Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gnn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gcn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/link_level.html#GNN_Net_Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GNN_Net_Link" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GNN_Net_Link.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/link_level.html#GNN_Net_Link.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GNN_Net_Link.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GNN_Net_Link.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/link_level.html#GNN_Net_Link.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GNN_Net_Link.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -224,13 +362,25 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GPR_Net">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GPR_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppnp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GPR_prop'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPR'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gpr.html#GPR_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GPR_Net" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://arxiv.org/pdf/2006.07988v6.pdf">https://arxiv.org/pdf/2006.07988v6.pdf</a>
-GPR-GNN model from the “Adaptive Universal Generalized PageRank Graph Neural Network” paper, in ICLR’21</p>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GPR_Net">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">GPR_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppnp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GPR_prop'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPR'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gpr.html#GPR_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GPR_Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPR-GNN model from the “Adaptive Universal Generalized PageRank Graph Neural Network” paper, in ICLR’21</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – dimension of input.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – dimension of output.</p></li>
+<li><p><strong>hidden</strong> (<em>int</em>) – dimension of hidden units, default=64.</p></li>
+<li><p><strong>K</strong> (<em>int</em>) – power of GPR-GNN, default=10.</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout ratio, default=.0.</p></li>
+<li><p><strong>ppnp</strong> (<em>str</em>) – propagation method in [‘PPNP’, ‘GPR_prop’]</p></li>
+<li><p><strong>Init</strong> (<em>str</em>) – init method in [‘SGC’, ‘PPR’, ‘NPPR’, ‘Random’, ‘WS’]</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.GPR_Net.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/gpr.html#GPR_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.GPR_Net.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.GPR_Net.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/gpr.html#GPR_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.GPR_Net.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -245,11 +395,11 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.LocalSage_Plus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">LocalSage_Plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pred</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/fedsageplus.html#LocalSage_Plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.LocalSage_Plus" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.LocalSage_Plus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">LocalSage_Plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_pred</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#LocalSage_Plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.LocalSage_Plus" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.LocalSage_Plus.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/fedsageplus.html#LocalSage_Plus.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.LocalSage_Plus.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.LocalSage_Plus.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#LocalSage_Plus.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.LocalSage_Plus.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -264,33 +414,44 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.MLP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">MLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relu_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/mlp.html#MLP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.MLP" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.MLP.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/mlp.html#MLP.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.MLP.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="flpackage.gfl.model.SAGE_Net">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flpackage.gfl.model.</span></span><span class="sig-name descname"><span class="pre">SAGE_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/sage.html#SAGE_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.SAGE_Net" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://arxiv.org/pdf/1706.02216.pdf">https://arxiv.org/pdf/1706.02216.pdf</a>
-GraphSAGE model from the “Inductive Representation Learning on Large Graphs” paper, in NeurIPS’17
-Source: <a class="reference external" href="https://github.com/pyg-team/pytorch_geometric/blob/master/examples/ogbn_products_sage.py">https://github.com/pyg-team/pytorch_geometric/blob/master/examples/ogbn_products_sage.py</a></p>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.MLP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">MLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relu_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/mlp.html#MLP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.MLP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multilayer Perceptron</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.SAGE_Net.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/sage.html#SAGE_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.SAGE_Net.forward" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.MLP.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/mlp.html#MLP.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.MLP.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.model.SAGE_Net">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">SAGE_Net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/sage.html#SAGE_Net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.SAGE_Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>GraphSAGE model from the “Inductive Representation Learning on Large Graphs” paper, in NeurIPS’17</p>
+<p>Source: <a class="reference external" href="https://github.com/pyg-team/pytorch_geometric/blob/master/examples/ogbn_products_sage.py">https://github.com/pyg-team/pytorch_geometric/blob/master/examples/ogbn_products_sage.py</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – dimension of input.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – dimension of output.</p></li>
+<li><p><strong>hidden</strong> (<em>int</em>) – dimension of hidden units, default=64.</p></li>
+<li><p><strong>max_depth</strong> (<em>int</em>) – layers of GNN, default=2.</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout ratio, default=.0.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.gfl.model.SAGE_Net.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/sage.html#SAGE_Net.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.SAGE_Net.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p><cite>train_loader</cite> computes the k-hop neighborhood of a batch of nodes,
 and returns, for each layer, a bipartite graph object, holding the
 bipartite edges <cite>edge_index</cite>, the index <cite>e_id</cite> of the original edges,
@@ -316,8 +477,8 @@ easily apply skip-connections or add self-loops.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="flpackage.gfl.model.SAGE_Net.inference">
-<span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgraph_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/flpackage/gfl/model/sage.html#SAGE_Net.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flpackage.gfl.model.SAGE_Net.inference" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.gfl.model.SAGE_Net.inference">
+<span class="sig-name descname"><span class="pre">inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgraph_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/sage.html#SAGE_Net.inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.SAGE_Net.inference" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute representations of nodes layer by layer, using <em>all</em>
 available edges. This leads to faster computation in contrast to
 immediately computing the final representations of each batch.</p>
@@ -341,13 +502,32 @@ immediately computing the final representations of each batch.</p>
 </dd></dl>
 
 </section>
+<section id="federatedscope-gfl-trainer">
+<h2>federatedscope.gfl.trainer<a class="headerlink" href="#federatedscope-gfl-trainer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.gfl.trainer"></span><p>Copyright (c) 2021 Matthias Fey, Jiaxuan You &lt;<a class="reference external" href="mailto:matthias&#46;fey&#37;&#52;&#48;tu-dortmund&#46;de">matthias<span>&#46;</span>fey<span>&#64;</span>tu-dortmund<span>&#46;</span>de</a>, <a class="reference external" href="mailto:jiaxuan&#37;&#52;&#48;cs&#46;stanford&#46;edu">jiaxuan<span>&#64;</span>cs<span>&#46;</span>stanford<span>&#46;</span>edu</a>&gt;</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="core.html" class="btn btn-neutral float-left" title="Core Module References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nlp.html" class="btn btn-neutral float-left" title="Federated Natural Language Processing Module References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="autotune.html" class="btn btn-neutral float-right" title="Auto-tuning Module References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

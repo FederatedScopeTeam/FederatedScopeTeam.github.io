@@ -4,13 +4,14 @@ permalink: /docs/privacy-attacks/
 excerpt: "We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL."
 last_modified_at: 2018-03-20T16:00:02-04:00
 toc: true
+layout: tuto
 ---
 
-We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.
+We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate the privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.
 
 In this part, we will introduce:
 1. [Types of Privacy attacks.](##1.-Background-of-Privacy-Attack-in-FL)
-2. Usage of attack module in FederatedScope
+2. Usages of attack module in FederatedScope
      * [Example of Optimization based Training Data/Label Inference Attack](#2.2-Example-of-Optimization-based-Training-Data/Label-Inference-Attack)
      * [Example of Class Representative Attack](#2.3-Example-of-Class-Representative-Attack)
      * [Example of Membership Inference Attack](#2.4-Example-of-Membership-Inference-Attack)
@@ -19,34 +20,34 @@ In this part, we will introduce:
 5. [Contribute your attackers.](#4.-Contribute-Your-Attacker-to-FederatedScope)
 
 ## 1. Background of Privacy Attack in FL
-In this part, we briefly introduce the types of privacy attacks in FL. For more detailed information about the privacy attacks in FL, please refer [[7]](#7).
+This part briefly introduces the types of privacy attacks in FL. For more detailed information about the privacy attacks in FL, please refer [[7]](#7).
 
 ### 1.1 Different Attack Targets
-According to the types of attacker's target, typical attacks including membership inference attack, property inference attack, class representative attack and training data/label inference attack. 
+According to the types of attacker's target, typical attacks include membership inference attack, property inference attack, class representative attack, and training data/label inference attack. 
 
-1. **Membership Inference Attack (MIA)**: In membership inference attack, an attacker can be a server or a client, and the objective is to infer whether the specific given data are exist in other clients' private dataset.
+1. **Membership Inference Attack (MIA)**: In membership inference attack, an attacker can be a server or a client, and the objective is to infer whether the specific given data exists in another client's private dataset.
 
-2. **Property Inference Attack (PIA)**: Property inference attack aims to infer the dataset property (may be the sensitive property) other than the class label. For example, in the facial image dataset, the original task is to infer whether wearing glass, an attacker may also curious about the gender and the age that is not related to original task. 
+2. **Property Inference Attack (PIA)**: Property inference attack aims to infer the dataset property (may be the sensitive property) other than the class label. For example, in the facial image dataset, the original task is to infer whether wearing glass, an attacker may also be curious about the gender and age unrelated to the original task. 
 
-3.  **Class Representative Attack (CRA)**: The goal of class representative attack is to infer the representative sample of specific class. This type of attack often exists in the case where a client only owns partial of class label, and is curious about the information related to other class.
+3.  **Class Representative Attack (CRA)**: Class representative attack aims to infer the representative sample of a specific class. This type of attack often exists in the case where a client only owns a part of the class label, and is curious about the information related to other classes.
 
 4.  **Training Data/Label Inference Attack (TIA)**: Training data/label inference attack aims to reconstruct the privately owned training samples through the intermediate information transmitted during the FL. 
 
 ### 1.2 Active Attack v.s. Passive Attack
-According to the actions that the attacker made, the privacy attacks can be divided into passive attack and active attack.
+According to the attacker's actions, the privacy attacks can be divided into passive and active attacks.
 
-1. **Passive Attack**: In passive attack, the attacker follows the FL protocols, and only saves the intermediate results or the received information for local attack computation. Due to the characteristics of passive attack, it is very hard to be detected by the FL monitor.
+1. **Passive Attack**: In a passive attack, the attacker follows the FL protocols, and only saves the intermediate results or the received information for local attack computation. Due to the characteristics of a passive attack, it is very hard to be detected by the FL monitor.
 
 
-2. **Active Attack**: Different from passive attack, in active attack, the attacker often inject malicious information into FL to induce other clients reveal more private information into the global model. The attacker preforming active attack are also named as malicious. Compared with passive attack, due to the malicious information injection, this type of attack is easier to be detected with additional information checking.  
+2. **Active Attack**: Different from the passive attack, in the active attack, the attacker often injects malicious information into FL to induce other clients to reveal more private information into the global model. The attacker performing active attacks are also named malicious. Compared with the passive attack, due to the malicious information injection, this type of attack is easier to be detected with additional information checking.  
 
 
 
 ## 2. Usage of Attack Module
 ### 2.1 Preliminary
-Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer LINK_TO_ADD. 
+Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer [quick start]({{ "/docs/quick-start/" | relative_url }}) and [start your own case]({{ "/docs/own-case/" | relative_url }}). 
 
-The attack module provides several attack methods for directly using. The users only need to add the hyperparameter to the configuration to call the corresponding method and add the prior knowledge to the attacker. For more configuration related materials, please refer: LINK_TO_ADD. 
+The attack module provides several attack methods for directly using. The users only need to set the corresponding hyper-parameters in the configuration to call the corresponding method and add the prior knowledge to the attacker.
 
 In order to make it easier for users to check the privacy protection strength of FL, FederatedScope provides implementations of SOTA privacy attack algorithms. The users only need to add the configuration of the attack module into FL's configuration, and provide the additional information required by the attack method. 
 
@@ -59,16 +60,16 @@ The implemented privacy algorithms include:
 In the next, we will use the example of attacking fedAvg to show the four kinds of attacks. 
 
 ### 2.2 Example of Optimization based Training Data/Label Inference Attack. 
-In this attack, the server is set as the attacker performing passive attack, i.e., when the server receives the model parameter updating information from the target client, it will perform the reconstruction procedure to find the data that generates the the same parameter updating as received. Specifically, DLG method optimizes the Eqn. (4) in [[1]](#1) and InvertingGradient (IG) method optimize the Eqn. (4) in [[4]](#4) 
+In this attack, the server is set as the attacker performing the passive attack, i.e., when the server receives the model parameter updating information from the target client, it will perform the reconstruction procedure to find the data that generates the same parameter updating as received. Specifically, DLG method optimizes the Eqn. (4) in [[1]](#1) and InvertingGradient (IG) method optimize the Eqn. (4) in [[4]](#4) 
 
-The knowledge that the attacker needs to obtain include the prior knowledge provided by the users, and the knowledge (e.g., model parameter updates/gradients) obtained from FL training procedure.  
+The knowledge that the attacker needs to obtain includes the prior knowledge provided by the users, and the knowledge (e.g., model parameter updates/gradients) obtained from FL training procedure.  
 
-**Attacker's prior knowledge:** 
-1.  The feature dimension of the dataset.
+**attacker's prior knowledge:** 
+1. The feature dimension of the dataset.
 
 **Attcker's knowledge obtained from FL:**
-1.  The parameter updates;
-2. The number of samples corresponding the received  parameter updates.
+1. The parameter updates;
+2. The number of samples corresponding the received parameter updates.
 
 #### 2.2.1 Running the attack on Femnist Example
 
@@ -76,7 +77,7 @@ Step 1: Set the configuration of fedavg;
 
 Step 2:  Add the configurations of attack to the configuration in step 1;
 
-**Configuration:**
+**configuration:**
 
 ```python
 attack:
@@ -96,6 +97,8 @@ python flpackage/main.py --cfg flpackage/attack/example_attack_config/reconstruc
 ```
 
 **Results on FedAvg on Femnist example:**
+The recovered training images are plotted in the directory of `cfg.outdir`.
+
 The reconstructed results at round 31 & 32 is:
 ![](https://img.alicdn.com/imgextra/i2/O1CN01LU3XM51aIeXHdssZg_!!6000000003307-2-tps-1820-462.png)
 
@@ -106,7 +109,7 @@ The reconstructed results at round 31 & 32 is:
 
 Step 1: The users should make sure the FL is set up correctly on the customized dataset. 
 
-Step 2: Add the prior knowledge about the dataset to function  `get_data_info` in `flpackage/attack/auxiliary/utils.py`.  Example of femnist dataset is: 
+Step 2: Add the prior knowledge about the dataset to function  `get_data_info` in `flpackage/attack/auxiliary/utils.py`. An example of femnist dataset is: 
 
 ```python
 def get_data_info(dataset_name):
@@ -127,7 +130,7 @@ python flpackage/main.py --cfg your_own_config.yaml
 
 ### 2.3 Example of Class Representative Attack
 
-The attack module provides the class representative attack with GAN, which is the implemetation of the method in [[2]](#2).
+The attack module provides the class representative attack with GAN, which is the implementation of the method in [[2]](#2).
 
 #### 2.3.1 Example attack on Femnist dataset
 
@@ -138,7 +141,7 @@ attack:
   attacker_id: 5
   target_label_ind: 3
 ```
-`attack_method` is the name of the method, `attacker_id` is the id the client that performs the class representative attack. `target_label_ind` is the index of the target class that the attacker want to infer its representative samples. 
+`attack_method` is the method's name, `attacker_id` is the id the client performs the class representative attack. `target_label_ind` is the index of the target class that the attacker wants to infer its representative samples. 
 
 The command to run the example attack: 
 ```console
@@ -147,6 +150,8 @@ python flpackage/main.py --cfg flpackage/attack/example_attack_config/CRA_fedavg
 
 
 **Results:**
+The results of the recovered class representatives are plotted in the directory of `cfg.outdir`.
+
 Results on Femnist dataset with target label class "3": 
 The representative samples is: 
 ![](https://img.alicdn.com/imgextra/i2/O1CN01OXyyFT1xbBj0sOfRw_!!6000000006461-2-tps-91-85.png)
@@ -163,15 +168,15 @@ def get_generator(dataset_name):
     else:
         ValueError("The generator to generate data like {} is not defined!".format(dataset_name))
 ```
-It takes the `dataset_name` as the input and return the dataset's corresponding generator. 
+It takes the `dataset_name` as the input and returns the dataset's corresponding generator. 
 
 
 ### 2.4 Example of Membership Inference Attack
-In Membership Inference Attack, the attacker's object is to infer whether the given target data exists in other client's private dataset. FederatedScope provides the method GradAscent, which is an active attack proposed in [[5]](#5). Specifically, GradAscent runs the gradient ascent to the gradient corresponding to the target data: 
+In the Membership Inference Attack, the attacker's object is to infer whether the given target data exists in another client's private datasets. FederatedScope provides the method GradAscent, which is an active attack proposed in [[5]](#5). Specifically, GradAscent runs the gradient ascent to the gradient corresponding to the target data: 
 $$W  \leftarrow W + \gamma \frac{\partial L_x}{\partial W},$$ 
 where $W$ is the model parameter, $L_x$ is the loss of the target data.
 
-If the target data $x$ in other client's training dataset, it would have a large updates on the model updates, since its optimizer will abruply reduces the gradient of $L_x$. 
+If the target data $x$ in another client's training dataset, it would have a large update on the model updates, since its optimizer will abruptly reduce the gradient of $L_x$. 
 
 #### 2.4.1 Example of MIA on Femnist dataset
 The configuration of GradAscent is: 
@@ -181,22 +186,24 @@ attack:
   attacker_id: 5
   inject_round: 0
 ```
-where  `attack_method` is the attack method name, `attacker_id` is the id of the client that performs the membership inference attack, `inject_round` is the round to run the gradient ascent on the target dataset. 
+Where `attack_method` is the attack method name, `attacker_id` is the id of the client that performs the membership inference attack, `inject_round` is the round to run the gradient ascent on the target dataset. 
 
 The command to run the example attack: 
 ```console
 python flpackage/main.py --cfg flpackage/attack/example_attack_config/gradient_ascent_MIA_on_femnist.yaml
 ```
 
-#### 2.4.2 Running the attack on customized dataset
+The results of loss changes on the target data are plotted in the directory of `cfg.outdir`.
+
+#### 2.4.2 Running the attack on a customized dataset
 The users should add the way to get the target data in function `get_target_data` in `flpackage/attack/auxiliary/MIA_get_target_data.py`
 
 
 ### 2.5 Example of Property Inference Attack
-In property inference attack, the attacker aims to infer the property of the sample that is irrelavant to the class task. In the server-client FL settings, the attacker is usually the server, and based on the received parameter updates, it wants to infer whether the property exist in the batch based on which the batch owner client sends the parameter updates to the server.
+In the property inference attack, the attacker aims to infer the property of the sample that is irrelevant to the classification task. In the server-client FL settings, the attacker is usually the server, and based on the received parameter updates, and it wants to infer whether the property exists in the batch based on which the batch owner client sends the parameter updates to the server.
 
-#### 2.5.1 Running the attack on synthetic dataset
-Since the Femnist dataset doesn't have the additional property information, we use the synthetic dataset as the example dataset and implement the BPC, which is the algorithm 3 in [[6]](#6). 
+#### 2.5.1 Running the attack on the synthetic dataset
+Since the Femnist dataset doesn't have the additional property information, we use the synthetic dataset as the example dataset and implement the BPC, which is algorithm 3 in [[6]](#6). 
 
 The synthetic dataset: 
 * The feature x with 5 dimension is generation by $N(0,0.5)$;
@@ -211,26 +218,73 @@ attack:
   attack_method: PassivePIA
   classifier_PIA: svm
 ```
-where `attack_method` is the attack method name; `classifier_PIA` is the method name of classifer that infer the property. 
+where `attack_method` is the attack method name; `classifier_PIA` is the method name of the classifer that infer the property. 
 
 The command to run the example attack: 
 ```console
 python flpackage/main.py --cfg flpackage/attack/example_attack_config/PIA_toy.yaml
 ```
 
-## 3. Develop Your Own Attack
-When developping your own atttack method, it only needs to overload the class of server, client or the trainer according to the role of the attacker in FL and the actions the attacker made. Before developping your own attack, please make sure that your target FL algorithm is already set up. 
 
-### 3.1 Server as the Attacker
-When the attacker is the server, overload the Server class of the target FL algorithm.  
-* If the attack action happens in the process of the FL training, the users should rewritten the `callback_funcs_model_para` which is the function that called when the server receives the model parameter updates. 
-* If the attack action happens in the end of the FL training, the users should check whether it is the last round, and if yes, then it will excute the attack actions. 
+## 3. Develop Your Own Attack
+When developing your own attack method, it only needs to overload the class of server, client, or trainer according to the role of the attacker and the actions the attacker made in FL. Before developing your own attack, please make sure that your target FL algorithm is already set up. 
+
+### 3.1 Add New Configuration
+
+If your own attack method requires new hyper-parameters, they should be registered in the configuration. The details of registering your own hyper-parameter can be found in [Link to add]({{}}).
+
+
+### 3.2 Server as the attacker
+When the attacker is the server, it requires an overload of the Server class of the target FL algorithm.  
+* If the attack happens in the FL training process, the users should rewrite the `callback_funcs_model_para`, which is the function that called when the server receives the model parameter updates. 
+* If the attack happens at the end of the FL training, the users should check whether it is the last round, and if yes, it will execute the attack actions. 
 
 After overloading the server class, you should add it the function `get_server_cls` in `flpackage/core/auxiliaries/worker_builder.py` .
 
-The following is an example in property inference attack where the attacker (server) performs attack actions both during and after the FL training. During the FL training, the attacker collect received the parameter updates and generate the training data for PIA classifer based on the current model. After the FL training, the attacker trains the PIA classifier, and then infer the property based on the collected parameter updates. 
+#### 3.2.1 Example of developing property inference attack
+The following is an example in a property inference attack where the attacker (server) performs attack actions both during and after the FL training. The attacker collects the received parameter updates during the FL training and generates the training data for PIA classifier based on the current model. After the FL training, the attacker trains the PIA classifier, and then infers the property based on the collected parameter updates. 
 
+In the following code, the original Server's ``callback_funcs_model_para`` function is rewritten to perform the above attack actions. 
 ```python
+class PassivePIAServer(Server):
+    '''
+    The implementation of the batch property classifier, the algorithm 3 in paper: Exploiting Unintended Feature Leakage in Collaborative Learning
+
+    References:
+    Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706
+    '''
+    def __init__(self,
+                 ID=-1,
+                 state=0,
+                 data=None,
+                 model=None,
+                 client_num=5,
+                 total_round_num=10,
+                 device='cpu',
+                 strategy=None,
+                 **kwargs):
+        super(PassivePIAServer, self).__init__(ID=ID,
+                                               state=state,
+                                               data=data,
+                                               model=model,
+                                               client_num=client_num,
+                                               total_round_num=total_round_num,
+                                               device=device,
+                                               strategy=strategy,
+                                               **kwargs)
+        self.atk_method = self._cfg.attack.attack_method
+        self.pia_attacker = PassivePropertyInference(
+            classier=self._cfg.attack.classifier_PIA,
+            fl_model_criterion=get_criterion(self._cfg.criterion.type,
+                                             device=self.device),
+            device=self.device,
+            grad_clip=self._cfg.optimizer.grad_clip,
+            dataset_name=self._cfg.data.type,
+            fl_local_update_num=self._cfg.federate.local_update_steps,
+            fl_type_optimizer=self._cfg.fedopt.type_optimizer,
+            fl_lr=self._cfg.optimizer.lr,
+            batch_size=100)
+
     def callback_funcs_model_para(self, message: Message):
         round, sender, content = message.state, message.sender, message.content
         # For a new round
@@ -239,37 +293,54 @@ The following is an example in property inference attack where the attacker (ser
 
         self.msg_buffer['train'][round][sender] = content
 
-        # collect the updates
-        self.pia_attacker.collect_updates(previous_para= self.model.state_dict(),
-                                          updated_parameter=content[1],
-                                          round=round,
-                                          client_id=sender)
-        self.pia_attacker.get_data_for_dataset_prop_classifier(model=self.model)
+        # PIA: collect the parameter updates 
+        self.pia_attacker.collect_updates(
+            previous_para=self.model.state_dict(),
+            updated_parameter=content[1],
+            round=round,
+            client_id=sender)
+        # PIA: generate the training data for inference classifier training based on the auxiliary dataset 
+        self.pia_attacker.get_data_for_dataset_prop_classifier(
+            model=self.model)
 
         if self._cfg.federate.online_aggr:
-            # TODO: put this line to `check_and_move_on`
-            # currently, no way to know the latest `sender`
             self.aggregator.inc(content)
         self.check_and_move_on()
 
         if self.state == self.total_round_num:
+            # PIA: Property inference classifier training
             self.pia_attacker.train_property_classifier()
+            # PIA: Property inference classifier infer the property based on the colloected parameter updates 
             self.pia_results = self.pia_attacker.infer_collected()
             print(self.pia_results)
 ```
 
-### 3.2 Client as the Attacker
-When the attacker is one of the client:
+The final step is to add the class ``PassivePIAServer`` into ``get_server_cls`` in ``flpackage/core/auxiliaries/worker_builder.py``.
+
+```python
+def get_server_cls(cfg):
+    if cfg.attack.attack_method.lower() in ['dlg', 'ig']:
+        from flpackage.attack.worker_as_attacker.server_attacker import PassiveServer
+        return PassiveServer
+    elif cfg.attack.attack_method.lower() in ['passivepia']:
+        from flpackage.attack.worker_as_attacker.server_attacker import PassivePIAServer
+        return PassivePIAServer
+```
+
+
+### 3.3 Client as the attacker
+When the attacker is one of the clients:
 * If the attack actions only happen in the local training procedure, users only need to define the wrapping function to wrap the trainer and add the attack actions. 
-* If the atttack actions also happen in the end of the FL training, users need to overload the client class and modify its`callback_funcs_for_finish` function. 
+* If the attack actions also happen at the end of the FL training, users need to overload the client class and modify its `callback_funcs_for_finish` function. 
 
-After setting the traininer wrapping function, it should be added to the function `get_trainer` in `flpackage/core/auxiliaries/trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `flpackage/core/auxiliaries/worker_builder.py`.
+After setting the trainer wrapping function, it should be added to the function `wrap_attacker_trainer` in `flpackage/attack/auxiliary/attack_trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `flpackage/core/auxiliaries/worker_builder.py`.
 
-The following is an example of wrapping the traininer in the implementation of class representative attack in [[2]](#2).  In this method, the attacker holds a local GAN, and at each FL training round, it will first update the GAN's discriminator with the received paramters, and then local trains GAN's generator so that its generated data can be classifed as the target class. After that, the client labels the generated data as the class other than the target class and injects them into the training batch to perform the regular local training. 
+#### 3.3.1 Example of developing class representative attack
+The following is an example of wrapping the trainer in the implementation of the class representative attack in [[2]](#2). In this method, the attacker holds a local GAN, and at each FL training round, it will first update the GAN's discriminator with the received paramters, and then local trains GAN's generator so that its generated data can be classified as the target class. After that, the client labels the generated data as the class other than the target class and injects them into the training batch to perform the regular local training. 
 
-The following code show the wrapping function that adding the above precedures into the traininer. The wrapping function takes the traininer instance as the input. 
-It first adds an instances  of `GANCRA` class which is the GAN attack class defined in `flpackage/attack/models/gan_based_model.py` to the context of the trainer, i.e., `base_trainer.ctx` . Then it registers different hooks into its corresponding phase: 
-* Register the hook `hood_on_fit_start_generator` to the phase`on_fit_start`, so that the trainer will update the round number at the beginning of local training in each round. 
+The following code shows the wrapping function that adds the above procedures to the trainer. The wrapping function takes the trainer instance as the input. 
+It first adds an instance of `GANCRA` class which is the GAN attack class defined in `flpackage/attack/models/gan_based_model.py` to the context of the trainer, i.e., `base_trainer.ctx` . Then it registers different hooks into its corresponding phase: 
+* Register the hook `hood_on_fit_start_generator` to the phase'on_fit_start`, so that the trainer will update the round number at the beginning of local training in each round. 
 * Register the hook `hook_on_gan_cra_train` and `hook_on_batch_injected_data_generation` to the phase `on_batch_start`, so that the trainer will train the GAN and inject the generated data to the training batch when preparing the train batch for local training. 
 * Register the hook `hook_on_data_injection_sav_data` to the phase `on_fit_end` , so that at the end of local training, it will save the data generated by GAN. 
 
@@ -321,11 +392,11 @@ def hood_on_fit_start_generator(ctx):
 
 def hook_on_batch_forward_injected_data(ctx):
     # inject the generated data into training batch loss
-    x, label = [_.to(ctx.device) for _ in ctx.data_batch]
+    x, label = [_.to(ctx.device) for _ in ctx.injected_data]
     pred = ctx.model(x)
     if len(label.size()) == 0:
         label = label.unsqueeze(0)
-    ctx.loss_batch += ctx.criterion(pred, label)
+    ctx.loss_task += ctx.criterion(pred, label)
     ctx.y_true_injected = label
     ctx.y_prob_injected = pred
 
@@ -336,9 +407,9 @@ def hook_on_batch_injected_data_generation(ctx):
 
 
 def hook_on_gan_cra_train(ctx):
-	# update the GAN's discriminator with the broadcasted parameter
+   # update the GAN's discriminator with the broadcasted parameter
     ctx.gan_cra.update_discriminator(ctx.model)
-	# train the GAN's generator
+   # train the GAN's generator
     ctx.gan_cra.generator_train()
 
 
@@ -346,10 +417,24 @@ def hook_on_data_injection_sav_data(ctx):
     ctx.gan_cra.generate_and_save_images()
 ```
 
+After defining the trainer wrapping function, the following code adds the ``wrap_GANTrainer`` into ``wrap_attacker_trainer`` in ``flpackage/attack/auxiliary/attack_trainer_builder.py``.
 
+```python
+def wrap_attacker_trainer(base_trainer, config):
+    if config.attack.attack_method.lower() == 'gan_attack':
+        from flpackage.attack.trainer.GAN_trainer import wrap_GANTrainer
+        return wrap_GANTrainer(base_trainer)
+    elif config.attack.attack_method.lower() == 'gradascent':
+        from flpackage.attack.trainer.MIA_invert_gradient_trainer import wrap_GradientAscentTrainer
+        return wrap_GradientAscentTrainer(base_trainer)
+
+    else:
+        raise ValueError('Trainer {} is not provided'.format(
+            config.attack.attack_method))
+```
 
 ## 4. Contribute Your Attacker to FederatedScope
-Users are welcome to contribute their own attack methods to FederatedScope. Please refer LINK_TO_ADD for more details. 
+Users are welcome to contribute their own attack methods to FederatedScope. Please refer [Contributing to FederatedScope]({{ "/docs/contributor/" | relative_url }}) for more details. 
 
 
 
@@ -364,10 +449,10 @@ Users are welcome to contribute their own attack methods to FederatedScope. Plea
 
 <a id="3">[3]</a> Zhu, Ligeng, Zhijian Liu, and Song Han. "Deep leakage from gradients." Advances in Neural Information Processing Systems 32 (2019).
 
-<a id="4">[4]</a> Geiping, Jonas, et al. "Inverting gradients-how easy is it to break privacy in federated learning?." Advances in Neural Information Processing Systems 33 (2020): 16937-16947.
+<a id= "4">[4]</a> Geiping, Jonas, et al. "Inverting gradients-how easy is it to break privacy in federated learning?." Advances in Neural Information Processing Systems 33 (2020): 16937-16947.
 
-<a id="5">[5]</a> Nasr, Milad, R. Shokri and Amir Houmansadr. “Comprehensive Privacy Analysis of Deep Learning: Stand-alone and Federated Learning under Passive and Active White-box Inference Attacks.” ArXiv abs/1812.00910 (2018): n. pag.
+<a id="5">[5]</a> Nasr, Milad, R. Shokri and Amir Houmansadr. "Comprehensive Privacy Analysis of Deep Learning: Stand-alone and Federated Learning under Passive and Active White-box Inference Attacks." ArXiv abs/1812.00910 (2018): n. pag.
 
-<a id="6">[6]</a> Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706.
+<a id= "6">[6]</a> Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. "Exploiting Unintended Feature Leakage in Collaborative Learning." 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706.
 
-<a id="7">[7]</a> Lyu, Lingjuan, Han Yu and Qiang Yang. “Threats to Federated Learning: A Survey.” ArXiv abs/2003.02133 (2020): n. pag.
+<a id="7">[7]</a> Lyu, Lingjuan, Han Yu and Qiang Yang. "Threats to Federated Learning: A Survey." ArXiv abs/2003.02133 (2020): n. pag.

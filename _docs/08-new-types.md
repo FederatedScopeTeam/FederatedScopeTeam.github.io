@@ -4,23 +4,27 @@ permalink: /docs/new-type/
 excerpt: "About defining new stuffs."
 last_modified_at: 2021-05-11T10:22:55-04:00
 toc: true
+layout: tuto
 ---
 
-Based on the [message-oriented framework](https://yuque.antfin-inc.com/gy2g1n/dcpcvz/ycrgg9), FederatedScope allows developers to customize FL tasks by introducing new types of exchanged messages and the corresponding handled functions. Here we provide the details of implementation.
+with the help of the [message-oriented framework]({{ "/docs/msg-oriented-framework/" | relative_url }}), FederatedScope allows developers to customize FL applications via introducing new types of  messages and the corresponding handling functions. Here we provide the implementation details.
 
-<a name="lxRt0"></a>
 ## Define new message type
-Firstly developers should define a new type of message that is exchanged in the custom FL course. The new message should include sender, receiver, msg_type, and payload. <br />For example, we define `Message(sender=server, receiver=client, msg_type='gradients', payload=MODEL_GRADIENTS)` to denote a new message containing gradients that is passed from server to the client.
 
-<a name="tJPvs"></a>
-## Add handled function
-After that, developers should implement the handled function for the receiver (here is the client) to handle the newly defined message. The operations in the handled function can include parsing the payload, updating models, aggregating, triggering some events, returning feedback,  and so on. For example:
+Firstly developers should define a new type of message that is exchanged in the customized FL course. The new message should include sender, receiver, msg_type, and payload. 
+
+For example, we define `Message(sender=server, receiver=client, msg_type='gradients', payload=MODEL_GRADIENTS)` to denote a new message containing gradients that is passed from the server to the client.
+
+## Add handling function
+
+After that, users should implement the handling function for the receiver (here is the client) to handle the newly defined message. The operations in the handling function might include parsing the payload, updating models, aggregating, triggering some events, returning feedback,  and so on. For example:
+
 ```python
 class Client(object):
 
     ... ...
     
-    # A handled function of client for 'gradients'
+    # A handling function of client for 'gradients'
     def callback_for_messgae_gradients(self, message):
         # parse the payload
         sender, model_gradients = message.sender, message.content
@@ -33,6 +37,8 @@ class Client(object):
         if	self.trainer.get_delta_of_model() > self.threshold:
             # local training
             updated_model = self.trainer.local_train()
+        else:
+            updated_model = self.model
     
         # return the feedback via communivator
         self.comm_manager.send(
@@ -41,14 +47,17 @@ class Client(object):
                     msg_type='updated_model', 
                     content=updated_model))
 ```
-Note that in some cases, the newly added handled function includes returning a message, such as 'updated_model' in the example. Developers might need to define a new handled function for the returned message if it is also a new type, or accordingly modify the implemented handled functions if necessary.
 
-<a name="Q9HSE"></a>
-## Register the handled function
-FederatedScope allows developers to add the new handled functions for server or client by registering:
+Note that in some cases, the newly added handling function includes returning a message, such as _updated_model_ in the example. Users might need to define a new handling function for the returned message if it is also a new type, or accordingly modify the implemented handling functions if necessary.
+
+## Register the handling function
+
+FederatedScope allows users to add the new handling functions for servers or clients by registering:
+
 ```python
 self.register_handlers(
     message_type='gradients', 
     callback_func=callback_for_messgae_gradients)
 ```
-Thus, a new type of message can be exchanged and handled in a custom FL task. 
+
+Thus, a new type of message can be exchanged and handled in a customized FL task. 
