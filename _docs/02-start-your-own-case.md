@@ -235,7 +235,7 @@ register_metric("mymetric", call_my_metric)
 ## <span id="config">Specify your own configuration</span>
 
 ### Basic usage
-FederatedScope provides an extended configuration system based on [yacs](https://github.com/rbgirshick/yacs). We leverage a two-level tree structure that consist of several internal dict-like containers to allow simple key-value access and management. For example,
+FederatedScope provides an extended configuration system based on [yacs](https://github.com/rbgirshick/yacs). We leverage a two-level tree structure that consists of several internal dict-like containers to allow simple key-value access and management. For example,
 ```
 cfg.backend = 'torch'  # level-1 configuration
 
@@ -247,6 +247,36 @@ The frequently-used APIs include
 - Besides, we can use `freeze` to make the configs immutable and save the configs in a yaml file under the specified `cfg.outdir`.
 - Both these functions will trigger the configuration validness checking.
 - To modify a config node after calling `freeze`, we can call `defrost`.
+
+As a start, our package will initialize a `global_cfg` instance by default, i.e., 
+```
+global_cfg = CN()
+init_global_cfg(global_cfg)
+``` 
+see more details in the file `federatedscope/core/configs/config.py`. 
+Users can clone and use their own configuration object as follows:
+```
+from federatedscope.core.configs.config import global_cfg
+
+def main():
+
+    init_cfg = global_cfg.clone()
+    args = parse_args()
+    init_cfg.merge_from_file(args.cfg_file)
+    init_cfg.merge_from_list(args.opts)
+
+    setup_logger(init_cfg)
+    setup_seed(init_cfg.seed)
+
+    # federated dataset might change the number of clients
+    # thus, we allow the creation procedure of dataset to modify the global cfg object
+    data, modified_cfg = get_data(config=init_cfg.clone())
+    init_cfg.merge_from_other_cfg(modified_cfg)
+
+    init_cfg.freeze()
+    
+    # do sth. further
+```
 
 ### Built-in configurations
 We divide the configuration could be used in the FL process into several sub files such as `cfg_fl_setting`, `cfg_fl_algo`, `cfg_model`, `cfg_training`, `cfg_evaluation`, see more details in `federatedscope/core/configs` directory.
