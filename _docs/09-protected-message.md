@@ -2,7 +2,7 @@
 title: "Privacy Protection for Message"
 permalink: /docs/protected-msg/
 excerpt: "About protecting messages."
-last_modified_at: 2018-09-10T12:33:24-04:00
+last_modified_at: 2022-04-06T12:33:24-04:00
 toc: true
 layout: tuto
 ---

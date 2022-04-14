@@ -2,7 +2,7 @@
 title: "Graph"
 permalink: /docs/graph/
 excerpt: "About graph."
-last_modified_at: 2020-05-01T10:22:56-04:00
+last_modified_at: 2022-04-13T10:22:56-04:00
 toc: true
 layout: tuto
 ---

@@ -2,7 +2,7 @@
 title: "Personalized FL"
 permalink: /docs/pfl/
 excerpt: "About personalized FL."
-last_modified_at: 2018-03-20T15:59:57-04:00
+last_modified_at: 2022-04-08T15:59:57-04:00
 toc: true
 layout: tuto
 ---
