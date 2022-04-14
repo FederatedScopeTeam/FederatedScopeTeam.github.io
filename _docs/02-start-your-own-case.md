@@ -15,6 +15,7 @@ We provide `register` function to help build your own federated learning workflo
 1. [Build a model](#model)
 1. [Create a trainer](#trainer)
 1. [Introduce more evaluation metrics](#metric)
+1. [Specify your own configuration](#config)
 
 
 ## <span id="data">Load a dataset</span>
@@ -229,3 +230,91 @@ register_metric("mymetric", call_my_metric)
 
 
 -  Step3: put this `.py` file in the `federatedscope/contrib/metircs/` folder, and add `"mymetric"` to `cfg.eval.metric` activate it. 
+
+
+## <span id="config">Specify your own configuration</span>
+
+### Basic usage
+FederatedScope provides an extended configuration system based on [yacs](https://github.com/rbgirshick/yacs). We leverage a two-level tree structure that consists of several internal dict-like containers to allow simple key-value access and management. For example,
+```
+cfg.backend = 'torch'  # level-1 configuration
+
+cfg.federate = CN()  # level-2 configuration
+cfg.federate.client_num = 0
+```
+The frequently-used APIs include
+- `merge_from_file`, `merge_from_other_cfg` and `merge_from_list` that load configs from a yaml file, another `cfg` instance or a list stores the keys and values.
+- Besides, we can use `freeze` to make the configs immutable and save the configs in a yaml file under the specified `cfg.outdir`.
+- Both these functions will trigger the configuration validness checking.
+- To modify a config node after calling `freeze`, we can call `defrost`.
+
+As a start, our package will initialize a `global_cfg` instance by default, i.e., 
+```
+global_cfg = CN()
+init_global_cfg(global_cfg)
+``` 
+see more details in the file `federatedscope/core/configs/config.py`. 
+Users can clone and use their own configuration object as follows:
+```
+from federatedscope.core.configs.config import global_cfg
+
+def main():
+
+    init_cfg = global_cfg.clone()
+    args = parse_args()
+    init_cfg.merge_from_file(args.cfg_file)
+    init_cfg.merge_from_list(args.opts)
+
+    setup_logger(init_cfg)
+    setup_seed(init_cfg.seed)
+
+    # federated dataset might change the number of clients
+    # thus, we allow the creation procedure of dataset to modify the global cfg object
+    data, modified_cfg = get_data(config=init_cfg.clone())
+    init_cfg.merge_from_other_cfg(modified_cfg)
+
+    init_cfg.freeze()
+    
+    # do sth. further
+```
+
+### Built-in configurations
+We divide the configuration could be used in the FL process into several sub files such as `cfg_fl_setting`, `cfg_fl_algo`, `cfg_model`, `cfg_training`, `cfg_evaluation`, see more details in `federatedscope/core/configs` directory.
+
+### Customized configuration
+To add new configuration, you need 
+1. implement your own extend function `extend_my_cfg(cfg):`, e.g.,
+   ```
+   def extend_training_cfg(cfg):
+       # ------------------------------------------------------------------------ #
+       # Trainer related options
+       # ------------------------------------------------------------------------ #
+       cfg.trainer = CN()
+
+       cfg.trainer.type = 'general'
+       cfg.trainer.finetune = CN()
+       cfg.trainer.finetune.steps = 0
+       cfg.trainer.finetune.only_psn = True
+       cfg.trainer.finetune.stepsize = 0.01
+        
+       # --------------- register corresponding check function ----------
+       cfg.register_cfg_check_fun(assert_training_cfg)
+   ```
+2. and implement your own config validation check function `assert_my_cfg`, e.g.,
+   ```
+   def assert_training_cfg(cfg):
+       if cfg.backend not in ['torch', 'tensorflow']:
+           raise ValueError(
+                "Value of 'cfg.backend' must be chosen from ['torch', 'tensorflow']."
+           )
+   ```
+    
+3. finally, register your own extended function, e.g.,
+   ```
+   from federatedscope.register import register_config
+   register_config("fl_training", extend_training_cfg)
+   ```
+   
+   
+We recommend users put the new customized configuration in `federatedscope/contrib/configs` directory
+  
