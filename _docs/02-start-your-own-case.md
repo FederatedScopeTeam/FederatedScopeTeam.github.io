@@ -232,8 +232,8 @@ register_metric("mymetric", call_my_metric)
 -  Step3: put this `.py` file in the `federatedscope/contrib/metircs/` folder, and add `"mymetric"` to `cfg.eval.metric` activate it. 
 
 
-<a name="config"></a>
-## Introduce your own configuration
+## <span id="config">Introduce your own configuration</span>
+
 ### Basic usage
 FederatedScope provides an extended configuration system based on [yacs](https://github.com/rbgirshick/yacs). We leverage a two-level tree structure that consist of several internal dict-like containers to allow simple key-value access and management. For example,
 ```
