@@ -2,7 +2,7 @@
 title: "New Types of Messages and Handlers"
 permalink: /docs/new-type/
 excerpt: "About defining new stuffs."
-last_modified_at: 2021-05-11T10:22:55-04:00
+last_modified_at: 2022-04-05T10:22:55-04:00
 toc: true
 layout: tuto
 ---

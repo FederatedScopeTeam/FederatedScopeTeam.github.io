@@ -2,7 +2,7 @@
 title: "Cross-Device FL"
 permalink: /docs/cross-device/
 excerpt: "About cross-device FL."
-last_modified_at: 2016-11-03T11:13:12-04:00
+last_modified_at: 2022-04-09T11:13:12-04:00
 toc: true
 layout: tuto
 ---

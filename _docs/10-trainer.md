@@ -2,7 +2,7 @@
 title: "Local Learning Abstraction: Trainer"
 permalink: /docs/trainer/
 excerpt: "About trainer."
-last_modified_at: 2020-08-30T21:27:40-04:00
+last_modified_at: 2022-04-07T21:27:40-04:00
 toc: true
 layout: tuto
 ---

@@ -2,7 +2,7 @@
 title: "ModelZoo"
 permalink: /docs/modelzoo/
 excerpt: "About ModelZoo."
-last_modified_at: 2021-06-23T08:15:34-04:00
+last_modified_at: 2022-04-01T08:15:34-04:00
 toc: true
 layout: tuto
 ---

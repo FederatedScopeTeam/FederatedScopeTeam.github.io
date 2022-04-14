@@ -2,7 +2,7 @@
 title: "Contributing to FederatedScope"
 permalink: /docs/contributor/
 excerpt: "About contributing to FederatedScope."
-last_modified_at: 2018-11-25T19:47:43-05:00
+last_modified_at: 2022-04-13T19:47:43-05:00
 toc: true
 layout: tuto
 ---

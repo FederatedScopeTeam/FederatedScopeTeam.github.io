@@ -2,7 +2,7 @@
 title: "AlgoZoo"
 permalink: /docs/algozoo/
 excerpt: "About AlgoZoo."
-last_modified_at: 2021-05-11T10:40:42-04:00
+last_modified_at: 2022-04-02T10:40:42-04:00
 toc: true
 layout: tuto
 ---

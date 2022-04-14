@@ -2,7 +2,7 @@
 title: "Message-oriented Framework"
 permalink: /docs/msg-oriented-framework/
 excerpt: "The message-oriented framework used in FederatedScope."
-last_modified_at: 2021-05-11T10:40:42-04:00
+last_modified_at: 2022-04-04T10:40:42-04:00
 toc: true
 layout: tuto
 ---

@@ -2,7 +2,7 @@
 title: "Tuning Federated Learning"
 permalink: /docs/use-hpo/
 excerpt: "About using Federated HPO."
-last_modified_at: 2020-07-27
+last_modified_at: 2022-04-03
 toc: true
 layout: tuto
 ---

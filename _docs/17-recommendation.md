@@ -2,7 +2,7 @@
 title: "Recommendation"
 permalink: /docs/recommendation/
 excerpt: "Federated Recommendation."
-last_modified_at: 2018-03-20T15:59:57-04:00
+last_modified_at: 2022-04-13T15:59:57-04:00
 toc: true
 layout: tuto
 ---

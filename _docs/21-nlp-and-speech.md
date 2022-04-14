@@ -2,7 +2,7 @@
 title: "NLP and Speech"
 permalink: /docs/nlp-and-speech/
 excerpt: "About NLP and Speech"
-last_modified_at: 2018-11-25T19:46:43-05:00
+last_modified_at: 2022-04-13T19:46:43-05:00
 toc: true
 layout: tuto
 ---

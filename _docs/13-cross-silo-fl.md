@@ -2,7 +2,7 @@
 title: "Cross-Silo FL"
 permalink: /docs/cross-silo/
 excerpt: "About cross-silo FL."
-last_modified_at: 2018-03-20T16:00:02-04:00
+last_modified_at: 2022-04-10T16:00:02-04:00
 toc: true
 layout: tuto
 ---

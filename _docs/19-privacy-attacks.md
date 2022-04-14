@@ -2,7 +2,7 @@
 title: "Privacy Attacks"
 permalink: /docs/privacy-attacks/
 excerpt: "We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL."
-last_modified_at: 2018-03-20T16:00:02-04:00
+last_modified_at: 2022-04-13T16:00:02-04:00
 toc: true
 layout: tuto
 ---
