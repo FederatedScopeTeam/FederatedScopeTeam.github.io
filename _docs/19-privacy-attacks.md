@@ -221,7 +221,7 @@ attack:
 where `attack_method` is the attack method name; `classifier_PIA` is the method name of the classifer that infer the property. 
 
 The command to run the example attack: 
-```console
+```bash
 python flpackage/main.py --cfg flpackage/attack/example_attack_config/PIA_toy.yaml
 ```
 
@@ -231,7 +231,7 @@ When developing your own attack method, it only needs to overload the class of s
 
 ### 3.1 Add New Configuration
 
-If your own attack method requires new hyper-parameters, they should be registered in the configuration. The details of registering your own hyper-parameter can be found in [Link to add]({{}}).
+If your own attack method requires new hyper-parameters, they should be registered in the configuration. The details of registering your own hyper-parameter can be found in [this post]({{ '/docs/own-case/' | relative_url }}).
 
 
 ### 3.2 Server as the attacker
