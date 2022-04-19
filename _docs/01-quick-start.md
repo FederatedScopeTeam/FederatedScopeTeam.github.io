@@ -13,35 +13,61 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
 
 We first provide an end-to-end example to illustrate how to implement a standard FL course with FederatedScope.
 
-## Clone source code and install the environment
+## Installation
+
+First of all, users need to clone the source code and install the required packages (we suggest python version >= 3.9).
 
 ```bash
 git clone https://github.com/alibaba/FederatedScope.git
 cd FederatedScope
+```
+You can install the dependencies from the requirement file:
+```
+# For minimal version
+conda install --file enviroment/requirements-torch1.10.txt -c pytorch -c conda-forge -c nvidia
+
+# For application version
+conda install --file enviroment/requirements-torch1.10-application.txt -c pytorch -c conda-forge -c nvidia -c pyg
+```
+or build docker image and run with docker env:
+```
+docker build -f enviroment/docker_files/federatedscope-torch1.10.Dockerfile -t alibaba/federatedscope:base-env-torch1.10 .
+docker run --gpus device=all --rm --it --name "fedscope" -w $(pwd) alibaba/federatedscope:base-env-torch1.10 /bin/bash"
+```
+Note: if you need to run with down-stream tasks such as graph FL, change the requirement/docker file name into another one when executing the above commands:
+```
+# enviroment/requirements-torch1.10.txt -> 
+requirements-torch1.10-application.txt
+
+# enviroment/docker_files/federatedscope-torch1.10.Dockerfile ->
+enviroment/docker_files/federatedscope-torch1.10-application.Dockerfile
+```
+Finally, after all the dependencies are installed, run:
+```bash
 python setup.py install
 ```
 
 ## Prepare datasets & models
 
-To run an FL course, firstly you should prepare datasets for FL. The [DataZoo]({{ "/docs/datazoo/" | relative_url }}) provided in FederatedScope can help to automatically download and preprocess widely-used public datasets from various FL applications, including computer vision, natural language processing, graph learning, recommendation, etc. Users can conveniently conduct experiments on the provided dataset via specifying `cfg.data.type = DATASET_NAME`in the configuration.  
+To run an FL course, firstly you should prepare datasets for FL. The DataZoo provided in FederatedScope can help to automatically download and preprocess widely-used public datasets from various FL applications, including computer vision, natural language processing, graph learning, recommendation, etc. Users can conveniently conduct experiments on the provided dataset via specifying `cfg.data.type = DATASET_NAME`in the configuration.  
 We also support users to adopt customized datasets, please refer to [DataZoo]({{ "/docs/datazoo/" | relative_url }}) for more details about the provided datasets, and refer to [Customized Datasets]({{ "/docs/own-case/#load-a-dataset" | relative_url }}) for introducing customized datasets in FederatedScope.
 
-Secondly, you should specify the model architecture that will be federally trained, such as ConvNet or LSTM. FederatedScope includes the ModelZoo to provide the implementation of famous model architectures for various FL applications. Users can set up `cfg.model.type = MODEL_NAME` to apply a specific model architecture in FL tasks. We allow users to use custom models via registering without caring about the federated process. You can refer to [DataZoo]({{ "/docs/datazoo/" | relative_url }}) for more details about how to customize models.
+Secondly, you should specify the model architecture that will be federally trained, such as ConvNet or LSTM. FederatedScope provides the ModelZoo that contains the implementation of widely-used model architectures for various FL applications. Users can set up `cfg.model.type = MODEL_NAME` to apply a specific model architecture in FL tasks. We allow users to use customized models via registering without caring about the federated process. You can refer to [ModelZoo]({{ "/docs/modelzoo/" | relative_url }}) for more details about how to customize models.
 
 For a standard FL course, all participants share the same model architecture and training configuration. And FederatedScope also supports adopting client-specific models and training configurations (known as personalized FL) to handle the non-IID issue in practical  FL applications, please refer to [Personalized FL]({{ "/docs/pdf/" | relative_url }}) for more details. 
 
-## Run an FL task with basic configurations.
+## Run an FL course with configurations
 
-Note that FederatedScope provides a unified interface for both standalone simulation and distributed deployment, therefore users can easily run an FL course in standalone mode or distributed mode via configuring. 
+Note that FederatedScope provides a unified view for both standalone simulation and distributed deployment, therefore users can easily run an FL course with standalone mode or distributed mode via configuring. 
 
 ### Standalone mode
 
-The standalone mode in FederatedScope means that we simulate multiple participants (servers and clients) in a single device, where the data and models of each participant are isolated from each other and only be shared via message passing. The standalone mode is often used for quickly and efficiently verifying the correctness and effectiveness of the proposed FL algorithms.
+The standalone mode in FederatedScope means to simulate multiple participants (servers and clients) in a single device, while participants' data are isolated from each other and their models might be shared via message passing. 
 
-Here we demonstrate how to run a standard FL course with FederatedScope as an example, with setting `cfg.data.type = 'FEMNIST'`and `cfg.model.type = 'ConvNet2'` to run vanilla FedAvg [1] for an image classification task.
+Here we demonstrate how to run a standard FL course with FederatedScope, with setting `cfg.data.type = 'FEMNIST'`and `cfg.model.type = 'ConvNet2'` to run vanilla FedAvg [1] for an image classification task.
 Users can include more training configurations, such as `cfg.federated.total_round_num`, `cfg.data.batch_size`, and `cfg.optimizer.lr`, in the configuration (a .yaml file), and run a standard FL course as: 
 
-```python
+```bash
 # Run with default configurations
 python federatedscope/main.py --cfg federatedscope/example_configs/femnist.yaml
 # Or with custom configurations
@@ -50,7 +76,7 @@ python federatedscope/main.py --cfg federatedscope/example_configs/femnist.yaml 
 
 Then users can observe some monitored metrics during the training process as:
 
-```python
+```
 INFO: Server #0 has been set up ...
 INFO: Model meta-info: <class 'federatedscope.cv.model.cnn.ConvNet2'>.
 ... ...
@@ -72,28 +98,28 @@ INFO: Server #0: Final evaluation is finished! Starting merging results.
 ```
 
 ### Distributed mode
+The distributed mode in FederatedScope denotes running multiple procedures to build up an FL course, where each procedure plays as a participant (server or client) that instantiates its model and loads its data. The communication between participants is already provided by the communication module of FederatedScope.
 
-The distributed mode in FederatedScope denotes running multiple procedures to build up an FL course, where each procedure plays as a participant (a server or a client) that instantiates its model and loads its data. The communication between participants relies on the computer network and is already provided by the communication module of FederatedScope.
-
-FederatedScope provides a unified interface for both standalone simulation and distributed deployment. Therefore, for running with distributed mode, users only need to:
+To run with distributed mode, you only need to:
 
 - Prepare isolated data file and set up `cfg.distribute.data_file = PATH/TO/DATA` for each participant;
-- Change `cfg.federate.model = 'distributed'`, and specify the role of each participant  by `cfg.distributed.role = 'server' or 'client'`.
-- Set up a valid address by `cfg.distribute.host = x.x.x.x` and `cfg.distribute.host = xxxx`. (Note that for a server, users need to set up server_host/server_port for listening messge, while for a client, users need to set up client_host/client_port for listening and server_host/server_port for  sending join-in applications when building up an FL course)
+- Change `cfg.federate.model = 'distributed'`, and specify the role of each participant  by `cfg.distributed.role = 'server'/'client'`.
+- Set up a valid address by `cfg.distribute.host = x.x.x.x` and `cfg.distribute.port = xxxx`. (Note that for a server, you need to set up server_host/server_port for listening message, while for a client, you need to set up client_host/client_port for listening and server_host/server_port for sending join-in applications when building up an FL course)
 
 We prepare a synthetic example for running with distributed mode:
 
-```python
- # For server
- python main.py --cfg federatedscope/example_configs/distributed_server.yaml data_path 'PATH/TO/DATA' server.host x.x.x.x client.port xxxx
- 
- # For client
- python main.py --cfg federatedscope/example_configs/distributed_client.yaml data_path 'PATH/TO/DATA' server.host x.x.x.x server.port xxxx client.host x.x.x.x client.port xxxx
+```bash
+# For server
+python main.py --cfg federatedscope/example_configs/distributed_server.yaml data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx
+
+# For clients
+python main.py --cfg federatedscope/example_configs/distributed_client_1.yaml data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
+python main.py --cfg federatedscope/example_configs/distributed_client_2.yaml data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
 ```
 
-And you can observe the results as (the IP addresses are replaced with 'x.x.x.x'):
+And you can observe the results as (the IP addresses are anonymized with 'x.x.x.x'):
 
-```python
+```
 INFO: Server #0: Listen to x.x.x.x:xxxx...
 INFO: Server #0 has been set up ...
 Model meta-info: <class 'federatedscope.core.lr.LogisticRegression'>.
