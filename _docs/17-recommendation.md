@@ -16,7 +16,13 @@ FederatedScope has built in the matrix factorization (MF) task for recommendatio
 - the privacy preserving techniques used in FederatedScope.
 <a name="L9eHO"></a>
 ### Background
-Matrix factorization (MF) [1-3] is a fundamental building block in recommendation system. For a matrix, a row corresponds to a user, while a column corresponds to an item. The target of matrix factorization is to approximate unobserved ratings by constructing user embedding $U\in{\mathbb{R}^{n\times{d}}}$and item embedding $V\in{\mathbb{R}^{m\times{d}}}$. <br /> ![mf_task.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648197184171-dca7f204-192f-424d-9794-52e8bf0d195c.png#clientId=u9a669a0e-153f-4&crop=0&crop=0&crop=1&crop=1&from=ui&height=200&id=udb15df61&margin=%5Bobject%20Object%5D&name=mf_task.png&originHeight=368&originWidth=1031&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16721&status=done&style=none&taskId=udbf3570a-b126-41e7-bb07-0479a3c4cf7&title=&width=559)<br />Supposing$X\in{\mathbb{R}^{n\times{m}}}$is the target rating matrix, the target is formulized as minimizing the loss function $\mathcal{L}(X,U,V)$:<br />$\frac{1}{|\Omega|}\sum_{(i,j)\in\Omega}\mathcal{L}_{i,j}(X,U,V)=\frac{1}{|\Omega|}\sum_{(i,j)\in\Omega}(X_{i,j}-<u_i,v_j>)^2$<br />where$u_i\in{\mathbb{R}^{n\times1}}$and $v_j\in{\mathbb{R}^{m\times1}}$are the user and item vectors of $U$and $V$.
+Matrix factorization (MF) [1-3] is a fundamental building block in recommendation system. For a matrix, a row corresponds to a user, while a column corresponds to an item. The target of matrix factorization is to approximate unobserved ratings by constructing user embedding $U\in{\mathbb{R}^{n\times{d}}}$and item embedding $V\in{\mathbb{R}^{m\times{d}}}$. 
+
+ ![mf_task.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648197184171-dca7f204-192f-424d-9794-52e8bf0d195c.png#clientId=u9a669a0e-153f-4&crop=0&crop=0&crop=1&crop=1&from=ui&height=200&id=udb15df61&margin=%5Bobject%20Object%5D&name=mf_task.png&originHeight=368&originWidth=1031&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16721&status=done&style=none&taskId=udbf3570a-b126-41e7-bb07-0479a3c4cf7&title=&width=559)
+
+Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the target is formalized as minimizing the loss function $\mathcal{L}(X,U,V)$:
+$\frac{1}{|\Omega|}\sum_{(i,j)\in\Omega}\mathcal{L}_{i,j}(X,U,V)=\frac{1}{|\Omega|}\sum_{(i,j)\in\Omega}(X_{i,j}-<u_i,v_j>)^2$
+where $u_i\in{\mathbb{R}^{n\times1}}$ and $v_j\in{\mathbb{R}^{m\times1}}$ are the user and item vectors of $U$ and $V$.
 <a name="SCGUt"></a>
 ### MF in Federated Learning
 In federated learning, the dataset is distributed in different clients. The vanilla federated matrix factorization algorithm runs as follows
@@ -170,9 +176,7 @@ class MovieLens10M(MovieLensData):
     raw_file = "ratings.dat"
     raw_file_md5 = "3f317698625386f66177629fa5c6b2dc"
 ```
-<a name="PXyQL"></a>
-#### 
-<a name="sxniP"></a>
+
 ##### FL Setting
 `VMFDataset`and `HMFDataset`specific the spliting of MF datasets (VFL or HFL).
 ```python
@@ -267,7 +271,6 @@ class MFTrainer(GeneralTrainer):
         ctx.batch_size = len(ratings)
 ```
 
-<a name="bd3A7"></a>
 ### Start an Example
 Taking the combination of dataset `MovieLen1M`and VFL setting as an example, the running command is as follows.
 ```bash
