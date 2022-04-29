@@ -214,6 +214,7 @@ body {
 
     .page__lead {
       max-width: $medium;
+      font-size: 1.7em;
     }
 
     .page__title {
@@ -642,8 +643,9 @@ body {
   height: 1em;
 }
 .archive__item-teaser{
-  width: 4em;
-  height: 4em;
+  width: 6em;
+  height: 6em;
+  margin: 0 auto;
 }
 .initial-content{
   background-color: #f8f9fb;
@@ -663,6 +665,9 @@ body {
     .archive__item{
       position: static;
       .archive__item-body{
+        .archive__item-title{
+          margin-top: 0;
+        }
         >p{
           position: absolute;
           bottom: 3em;
