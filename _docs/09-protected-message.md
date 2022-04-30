@@ -13,7 +13,7 @@ Here we give a brief introduction of how to use these technologies in FederatedS
 
 ## Differential Privacy
 
-Differential privacy (DP) is a powerful theoretical criterion for privacy. A mechanism satisfying $(\epsilon-\delta)$ differential privacy promises the indistinguishability of similar information with the possibility $1-\delta$. 
+Differential privacy (DP) is a powerful theoretical criterion for privacy. A mechanism satisfying $(\epsilon,\delta)-$differential privacy promises the indistinguishability of similar information with the possibility $1-\delta$. 
 
 As a message-oriented federated learning framework, FederatedScope usually exchanges messages at high frequency. Differential privacy provides a powerful theoretical metric to evaluate the balance between training performance and privacy protection. 
 
