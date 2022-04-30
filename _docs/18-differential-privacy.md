@@ -11,7 +11,11 @@ layout: tuto
 ## Background
 Differential privacy (DP) [1] is a powerful theoretical criterion metric for privacy preserving in database. Specifically, a randomized mechanism satisfying $(\epsilon-\delta)$-DP promises the privacy loss of all neighboring datasets is bounded by $\epsilon$ with the probability at least $1-\delta$[1].
 
-**Differential Privacy**: <br />A randomized algorithm $\mathcal{M}$satisifies $(\epsilon-\delta)$-DP if for all $S\subseteq{Range(\mathcal{M})}$and all neigbhoring datasets $x,y$$(||x-y||_1\leq1)$:<br />$Pr(\mathcal{M}(x)\in{S})\leq{exp(\epsilon)Pr(\mathcal{M}(y)\in{S})}+\delta$
+**Differential Privacy**: 
+
+A randomized algorithm $\mathcal{M}$ satisfies $(\epsilon-\delta)$-DP if for all $S\subseteq{Range(\mathcal{M})}$ and all neighboring datasets $x,y (||x-y||_1\leq{1})$:
+
+$Pr(\mathcal{M}(x)\in{S})\leq{exp(\epsilon)Pr(\mathcal{M}(y)\in{S})}+\delta$.
 
 <a name="VZ5KN"></a>
 ## Support of DP
