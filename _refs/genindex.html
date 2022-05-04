@@ -45,6 +45,7 @@
 <li class="toctree-l1"><a class="reference internal" href="gfl.html">Federated Graph Learning  Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mf.html">Federated Matrix Factorization Module References</a></li>
 </ul>
 
         </div>
@@ -86,6 +87,7 @@
  | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -107,6 +109,8 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mf.html#federatedscope.mf.model.BasicMFNet">BasicMFNet (class in federatedscope.mf.model)</a>
+</li>
       <li><a href="core.html#federatedscope.core.worker.Server.broadcast_client_address">broadcast_client_address() (federatedscope.core.worker.Server method)</a>
 </li>
   </ul></td>
@@ -131,6 +135,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.worker.Client">Client (class in federatedscope.core.worker)</a>
 </li>
+      <li><a href="core.html#federatedscope.core.trainers.Context">Context (class in federatedscope.core.trainers)</a>
+</li>
       <li><a href="autotune.html#federatedscope.autotune.choice_types.Continuous">Continuous (class in federatedscope.autotune.choice_types)</a>
 </li>
       <li><a href="cv.html#federatedscope.cv.model.ConvNet2">ConvNet2 (class in federatedscope.cv.model)</a>
@@ -154,6 +160,10 @@
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mf.html#federatedscope.mf.trainer.embedding_clip">embedding_clip() (in module federatedscope.mf.trainer)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.worker.Server.eval">eval() (federatedscope.core.worker.Server method)</a>
 </li>
@@ -213,6 +223,20 @@
 </li>
       </ul></li>
       <li>
+    federatedscope.core.fed_runner
+
+      <ul>
+        <li><a href="core.html#module-federatedscope.core.fed_runner">module</a>
+</li>
+      </ul></li>
+      <li>
+    federatedscope.core.monitors
+
+      <ul>
+        <li><a href="core.html#module-federatedscope.core.monitors">module</a>
+</li>
+      </ul></li>
+      <li>
     federatedscope.core.trainers
 
       <ul>
@@ -258,23 +282,51 @@
     federatedscope.gfl.dataloader
 
       <ul>
-        <li><a href="gfl.html#module-0">module</a>, <a href="gfl.html#module-federatedscope.gfl.dataloader">[1]</a>
+        <li><a href="gfl.html#module-federatedscope.gfl.dataloader">module</a>
+</li>
+      </ul></li>
+      <li>
+    federatedscope.gfl.model
+
+      <ul>
+        <li><a href="gfl.html#module-federatedscope.gfl.model">module</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    federatedscope.gfl.model
-
-      <ul>
-        <li><a href="gfl.html#module-federatedscope.gfl.model">module</a>, <a href="model.html#module-federatedscope.gfl.model">[1]</a>
-</li>
-      </ul></li>
-      <li>
     federatedscope.gfl.trainer
 
       <ul>
         <li><a href="gfl.html#module-federatedscope.gfl.trainer">module</a>
+</li>
+      </ul></li>
+      <li>
+    federatedscope.mf.dataloader
+
+      <ul>
+        <li><a href="mf.html#module-federatedscope.mf.dataloader">module</a>
+</li>
+      </ul></li>
+      <li>
+    federatedscope.mf.dataset
+
+      <ul>
+        <li><a href="mf.html#module-federatedscope.mf.dataset">module</a>
+</li>
+      </ul></li>
+      <li>
+    federatedscope.mf.model
+
+      <ul>
+        <li><a href="mf.html#module-federatedscope.mf.model">module</a>
+</li>
+      </ul></li>
+      <li>
+    federatedscope.mf.trainer
+
+      <ul>
+        <li><a href="mf.html#module-federatedscope.mf.trainer">module</a>
 </li>
       </ul></li>
       <li>
@@ -305,32 +357,36 @@
         <li><a href="nlp.html#module-federatedscope.nlp.trainer">module</a>
 </li>
       </ul></li>
-      <li><a href="gfl.html#federatedscope.gfl.model.FedSage_Plus">FedSage_Plus (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.FedSage_Plus">[1]</a>
+      <li><a href="core.html#federatedscope.core.fed_runner.FedRunner">FedRunner (class in federatedscope.core.fed_runner)</a>
+</li>
+      <li><a href="gfl.html#federatedscope.gfl.model.FedSage_Plus">FedSage_Plus (class in federatedscope.gfl.model)</a>
 </li>
       <li><a href="cv.html#federatedscope.cv.model.ConvNet2.forward">forward() (federatedscope.cv.model.ConvNet2 method)</a>
 
       <ul>
         <li><a href="cv.html#federatedscope.cv.model.VGG11.forward">(federatedscope.cv.model.VGG11 method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.FedSage_Plus.forward">(federatedscope.gfl.model.FedSage_Plus method)</a>, <a href="model.html#federatedscope.gfl.model.FedSage_Plus.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.FedSage_Plus.forward">(federatedscope.gfl.model.FedSage_Plus method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.GAT_Net.forward">(federatedscope.gfl.model.GAT_Net method)</a>, <a href="model.html#federatedscope.gfl.model.GAT_Net.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.GAT_Net.forward">(federatedscope.gfl.model.GAT_Net method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.GCN_Net.forward">(federatedscope.gfl.model.GCN_Net method)</a>, <a href="model.html#federatedscope.gfl.model.GCN_Net.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.GCN_Net.forward">(federatedscope.gfl.model.GCN_Net method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.GIN_Net.forward">(federatedscope.gfl.model.GIN_Net method)</a>, <a href="model.html#federatedscope.gfl.model.GIN_Net.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.GIN_Net.forward">(federatedscope.gfl.model.GIN_Net method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Graph.forward">(federatedscope.gfl.model.GNN_Net_Graph method)</a>, <a href="model.html#federatedscope.gfl.model.GNN_Net_Graph.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Graph.forward">(federatedscope.gfl.model.GNN_Net_Graph method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Link.forward">(federatedscope.gfl.model.GNN_Net_Link method)</a>, <a href="model.html#federatedscope.gfl.model.GNN_Net_Link.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Link.forward">(federatedscope.gfl.model.GNN_Net_Link method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.GPR_Net.forward">(federatedscope.gfl.model.GPR_Net method)</a>, <a href="model.html#federatedscope.gfl.model.GPR_Net.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.GPR_Net.forward">(federatedscope.gfl.model.GPR_Net method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.LocalSage_Plus.forward">(federatedscope.gfl.model.LocalSage_Plus method)</a>, <a href="model.html#federatedscope.gfl.model.LocalSage_Plus.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.LocalSage_Plus.forward">(federatedscope.gfl.model.LocalSage_Plus method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.MLP.forward">(federatedscope.gfl.model.MLP method)</a>, <a href="model.html#federatedscope.gfl.model.MLP.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.MLP.forward">(federatedscope.gfl.model.MLP method)</a>
 </li>
-        <li><a href="gfl.html#federatedscope.gfl.model.SAGE_Net.forward">(federatedscope.gfl.model.SAGE_Net method)</a>, <a href="model.html#federatedscope.gfl.model.SAGE_Net.forward">[1]</a>
+        <li><a href="gfl.html#federatedscope.gfl.model.SAGE_Net.forward">(federatedscope.gfl.model.SAGE_Net method)</a>
+</li>
+        <li><a href="mf.html#federatedscope.mf.model.BasicMFNet.forward">(federatedscope.mf.model.BasicMFNet method)</a>
 </li>
         <li><a href="nlp.html#federatedscope.nlp.model.LSTM.forward">(federatedscope.nlp.model.LSTM method)</a>
 </li>
@@ -343,9 +399,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="attack.html#federatedscope.attack.privacy_attacks.GANCRA">GANCRA (class in federatedscope.attack.privacy_attacks)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.GAT_Net">GAT_Net (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.GAT_Net">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.GAT_Net">GAT_Net (class in federatedscope.gfl.model)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.GCN_Net">GCN_Net (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.GCN_Net">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.GCN_Net">GCN_Net (class in federatedscope.gfl.model)</a>
 </li>
       <li><a href="core.html#federatedscope.core.trainers.GeneralTorchTrainer">GeneralTorchTrainer (class in federatedscope.core.trainers)</a>
 </li>
@@ -356,6 +412,8 @@
       <li><a href="attack.html#federatedscope.attack.auxiliary.get_data_info">get_data_info() (in module federatedscope.attack.auxiliary)</a>
 </li>
       <li><a href="attack.html#federatedscope.attack.auxiliary.get_generator">get_generator() (in module federatedscope.attack.auxiliary)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.model.get_mfnet">get_mfnet() (in module federatedscope.mf.model)</a>
 </li>
       <li><a href="core.html#federatedscope.core.trainers.GeneralTorchTrainer.get_model_para">get_model_para() (federatedscope.core.trainers.GeneralTorchTrainer method)</a>
 
@@ -371,13 +429,15 @@
 </li>
       <li><a href="attack.html#federatedscope.attack.auxiliary.get_reconstructor">get_reconstructor() (in module federatedscope.attack.auxiliary)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.GIN_Net">GIN_Net (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.GIN_Net">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.GIN_Net">GIN_Net (class in federatedscope.gfl.model)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Graph">GNN_Net_Graph (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.GNN_Net_Graph">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Graph">GNN_Net_Graph (class in federatedscope.gfl.model)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Link">GNN_Net_Link (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.GNN_Net_Link">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.GNN_Net_Link">GNN_Net_Link (class in federatedscope.gfl.model)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.GPR_Net">GPR_Net (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.GPR_Net">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.GPR_Net">GPR_Net (class in federatedscope.gfl.model)</a>
+</li>
+      <li><a href="gfl.html#federatedscope.gfl.trainer.GraphMiniBatchTrainer">GraphMiniBatchTrainer (class in federatedscope.gfl.trainer)</a>
 </li>
       <li><a href="autotune.html#federatedscope.autotune.choice_types.Continuous.grid">grid() (federatedscope.autotune.choice_types.Continuous method)</a>
 </li>
@@ -389,10 +449,20 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="attack.html#federatedscope.attack.trainer.hood_on_fit_start_generator">hood_on_fit_start_generator() (in module federatedscope.attack.trainer)</a>
+      <li><a href="mf.html#federatedscope.mf.dataset.HFLMovieLens10M">HFLMovieLens10M (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.dataset.HFLMovieLens1M">HFLMovieLens1M (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.dataset.HMFDataset">HMFDataset (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.model.HMFNet">HMFNet (class in federatedscope.mf.model)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="attack.html#federatedscope.attack.trainer.hood_on_fit_start_generator">hood_on_fit_start_generator() (in module federatedscope.attack.trainer)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.trainer.hook_on_batch_backward">hook_on_batch_backward() (in module federatedscope.mf.trainer)</a>
+</li>
       <li><a href="attack.html#federatedscope.attack.trainer.hook_on_batch_forward_injected_data">hook_on_batch_forward_injected_data() (in module federatedscope.attack.trainer)</a>
 </li>
       <li><a href="attack.html#federatedscope.attack.trainer.hook_on_batch_injected_data_generation">hook_on_batch_injected_data_generation() (in module federatedscope.attack.trainer)</a>
@@ -405,10 +475,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="attack.html#federatedscope.attack.auxiliary.iDLG_trick">iDLG_trick() (in module federatedscope.attack.auxiliary)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.SAGE_Net.inference">inference() (federatedscope.gfl.model.SAGE_Net method)</a>, <a href="model.html#federatedscope.gfl.model.SAGE_Net.inference">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.SAGE_Net.inference">inference() (federatedscope.gfl.model.SAGE_Net method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mf.html#federatedscope.mf.trainer.init_sgdmf_ctx">init_sgdmf_ctx() (in module federatedscope.mf.trainer)</a>
+</li>
       <li><a href="attack.html#federatedscope.attack.privacy_attacks.InvertGradient">InvertGradient (class in federatedscope.attack.privacy_attacks)</a>
 </li>
       <li><a href="autotune.html#federatedscope.autotune.algos.IterativeScheduler">IterativeScheduler (class in federatedscope.autotune.algos)</a>
@@ -427,19 +499,27 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gfl.html#federatedscope.gfl.trainer.LinkFullBatchTrainer">LinkFullBatchTrainer (class in federatedscope.gfl.trainer)</a>
+</li>
+      <li><a href="gfl.html#federatedscope.gfl.trainer.LinkMiniBatchTrainer">LinkMiniBatchTrainer (class in federatedscope.gfl.trainer)</a>
+</li>
       <li><a href="cv.html#federatedscope.cv.dataloader.load_cv_dataset">load_cv_dataset() (in module federatedscope.cv.dataloader)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.dataloader.load_graphlevel_dataset">load_graphlevel_dataset() (in module federatedscope.gfl.dataloader)</a>, <a href="gfl.html#id0">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.dataloader.load_graphlevel_dataset">load_graphlevel_dataset() (in module federatedscope.gfl.dataloader)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.dataloader.load_linklevel_dataset">load_linklevel_dataset() (in module federatedscope.gfl.dataloader)</a>, <a href="gfl.html#id2">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.dataloader.load_linklevel_dataset">load_linklevel_dataset() (in module federatedscope.gfl.dataloader)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mf.html#federatedscope.mf.dataloader.load_mf_dataset">load_mf_dataset() (in module federatedscope.mf.dataloader)</a>
+</li>
       <li><a href="nlp.html#federatedscope.nlp.dataloader.load_nlp_dataset">load_nlp_dataset() (in module federatedscope.nlp.dataloader)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.dataloader.load_nodelevel_dataset">load_nodelevel_dataset() (in module federatedscope.gfl.dataloader)</a>, <a href="gfl.html#id3">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.dataloader.load_nodelevel_dataset">load_nodelevel_dataset() (in module federatedscope.gfl.dataloader)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.LocalSage_Plus">LocalSage_Plus (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.LocalSage_Plus">[1]</a>
+      <li><a href="mf.html#federatedscope.mf.model.BasicMFNet.load_state_dict">load_state_dict() (federatedscope.mf.model.BasicMFNet method)</a>
+</li>
+      <li><a href="gfl.html#federatedscope.gfl.model.LocalSage_Plus">LocalSage_Plus (class in federatedscope.gfl.model)</a>
 </li>
       <li><a href="nlp.html#federatedscope.nlp.model.LSTM">LSTM (class in federatedscope.nlp.model)</a>
 </li>
@@ -451,7 +531,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.worker.Server.merge_eval_results_from_all_clients">merge_eval_results_from_all_clients() (federatedscope.core.worker.Server method)</a>
 </li>
-      <li><a href="gfl.html#federatedscope.gfl.model.MLP">MLP (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.MLP">[1]</a>
+      <li><a href="mf.html#federatedscope.mf.dataloader.MFDataLoader">MFDataLoader (class in federatedscope.mf.dataloader)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.trainer.MFTrainer">MFTrainer (class in federatedscope.mf.trainer)</a>
+</li>
+      <li><a href="gfl.html#federatedscope.gfl.model.MLP">MLP (class in federatedscope.gfl.model)</a>
 </li>
       <li>
     module
@@ -471,6 +555,10 @@
 </li>
         <li><a href="core.html#module-federatedscope.core.configs">federatedscope.core.configs</a>
 </li>
+        <li><a href="core.html#module-federatedscope.core.fed_runner">federatedscope.core.fed_runner</a>
+</li>
+        <li><a href="core.html#module-federatedscope.core.monitors">federatedscope.core.monitors</a>
+</li>
         <li><a href="core.html#module-federatedscope.core.trainers">federatedscope.core.trainers</a>
 </li>
         <li><a href="core.html#module-federatedscope.core.worker">federatedscope.core.worker</a>
@@ -483,11 +571,19 @@
 </li>
         <li><a href="cv.html#module-federatedscope.cv.trainer">federatedscope.cv.trainer</a>
 </li>
-        <li><a href="gfl.html#module-0">federatedscope.gfl.dataloader</a>, <a href="gfl.html#module-federatedscope.gfl.dataloader">[1]</a>
+        <li><a href="gfl.html#module-federatedscope.gfl.dataloader">federatedscope.gfl.dataloader</a>
 </li>
-        <li><a href="gfl.html#module-federatedscope.gfl.model">federatedscope.gfl.model</a>, <a href="model.html#module-federatedscope.gfl.model">[1]</a>
+        <li><a href="gfl.html#module-federatedscope.gfl.model">federatedscope.gfl.model</a>
 </li>
         <li><a href="gfl.html#module-federatedscope.gfl.trainer">federatedscope.gfl.trainer</a>
+</li>
+        <li><a href="mf.html#module-federatedscope.mf.dataloader">federatedscope.mf.dataloader</a>
+</li>
+        <li><a href="mf.html#module-federatedscope.mf.dataset">federatedscope.mf.dataset</a>
+</li>
+        <li><a href="mf.html#module-federatedscope.mf.model">federatedscope.mf.model</a>
+</li>
+        <li><a href="mf.html#module-federatedscope.mf.trainer">federatedscope.mf.trainer</a>
 </li>
         <li><a href="nlp.html#module-federatedscope.nlp.dataloader">federatedscope.nlp.dataloader</a>
 </li>
@@ -498,6 +594,26 @@
         <li><a href="nlp.html#module-federatedscope.nlp.trainer">federatedscope.nlp.trainer</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mf.html#federatedscope.mf.dataset.MovieLens10M">MovieLens10M (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.dataset.MovieLens1M">MovieLens1M (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.dataset.MovieLensData">MovieLensData (class in federatedscope.mf.dataset)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gfl.html#federatedscope.gfl.trainer.NodeFullBatchTrainer">NodeFullBatchTrainer (class in federatedscope.gfl.trainer)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gfl.html#federatedscope.gfl.trainer.NodeMiniBatchTrainer">NodeMiniBatchTrainer (class in federatedscope.gfl.trainer)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -519,13 +635,25 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.trainers.GeneralTorchTrainer.parse_data">parse_data() (federatedscope.core.trainers.GeneralTorchTrainer method)</a>
+
+      <ul>
+        <li><a href="gfl.html#federatedscope.gfl.trainer.LinkFullBatchTrainer.parse_data">(federatedscope.gfl.trainer.LinkFullBatchTrainer method)</a>
 </li>
+        <li><a href="gfl.html#federatedscope.gfl.trainer.LinkMiniBatchTrainer.parse_data">(federatedscope.gfl.trainer.LinkMiniBatchTrainer method)</a>
+</li>
+        <li><a href="gfl.html#federatedscope.gfl.trainer.NodeFullBatchTrainer.parse_data">(federatedscope.gfl.trainer.NodeFullBatchTrainer method)</a>
+</li>
+        <li><a href="gfl.html#federatedscope.gfl.trainer.NodeMiniBatchTrainer.parse_data">(federatedscope.gfl.trainer.NodeMiniBatchTrainer method)</a>
+</li>
+        <li><a href="mf.html#federatedscope.mf.trainer.MFTrainer.parse_data">(federatedscope.mf.trainer.MFTrainer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="attack.html#federatedscope.attack.worker_as_attacker.PassivePIAServer">PassivePIAServer (class in federatedscope.attack.worker_as_attacker)</a>
 </li>
       <li><a href="attack.html#federatedscope.attack.privacy_attacks.PassivePropertyInference">PassivePropertyInference (class in federatedscope.attack.privacy_attacks)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="attack.html#federatedscope.attack.worker_as_attacker.PassiveServer">PassiveServer (class in federatedscope.attack.worker_as_attacker)</a>
 </li>
       <li><a href="autotune.html#federatedscope.autotune.algos.PBT">PBT (class in federatedscope.autotune.algos)</a>
@@ -555,6 +683,8 @@
       <li><a href="autotune.html#federatedscope.autotune.algos.TrialExecutor.run">run() (federatedscope.autotune.algos.TrialExecutor method)</a>
 
       <ul>
+        <li><a href="core.html#federatedscope.core.fed_runner.FedRunner.run">(federatedscope.core.fed_runner.FedRunner method)</a>
+</li>
         <li><a href="core.html#federatedscope.core.worker.Client.run">(federatedscope.core.worker.Client method)</a>
 </li>
         <li><a href="core.html#federatedscope.core.worker.Server.run">(federatedscope.core.worker.Server method)</a>
@@ -566,7 +696,7 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gfl.html#federatedscope.gfl.model.SAGE_Net">SAGE_Net (class in federatedscope.gfl.model)</a>, <a href="model.html#federatedscope.gfl.model.SAGE_Net">[1]</a>
+      <li><a href="gfl.html#federatedscope.gfl.model.SAGE_Net">SAGE_Net (class in federatedscope.gfl.model)</a>
 </li>
       <li><a href="autotune.html#federatedscope.autotune.choice_types.Continuous.sample">sample() (federatedscope.autotune.choice_types.Continuous method)</a>
 
@@ -579,6 +709,8 @@
       <li><a href="autotune.html#federatedscope.autotune.algos.Scheduler">Scheduler (class in federatedscope.autotune.algos)</a>
 </li>
       <li><a href="core.html#federatedscope.core.worker.Server">Server (class in federatedscope.core.worker)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.model.BasicMFNet.state_dict">state_dict() (federatedscope.mf.model.BasicMFNet method)</a>
 </li>
       <li><a href="autotune.html#federatedscope.autotune.algos.SuccessiveHalvingAlgo">SuccessiveHalvingAlgo (class in federatedscope.autotune.algos)</a>
 </li>
@@ -618,7 +750,17 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mf.html#federatedscope.mf.dataset.VFLMovieLens10M">VFLMovieLens10M (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.dataset.VFLMovieLens1M">VFLMovieLens1M (class in federatedscope.mf.dataset)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cv.html#federatedscope.cv.model.VGG11">VGG11 (class in federatedscope.cv.model)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.dataset.VMFDataset">VMFDataset (class in federatedscope.mf.dataset)</a>
+</li>
+      <li><a href="mf.html#federatedscope.mf.model.VMFNet">VMFNet (class in federatedscope.mf.model)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -628,11 +770,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.worker.Worker">Worker (class in federatedscope.core.worker)</a>
 </li>
+      <li><a href="core.html#federatedscope.core.trainers.wrap_fedprox_trainer">wrap_fedprox_trainer() (in module federatedscope.core.trainers)</a>
+</li>
       <li><a href="attack.html#federatedscope.attack.trainer.wrap_GANTrainer">wrap_GANTrainer() (in module federatedscope.attack.trainer)</a>
+</li>
+      <li><a href="attack.html#federatedscope.attack.trainer.wrap_GradientAscentTrainer">wrap_GradientAscentTrainer() (in module federatedscope.attack.trainer)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="attack.html#federatedscope.attack.trainer.wrap_GradientAscentTrainer">wrap_GradientAscentTrainer() (in module federatedscope.attack.trainer)</a>
+      <li><a href="mf.html#federatedscope.mf.trainer.wrap_MFTrainer">wrap_MFTrainer() (in module federatedscope.mf.trainer)</a>
+</li>
+      <li><a href="core.html#federatedscope.core.trainers.wrap_nbafl_server">wrap_nbafl_server() (in module federatedscope.core.trainers)</a>
+</li>
+      <li><a href="core.html#federatedscope.core.trainers.wrap_nbafl_trainer">wrap_nbafl_trainer() (in module federatedscope.core.trainers)</a>
 </li>
       <li><a href="core.html#federatedscope.core.trainers.wrap_pFedMeTrainer">wrap_pFedMeTrainer() (in module federatedscope.core.trainers)</a>
 </li>

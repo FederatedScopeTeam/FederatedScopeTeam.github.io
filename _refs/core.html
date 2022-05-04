@@ -44,7 +44,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Core Module References</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#federatedscope-core-configs">federatedscope.core.configs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#federatedscope-core-dail-fed-api">federatedscope.core.DAIL_fed_api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-core-monitors">federatedscope.core.monitors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-core-fed-runner">federatedscope.core.fed_runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#federatedscope-core-worker">federatedscope.core.worker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#federatedscope-core-trainers">federatedscope.core.trainers</a></li>
 </ul>
@@ -54,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="gfl.html">Federated Graph Learning  Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mf.html">Federated Matrix Factorization Module References</a></li>
 </ul>
 
         </div>
@@ -85,8 +87,23 @@
 <section id="federatedscope-core-configs">
 <h2>federatedscope.core.configs<a class="headerlink" href="#federatedscope-core-configs" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-federatedscope.core.configs"></span></section>
-<section id="federatedscope-core-dail-fed-api">
-<h2>federatedscope.core.DAIL_fed_api<a class="headerlink" href="#federatedscope-core-dail-fed-api" title="Permalink to this headline">¶</a></h2>
+<section id="federatedscope-core-monitors">
+<h2>federatedscope.core.monitors<a class="headerlink" href="#federatedscope-core-monitors" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.core.monitors"></span></section>
+<section id="federatedscope-core-fed-runner">
+<h2>federatedscope.core.fed_runner<a class="headerlink" href="#federatedscope-core-fed-runner" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-federatedscope.core.fed_runner"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.fed_runner.FedRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.fed_runner.</span></span><span class="sig-name descname"><span class="pre">FedRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_class=&lt;class</span> <span class="pre">'federatedscope.core.worker.server.Server'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_class=&lt;class</span> <span class="pre">'federatedscope.core.worker.client.Client'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#FedRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.FedRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used for building up the Federated Learning course</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.fed_runner.FedRunner.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#FedRunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.FedRunner.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>To run an FL course, which is called after server/client has been set up</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="federatedscope-core-worker">
 <h2>federatedscope.core.worker<a class="headerlink" href="#federatedscope-core-worker" title="Permalink to this headline">¶</a></h2>
@@ -230,6 +247,64 @@ update best, log the merged results and save then into eval_results.log</p>
 <section id="federatedscope-core-trainers">
 <h2>federatedscope.core.trainers<a class="headerlink" href="#federatedscope-core-trainers" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-federatedscope.core.trainers"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.trainers.Context">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">Context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/context.html#Context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.Context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Record and pass variables among different hook functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Module</em>) – training model</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – a dict contains train/val/test dataset or dataloader</p></li>
+<li><p><strong>blind</strong> (<em>#</em>) – </p></li>
+<li><p><strong>device</strong> – running device</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Record attributes:</dt><dd><p>model (Module): the training model
+data (dict): a dict contains train/val/test dataset or dataloader
+device (torch.device): specific device to running to
+criterion: specific loss function
+optimizer: specific optimizer
+mode: maintain the current mode of the model</p>
+<p>data_batch: current batch data from train/test/val data loader</p>
+<p># train
+trainable_para_names (list): a list of the names of the trainable parameters within <code class="docutils literal notranslate"><span class="pre">`ctx.model`</span></code>
+train_data: training dataset
+train_loader: training dataloader
+num_train_data (int): the number of training samples within one epoch
+num_train_epoch (int): the number of total training epochs
+num_train_batch (int): the number of batches within one completed training epoch
+num_train_batch_last_epoch (int): the number of batches within the last epoch</p>
+<p># test
+test_data: test data
+test_loader: test dataloader
+num_test_data (int): the number of test samples within one epoch
+num_test_epoch (int): the number of test epochs, default 1
+num_test_batch (int): the number of batches within one completed test epoch</p>
+<p># val
+val_data: val data
+val_loader: val dataloader
+num_val_data (int): the number of val samples within one epoch
+num_val_epoch (int): the number of val epochs, default 1
+num_val_batch (int): the number of batches within one completed val epoch</p>
+</dd>
+<dt>Statistical variables:</dt><dd><p>loss_batch (float): loss of the current data_batch, shared by train/test/val
+loss_regular (float): loss of the regularizer
+loss_task (float): the sum of loss_batch and loss_regular</p>
+<p>loss_total_batch_train (float): accumulated batch loss during training
+loss_total_regular_train (float): accumulated regular loss during training
+num_samples_train (int): accumulated number of training samples involved at present</p>
+<p>loss_total_test (float): accumulated batch loss during test
+num_samples_test (float): accumulated regular loss during test</p>
+<p>loss_total_val (float): accumulated batch loss during val
+num_samples_val (float): accumulated regular loss during val</p>
+<p>eval_metrics (dict): evaluation results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.core.trainers.GeneralTorchTrainer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">GeneralTorchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#GeneralTorchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.GeneralTorchTrainer" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
@@ -296,6 +371,35 @@ update best, log the merged results and save then into eval_results.log</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.core.trainers.wrap_fedprox_trainer">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">wrap_fedprox_trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer_fedprox.html#wrap_fedprox_trainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.wrap_fedprox_trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of fedprox refer to <cite>Federated Optimization in Heterogeneous Networks</cite> [Tian Li, et al., 2020]
+(<a class="reference external" href="https://proceedings.mlsys.org/paper/2020/file/38af86134b65d0f10fe33d30dd76442e-Paper.pdf">https://proceedings.mlsys.org/paper/2020/file/38af86134b65d0f10fe33d30dd76442e-Paper.pdf</a>)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.core.trainers.wrap_nbafl_server">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">wrap_nbafl_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.core.worker.Server" title="federatedscope.core.worker.server.Server"><span class="pre">federatedscope.core.worker.server.Server</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.core.worker.Server" title="federatedscope.core.worker.server.Server"><span class="pre">federatedscope.core.worker.server.Server</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer_nbafl.html#wrap_nbafl_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.wrap_nbafl_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register noise injector for the server</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.core.trainers.wrap_nbafl_trainer">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">wrap_nbafl_trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer_nbafl.html#wrap_nbafl_trainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.wrap_nbafl_trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of NbAFL refer to <cite>Federated Learning with Differential Privacy: Algorithms and Performance Analysis</cite> [et al., 2020]
+(<a class="reference external" href="https://ieeexplore.ieee.org/abstract/document/9069945/">https://ieeexplore.ieee.org/abstract/document/9069945/</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu</strong> – the factor of the regularizer</p></li>
+<li><p><strong>epsilon</strong> – the distinguishable bound</p></li>
+<li><p><strong>w_clip</strong> – the threshold to clip weights</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
