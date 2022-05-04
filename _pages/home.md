@@ -21,10 +21,10 @@ feature_row:
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: https://gw.alicdn.com/imgextra/i1/O1CN016bpgXh1q7EWEoTQgo_!!6000000005448-2-tps-159-159.png
-    alt: "message-oriented paradigm"
-    title: "Message-oriented"
-    excerpt: "Fderated learning algorithms are modularized and expressed via defining messages and corresponding handlers for the participants."
-    url: "/docs/msg-oriented-framework/"
+    alt: "event-driven architecture"
+    title: "Event-driven"
+    excerpt: "Fderated learning algorithms are modularized and expressed via defining events and corresponding handlers for the participants."
+    url: "/docs/event-driven-architecture/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: https://gw.alicdn.com/imgextra/i2/O1CN01AScSz71x8nB7lujap_!!6000000006399-2-tps-159-159.png
