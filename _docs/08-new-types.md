@@ -7,7 +7,7 @@ toc: true
 layout: tuto
 ---
 
-with the help of the [Event-driven Architecture]({{ "/docs/event-driven architecture/" | relative_url }}), FederatedScope allows developers to customize FL applications via introducing new types of  messages and the corresponding handling functions. Here we provide the implementation details.
+with the help of the [Event-driven Architecture]({{ "/docs/event-driven-architecture/" | relative_url }}), FederatedScope allows developers to customize FL applications via introducing new types of  messages and the corresponding handling functions. Here we provide the implementation details.
 
 ## Define new message type
 
