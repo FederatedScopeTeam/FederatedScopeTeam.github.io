@@ -47,13 +47,14 @@
 <li class="toctree-l1"><a class="reference internal" href="nlp.html">Federated Natural Language Processing  Module References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Federated Graph Learning  Module References</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-dataset">federatedscope.gfl.dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">federatedscope.gfl.dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-dataloader">federatedscope.gfl.dataloader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-model">federatedscope.gfl.model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#federatedscope-gfl-trainer">federatedscope.gfl.trainer</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mf.html">Federated Matrix Factorization Module References</a></li>
 </ul>
 
         </div>
@@ -84,28 +85,31 @@
 <h1>Federated Graph Learning  Module References<a class="headerlink" href="#federated-graph-learning-module-references" title="Permalink to this headline">¶</a></h1>
 <section id="federatedscope-gfl-dataset">
 <h2>federatedscope.gfl.dataset<a class="headerlink" href="#federatedscope-gfl-dataset" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="federatedscope-gfl-dataloader">
+<h2>federatedscope.gfl.dataloader<a class="headerlink" href="#federatedscope-gfl-dataloader" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-federatedscope.gfl.dataloader"></span><dl class="py function">
 <dt class="sig sig-object py" id="federatedscope.gfl.dataloader.load_graphlevel_dataset">
 <span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_graphlevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_graph.html#load_graphlevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.dataloader.load_graphlevel_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><dl>
-<dt>{</dt><dd><dl>
-<dt>‘client_id’: {</dt><dd><p>‘train’: DataLoader(),
+<dd><p>Convert dataset to Dataloader.
+:returns:</p>
+<blockquote>
+<div><p>data_local_dict</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><p>Dict {
+‘client_id’: {</p>
+<blockquote>
+<div><p>’train’: DataLoader(),
 ‘val’: DataLoader(),
 ‘test’: DataLoader()</p>
 <blockquote>
 <div><p>}</p>
 </div></blockquote>
-</dd>
-</dl>
+</div></blockquote>
 <p>}</p>
-</dd>
-</dl>
 </p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>data_local_dict (Dict)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -115,10 +119,10 @@
 <span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_linklevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_link.html#load_linklevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.dataloader.load_linklevel_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
+<dd class="field-odd"><p>data_local_dict</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>data_local_dict (Dict)</p>
+<dd class="field-even"><p>(Dict): dict{‘client_id’: Data()}</p>
 </dd>
 </dl>
 </dd></dl>
@@ -128,65 +132,10 @@
 <span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_nodelevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_node.html#load_nodelevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.dataloader.load_nodelevel_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
+<dd class="field-odd"><p>data_local_dict</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>data_local_dict (Dict)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="id1">
-<h2>federatedscope.gfl.dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-0"></span><dl class="py function">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_graphlevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_graph.html#load_graphlevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><dl>
-<dt>{</dt><dd><dl>
-<dt>‘client_id’: {</dt><dd><p>‘train’: DataLoader(),
-‘val’: DataLoader(),
-‘test’: DataLoader()</p>
-<blockquote>
-<div><p>}</p>
-</div></blockquote>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>data_local_dict (Dict)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_linklevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_link.html#load_linklevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>data_local_dict (Dict)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_nodelevel_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/dataloader/dataloader_node.html#load_nodelevel_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>dict{‘client_id’: Data()}</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>data_local_dict (Dict)</p>
+<dd class="field-even"><p>Dict: dict{‘client_id’: Data()}</p>
 </dd>
 </dl>
 </dd></dl>
@@ -196,7 +145,7 @@
 <h2>federatedscope.gfl.model<a class="headerlink" href="#federatedscope-gfl-model" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-federatedscope.gfl.model"></span><dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.gfl.model.FedSage_Plus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">FedSage_Plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#federatedscope.gfl.model.LocalSage_Plus" title="federatedscope.gfl.model.fedsageplus.LocalSage_Plus"><span class="pre">federatedscope.gfl.model.fedsageplus.LocalSage_Plus</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#FedSage_Plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.FedSage_Plus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.model.</span></span><span class="sig-name descname"><span class="pre">FedSage_Plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#federatedscope.gfl.model.LocalSage_Plus" title="federatedscope.gfl.model.fedsageplus.LocalSage_Plus"><span class="pre">federatedscope.gfl.model.fedsageplus.LocalSage_Plus</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#FedSage_Plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.FedSage_Plus" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.gfl.model.FedSage_Plus.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/model/fedsageplus.html#FedSage_Plus.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.model.FedSage_Plus.forward" title="Permalink to this definition">¶</a></dt>
@@ -468,10 +417,10 @@ easily apply skip-connections or add self-loops.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>output</p>
+<dd class="field-even"><p>x: output</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>x (torch.Tensor)</p>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -491,10 +440,7 @@ immediately computing the final representations of each batch.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>output</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>x_all</p>
+<dd class="field-even"><p>x_all: output</p>
 </dd>
 </dl>
 </dd></dl>
@@ -504,22 +450,56 @@ immediately computing the final representations of each batch.</p>
 </section>
 <section id="federatedscope-gfl-trainer">
 <h2>federatedscope.gfl.trainer<a class="headerlink" href="#federatedscope-gfl-trainer" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.gfl.trainer"></span><p>Copyright (c) 2021 Matthias Fey, Jiaxuan You &lt;<a class="reference external" href="mailto:matthias&#46;fey&#37;&#52;&#48;tu-dortmund&#46;de">matthias<span>&#46;</span>fey<span>&#64;</span>tu-dortmund<span>&#46;</span>de</a>, <a class="reference external" href="mailto:jiaxuan&#37;&#52;&#48;cs&#46;stanford&#46;edu">jiaxuan<span>&#64;</span>cs<span>&#46;</span>stanford<span>&#46;</span>edu</a>&gt;</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.</p>
+<span class="target" id="module-federatedscope.gfl.trainer"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.GraphMiniBatchTrainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.trainer.</span></span><span class="sig-name descname"><span class="pre">GraphMiniBatchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/graphtrainer.html#GraphMiniBatchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.GraphMiniBatchTrainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.LinkFullBatchTrainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.trainer.</span></span><span class="sig-name descname"><span class="pre">LinkFullBatchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/linktrainer.html#LinkFullBatchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.LinkFullBatchTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.LinkFullBatchTrainer.parse_data">
+<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/linktrainer.html#LinkFullBatchTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.LinkFullBatchTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different modes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.LinkMiniBatchTrainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.trainer.</span></span><span class="sig-name descname"><span class="pre">LinkMiniBatchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/linktrainer.html#LinkMiniBatchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.LinkMiniBatchTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p># Support GraphSAGE with GraphSAINTRandomWalkSampler in train ONLY!</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.LinkMiniBatchTrainer.parse_data">
+<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/linktrainer.html#LinkMiniBatchTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.LinkMiniBatchTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different modes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.NodeFullBatchTrainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.trainer.</span></span><span class="sig-name descname"><span class="pre">NodeFullBatchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/nodetrainer.html#NodeFullBatchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.NodeFullBatchTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.NodeFullBatchTrainer.parse_data">
+<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/nodetrainer.html#NodeFullBatchTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.NodeFullBatchTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different modes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.NodeMiniBatchTrainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.gfl.trainer.</span></span><span class="sig-name descname"><span class="pre">NodeMiniBatchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/nodetrainer.html#NodeMiniBatchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.NodeMiniBatchTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.gfl.trainer.NodeMiniBatchTrainer.parse_data">
+<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/gfl/trainer/nodetrainer.html#NodeMiniBatchTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.gfl.trainer.NodeMiniBatchTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different modes</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
