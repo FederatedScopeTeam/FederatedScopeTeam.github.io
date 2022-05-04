@@ -50,8 +50,8 @@ docs:
         url: /docs/use-hpo/
   - title: Advanced
     children:
-      - title: "Message-oriented Framework"
-        url: /docs/msg-oriented-framework/
+      - title: "Event-driven Architecture"
+        url: /docs/event-driven-architecture/
       - title: "New Types of Messages and Handlers"
         url: /docs/new-type/
       - title: "Privacy Protection for Message"
