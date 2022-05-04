@@ -186,6 +186,21 @@ check_eval_result (bool): To check training results for evaluation results
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.merge_eval_results_from_all_clients">
+<span class="sig-name descname"><span class="pre">merge_eval_results_from_all_clients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">final_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.merge_eval_results_from_all_clients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.merge_eval_results_from_all_clients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge evaluation results from all clients,
+update best, log the merged results and save then into eval_results.log</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>final_round</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.register_handlers">
 <span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.register_handlers" title="Permalink to this definition">¶</a></dt>
 <dd><p>To bind a message type with a handled function</p>
@@ -203,13 +218,6 @@ check_eval_result (bool): To check training results for evaluation results
 <dd><p>To start the FL course when the expected number of clients have joined</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="federatedscope.core.worker.Server.update_best_result">
-<span class="sig-name descname"><span class="pre">update_best_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_wise_update_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'val_loss'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.update_best_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.update_best_result" title="Permalink to this definition">¶</a></dt>
-<dd><p>update best evaluation results.
-by default, the update is based on validation loss with <a href="#id1"><span class="problematic" id="id2">`</span></a>round_wise_update_key=”val_loss” `</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -225,6 +233,16 @@ by default, the update is based on validation loss with <a href="#id1"><span cla
 <dt class="sig sig-object py" id="federatedscope.core.trainers.GeneralTorchTrainer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">GeneralTorchTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#GeneralTorchTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.GeneralTorchTrainer" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.trainers.GeneralTorchTrainer.get_model_para">
+<span class="sig-name descname"><span class="pre">get_model_para</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#GeneralTorchTrainer.get_model_para"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.GeneralTorchTrainer.get_model_para" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>model_parameters (dict): {model_name: model_val}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.trainers.GeneralTorchTrainer.parse_data">
 <span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#GeneralTorchTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.GeneralTorchTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different modes</p>
@@ -250,6 +268,16 @@ by default, the update is based on validation loss with <a href="#id1"><span cla
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.trainers.</span></span><span class="sig-name descname"><span class="pre">Trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#Trainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.Trainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register, organize and run the train/test/val procedures</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.trainers.Trainer.get_model_para">
+<span class="sig-name descname"><span class="pre">get_model_para</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#Trainer.get_model_para"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.Trainer.get_model_para" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>model_parameters (dict): {model_name: model_val}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.trainers.Trainer.print_trainer_meta_info">
 <span class="sig-name descname"><span class="pre">print_trainer_meta_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/trainers/trainer.html#Trainer.print_trainer_meta_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.trainers.Trainer.print_trainer_meta_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>print some meta info for code-users, e.g., model type; the para names will be filtered out, etc.,</p>
@@ -263,7 +291,7 @@ by default, the update is based on validation loss with <a href="#id1"><span cla
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>model_parameters</strong> (<em>dict</em>) – PyTorch Module object’s state_dict.</p>
+<dd class="field-odd"><p><strong>model_parameters</strong> (<em>dict</em>) – {model_name: model_val}</p>
 </dd>
 </dl>
 </dd></dl>

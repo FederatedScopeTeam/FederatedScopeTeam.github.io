@@ -15,6 +15,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -47,9 +48,10 @@
 <li class="toctree-l1"><a class="reference internal" href="gfl.html">Federated Graph Learning  Module References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Attack Module References</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#federatedscope-attack-models">federatedscope.attack.models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#federatedscope-attack-dataset">federatedscope.attack.dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#federatedscope-attack-privacy-attacks">federatedscope.attack.privacy_attacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-federatedscope.attack.privacy_attacks">federatedscope.attack.privacy_attacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-federatedscope.attack.worker_as_attacker">federatedscope.attack.worker_as_attacker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-federatedscope.attack.auxiliary">federatedscope.attack.auxiliary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-federatedscope.attack.trainer">federatedscope.attack.trainer</a></li>
 </ul>
 </li>
 </ul>
@@ -80,15 +82,354 @@
              
   <section id="attack-module-references">
 <h1>Attack Module References<a class="headerlink" href="#attack-module-references" title="Permalink to this headline">¶</a></h1>
-<section id="federatedscope-attack-models">
-<h2>federatedscope.attack.models<a class="headerlink" href="#federatedscope-attack-models" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.attack.models"></span></section>
-<section id="federatedscope-attack-dataset">
-<h2>federatedscope.attack.dataset<a class="headerlink" href="#federatedscope-attack-dataset" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.attack.trainer"></span></section>
-<section id="federatedscope-attack-privacy-attacks">
-<h2>federatedscope.attack.privacy_attacks<a class="headerlink" href="#federatedscope-attack-privacy-attacks" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.attack.privacy_attacks"></span></section>
+<section id="module-federatedscope.attack.privacy_attacks">
+<span id="federatedscope-attack-privacy-attacks"></span><h2>federatedscope.attack.privacy_attacks<a class="headerlink" href="#module-federatedscope.attack.privacy_attacks" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.DLG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.attack.privacy_attacks.</span></span><span class="sig-name descname"><span class="pre">DLG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_ite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">federate_loss_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">federate_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">federate_lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_diff_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_one_hot_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/reconstruction_opt.html#DLG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.DLG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of the paper “Deep Leakage from Gradients”: <a class="reference external" href="https://papers.nips.cc/paper/2019/file/60a6c4002cc7b29142def8871531281a-Paper.pdf">https://papers.nips.cc/paper/2019/file/60a6c4002cc7b29142def8871531281a-Paper.pdf</a></p>
+<p class="rubric">References</p>
+<p>Zhu, Ligeng, Zhijian Liu, and Song Han. “Deep leakage from gradients.” Advances in Neural Information Processing Systems 32 (2019).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>max_ite (int): the max iteration number;</p></li>
+<li><p>lr (float): learning rate in optimization based reconstruction;</p></li>
+<li><p>federate_loss_fn (object): The loss function used in FL training;</p></li>
+<li><p>device (str): the device running the reconstruction;</p></li>
+<li><p>federate_method (str): The federated learning method;</p></li>
+<li><p>federate_lr (float):The learning rate used in FL training; default None.</p></li>
+<li><p>optim (str): The optimization method used in reconstruction; default: “Adam”; supported: ‘sgd’, ‘adam’, ‘lbfgs’</p></li>
+<li><p>info_diff_type (str): The type of loss between the ground-truth gradient/parameter updates info and the reconstructed info; default: “l2”</p></li>
+<li><p>is_one_hot_label (bool): whether the label is one-hot; default: False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.DLG.get_original_gradient_from_para">
+<span class="sig-name descname"><span class="pre">get_original_gradient_from_para</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_para_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/reconstruction_opt.html#DLG.get_original_gradient_from_para"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.DLG.get_original_gradient_from_para" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transfer the model parameter updates to gradient based on:</p>
+<div class="math notranslate nohighlight">
+\[P_{t} = P - \eta g,\]</div>
+<p>where
+<span class="math notranslate nohighlight">\(P_{t}\)</span> is the parameters updated by the client at current round;
+<span class="math notranslate nohighlight">\(P\)</span> is the parameters of the global model at the end of the last round;
+<span class="math notranslate nohighlight">\(\eta\)</span> is the learning rate of clients’ local training;
+<span class="math notranslate nohighlight">\(g\)</span> is the gradient</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>-</em>) – The model owned by the Server</p></li>
+<li><p><strong>original_info</strong> (<em>-</em>) – The model parameter updates received by Server</p></li>
+<li><p><strong>model_para_name</strong> (<em>-</em>) – The list of model name. Be sure the <code class="xref py py-attr docutils literal notranslate"><span class="pre">model_para_name</span></code> is consistent with the the key name in <code class="xref py py-attr docutils literal notranslate"><span class="pre">original_info</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>original_gradient (list): the list of the gradient corresponding to the model updates</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.DLG.reconstruct">
+<span class="sig-name descname"><span class="pre">reconstruct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_feature_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/reconstruction_opt.html#DLG.reconstruct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.DLG.reconstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct the original training data and label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – The model used in FL; Type: object</p></li>
+<li><p><strong>original_info</strong> – The message received to perform reconstruction, usually the gradient/parameter updates; Type: list</p></li>
+<li><p><strong>data_feature_dim</strong> – The feature dimension of dataset; Type: list or Tensor.Size</p></li>
+<li><p><strong>num_class</strong> – the number of total classes in the dataset; Type: int</p></li>
+<li><p><strong>batch_size</strong> – the number of samples in the batch that generate the original_info; Type: int</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>The reconstructed data (Tensor); Size: [batch_size, data_feature_dim]</p></li>
+<li><p>The reconstructed label (Tensor): Size: [batch_size]</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.GANCRA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.attack.privacy_attacks.</span></span><span class="sig-name descname"><span class="pre">GANCRA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_label_ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fl_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_train_epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sav_pth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/GAN_based_attack.html#GANCRA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.GANCRA" title="Permalink to this definition">¶</a></dt>
+<dd><p>The implementation of GAN based class representative attack. <a class="reference external" href="https://dl.acm.org/doi/abs/10.1145/3133956.3134012">https://dl.acm.org/doi/abs/10.1145/3133956.3134012</a></p>
+<p class="rubric">References</p>
+<p>Hitaj, Briland, Giuseppe Ateniese, and Fernando Perez-Cruz.</p>
+<p>“Deep models under the GAN: information leakage from collaborative deep learning.”
+Proceedings of the 2017 ACM SIGSAC conference on computer and communications security. 2017.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>target_label_ind (int): the label index whose representative</p></li>
+<li><p>fl_model (object):</p></li>
+<li><p>device (str or int): the device to run; ‘cpu’ or the device index to select; default: ‘cpu’.</p></li>
+<li><p>dataset_name (str): the dataset name; default: None</p></li>
+<li><p>noise_dim (int): the dimension of the noise that fed into the generator; default: 100</p></li>
+<li><p>batch_size (int): the number of data generated into training; default: 16</p></li>
+<li><p>generator_train_epoch (int): the number of training steps when training the generator; default: 10</p></li>
+<li><p>lr (float): the learning rate of the generator training; default: 0.001</p></li>
+<li><p>sav_pth (str): the path to save the generated data; default: ‘data/’</p></li>
+<li><p>round_num (int): the FL round that starting the attack; default: -1.</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.GANCRA.generate_and_save_images">
+<span class="sig-name descname"><span class="pre">generate_and_save_images</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/GAN_based_attack.html#GANCRA.generate_and_save_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.GANCRA.generate_and_save_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the generated data and the generator training loss</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.GANCRA.generator_loss">
+<span class="sig-name descname"><span class="pre">generator_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discriminator_output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/GAN_based_attack.html#GANCRA.generator_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.GANCRA.generator_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the generator loss based on the discriminator’s output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>discriminator_output</strong> (<em>Tensor</em>) – the discriminator’s output; size: batch_size * n_class</p>
+</dd>
+</dl>
+<p>Returns: generator_loss</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.GANCRA.update_discriminator">
+<span class="sig-name descname"><span class="pre">update_discriminator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/GAN_based_attack.html#GANCRA.update_discriminator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.GANCRA.update_discriminator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the model of the server as the discriminator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>object</em>) – the model in the server</p>
+</dd>
+</dl>
+<p>Returns: the discriminator</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.InvertGradient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.attack.privacy_attacks.</span></span><span class="sig-name descname"><span class="pre">InvertGradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_ite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">federate_loss_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">federate_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">federate_lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_TV</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_diff_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sim'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_one_hot_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/reconstruction_opt.html#InvertGradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.InvertGradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>The implementation of “Inverting Gradients - How easy is it to break privacy in federated learning?”.
+Link: <a class="reference external" href="https://proceedings.neurips.cc/paper/2020/hash/c4ede56bbd98819ae6112b20ac6bf145-Abstract.html">https://proceedings.neurips.cc/paper/2020/hash/c4ede56bbd98819ae6112b20ac6bf145-Abstract.html</a></p>
+<p class="rubric">References</p>
+<p>Geiping, Jonas, et al. “Inverting gradients-how easy is it to break privacy in federated learning?.” Advances in Neural Information Processing Systems 33 (2020): 16937-16947.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_ite</strong> (<em>-</em>) – the max iteration number;</p></li>
+<li><p><strong>lr</strong> (<em>-</em>) – learning rate in optimization based reconstruction;</p></li>
+<li><p><strong>federate_loss_fn</strong> (<em>-</em>) – The loss function used in FL training;</p></li>
+<li><p><strong>device</strong> (<em>-</em>) – the device running the reconstruction;</p></li>
+<li><p><strong>federate_method</strong> (<em>-</em>) – The federated learning method;</p></li>
+<li><p><strong>federate_lr</strong> (<em>-</em>) – The learning rate used in FL training; default: None.</p></li>
+<li><p><strong>alpha_TV</strong> (<em>-</em>) – the hyper-parameter of the total variance term; default: 0.001</p></li>
+<li><p><strong>info_diff_type</strong> (<em>-</em>) – The type of loss between the ground-truth gradient/parameter updates info and the reconstructed info; default: “l2”</p></li>
+<li><p><strong>optim</strong> (<em>-</em>) – The optimization method used in reconstruction; default: “Adam”; supported: ‘sgd’, ‘adam’, ‘lbfgs’</p></li>
+<li><p><strong>info_diff_type</strong> – The type of loss between the ground-truth gradient/parameter updates info and the reconstructed info; default: “l2”</p></li>
+<li><p><strong>is_one_hot_label</strong> (<em>-</em>) – whether the label is one-hot; default: False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.PassivePropertyInference">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.attack.privacy_attacks.</span></span><span class="sig-name descname"><span class="pre">PassivePropertyInference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fl_model_criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_clip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fl_local_update_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fl_type_optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fl_lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/passive_PIA.html#PassivePropertyInference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.PassivePropertyInference" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an implementation of the passive property inference （algorithm 3）in Exploiting Unintended Feature Leakage in Collaborative Learning:
+<a class="reference external" href="https://arxiv.org/pdf/1805.04049.pdf">https://arxiv.org/pdf/1805.04049.pdf</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.attack.privacy_attacks.PassivePropertyInference.add_parameter_updates">
+<span class="sig-name descname"><span class="pre">add_parameter_updates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_updates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/privacy_attacks/passive_PIA.html#PassivePropertyInference.add_parameter_updates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.privacy_attacks.PassivePropertyInference.add_parameter_updates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter_updates</strong> – Tensor with dimension n * d_feature</p></li>
+<li><p><strong>prop</strong> – Tensor with dimension  n * 1</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-federatedscope.attack.worker_as_attacker">
+<span id="federatedscope-attack-worker-as-attacker"></span><h2>federatedscope.attack.worker_as_attacker<a class="headerlink" href="#module-federatedscope.attack.worker_as_attacker" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.attack.worker_as_attacker.PassivePIAServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.attack.worker_as_attacker.</span></span><span class="sig-name descname"><span class="pre">PassivePIAServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_round_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/worker_as_attacker/server_attacker.html#PassivePIAServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.worker_as_attacker.PassivePIAServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The implementation of the batch property classifier, the algorithm 3 in paper: Exploiting Unintended Feature Leakage in Collaborative Learning</p>
+<p>References:</p>
+<p>Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.attack.worker_as_attacker.PassiveServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.attack.worker_as_attacker.</span></span><span class="sig-name descname"><span class="pre">PassiveServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_round_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_to_reconstruct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_to_reconstruct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/worker_as_attacker/server_attacker.html#PassiveServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.worker_as_attacker.PassiveServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>In passive attack, the server store the model and the message collected from the client,and perform the optimization based reconstruction, such as DLG, InvertGradient.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.worker_as_attacker.plot_target_loss">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.worker_as_attacker.</span></span><span class="sig-name descname"><span class="pre">plot_target_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/worker_as_attacker/active_client.html#plot_target_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.worker_as_attacker.plot_target_loss" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss_list</strong> – the list of loss regrading the target data</p></li>
+<li><p><strong>outdir</strong> – the directory to store the loss</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-federatedscope.attack.auxiliary">
+<span id="federatedscope-attack-auxiliary"></span><h2>federatedscope.attack.auxiliary<a class="headerlink" href="#module-federatedscope.attack.auxiliary" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.auxiliary.get_data_info">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.auxiliary.</span></span><span class="sig-name descname"><span class="pre">get_data_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/auxiliary/utils.html#get_data_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.auxiliary.get_data_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the dataset information, including the feature dimension, number of total classes, whether the label is represented in one-hot version</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset_name</strong> – dataset name; str</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>data_feature_dim, num_class, is_one_hot_label</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.auxiliary.get_generator">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.auxiliary.</span></span><span class="sig-name descname"><span class="pre">get_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/auxiliary/utils.html#get_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.auxiliary.get_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the dataset’s corresponding generator.
+:param dataset_name: The dataset name; Type: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The generator; Type: object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.auxiliary.get_passive_PIA_auxiliary_dataset">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.auxiliary.</span></span><span class="sig-name descname"><span class="pre">get_passive_PIA_auxiliary_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/auxiliary/utils.html#get_passive_PIA_auxiliary_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.auxiliary.get_passive_PIA_auxiliary_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset_name</strong> (<em>str</em>) – dataset name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+<p>the auxiliary dataset for property inference attack. Type: dict</p>
+<dl>
+<dt>{</dt><dd><p>‘x’: array,
+‘y’: array,
+‘prop’: array</p>
+<blockquote>
+<div><p>}</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.auxiliary.get_reconstructor">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.auxiliary.</span></span><span class="sig-name descname"><span class="pre">get_reconstructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atk_method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/auxiliary/utils.html#get_reconstructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.auxiliary.get_reconstructor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atk_method</strong> – the attack method name, and currently supporting “DLG: deep leakage from gradient”, and “IG: Inverting gradient” ; Type: str</p></li>
+<li><p><strong>**kwargs</strong> – other arguments</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.auxiliary.iDLG_trick">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.auxiliary.</span></span><span class="sig-name descname"><span class="pre">iDLG_trick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_gradient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_one_hot_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/auxiliary/utils.html#iDLG_trick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.auxiliary.iDLG_trick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using iDLG trick to recover the label. Paper: “iDLG: Improved Deep Leakage from Gradients”, link: <a class="reference external" href="https://arxiv.org/abs/2001.02610">https://arxiv.org/abs/2001.02610</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_gradient</strong> – the gradient of the FL model; type: list</p></li>
+<li><p><strong>num_class</strong> – the total number of class in the data</p></li>
+<li><p><strong>is_one_hot_label</strong> – whether the dataset’s label is in the form of one hot. Type: bool</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The recovered label by iDLG trick.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-federatedscope.attack.trainer">
+<span id="federatedscope-attack-trainer"></span><h2>federatedscope.attack.trainer<a class="headerlink" href="#module-federatedscope.attack.trainer" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.trainer.hood_on_fit_start_generator">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">hood_on_fit_start_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/trainer/GAN_trainer.html#hood_on_fit_start_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.hood_on_fit_start_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>count the FL training round before fitting
+:param ctx ():</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.trainer.hook_on_batch_forward_injected_data">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">hook_on_batch_forward_injected_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/trainer/GAN_trainer.html#hook_on_batch_forward_injected_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.hook_on_batch_forward_injected_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>inject the generated data into training batch loss
+:param ctx ():</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.trainer.hook_on_batch_injected_data_generation">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">hook_on_batch_injected_data_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/attack/trainer/GAN_trainer.html#hook_on_batch_injected_data_generation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.hook_on_batch_injected_data_generation" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate the injected data</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.trainer.wrap_GANTrainer">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">wrap_GANTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/attack/trainer/GAN_trainer.html#wrap_GANTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.wrap_GANTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Warp the trainer for gan_based class representative attack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base_trainer</strong> – Type: core.trainers.GeneralTorchTrainer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The wrapped trainer; Type: core.trainers.GeneralTorchTrainer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.trainer.wrap_GradientAscentTrainer">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">wrap_GradientAscentTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.trainer.GeneralTorchTrainer"><span class="pre">federatedscope.core.trainers.trainer.GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/attack/trainer/MIA_invert_gradient_trainer.html#wrap_GradientAscentTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.wrap_GradientAscentTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrap the gradient_invert trainer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base_trainer</strong> – Type: core.trainers.GeneralTorchTrainer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The wrapped trainer; Type: core.trainers.GeneralTorchTrainer</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
 
