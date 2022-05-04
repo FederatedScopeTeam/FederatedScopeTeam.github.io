@@ -7,17 +7,20 @@ toc: true
 layout: tuto
 ---
 
-<a name="VfJFz"></a>
+
 ## Background
-Differential privacy (DP) [1] is a powerful theoretical criterion metric for privacy preserving in database. Specifically, a randomized mechanism satisfying $(\epsilon-\delta)$-DP promises the privacy loss of all neighboring datasets is bounded by $\epsilon$ with the probability at least $1-\delta$[1].
+Differential privacy (DP) [1] is a powerful theoretical criterion metric for privacy preserving in database. Specifically, a randomized mechanism satisfying $(\epsilon, \delta)$-DP promises the privacy loss of all neighboring datasets is bounded by $\epsilon$ with the probability at least $1-\delta$[1].
 
 **Differential Privacy**: 
 
-A randomized algorithm $\mathcal{M}$ satisfies $(\epsilon-\delta)$-DP if for all $S\subseteq{Range(\mathcal{M})}$ and all neighboring datasets $x,y (||x-y||_1\leq{1})$:
+A randomized algorithm $\mathcal{M}$ satisfies $(\epsilon, \delta)$-DP if for all 
+$S \subseteq{Range(\mathcal{M})}$
+and all neighboring datasets 
+$x, y$:
 
-$Pr(\mathcal{M}(x)\in{S})\leq{exp(\epsilon)Pr(\mathcal{M}(y)\in{S})}+\delta$.
+$Pr( \mathcal{M} (x) \in{S}) \leq{exp(\epsilon) Pr(\mathcal{M} (y) \in{S})} + \delta$.
 
-<a name="VZ5KN"></a>
+
 ## Support of DP
 In federated learning scenario, noise injection and gradient clipping are foundational tools for differential privcay. In FederatedScope, DP algorithms are supported by preseting APIs in the core library, including 
 
@@ -25,7 +28,6 @@ In federated learning scenario, noise injection and gradient clipping are founda
 - noise injection in unload channel (client)
 - gradient clipping before upload
 
-<a name="kW3c6"></a>
 ### Noise Injection in Download
 In server, a protected attribute `_noise_injector` is preset in the server class for noise injection with default value is `None`. 
 ```python
@@ -46,7 +48,6 @@ class Server(Worker):
     ...
 ```
 
-<a name="ORt3o"></a>
 ### Noise Injection in Upload
 For clients, the noise injection can be done by registering hook function at the end of training (before uploading parameters). 
 ```python
@@ -59,7 +60,6 @@ trainer.register_hook_in_train(new_hook=noise_injection_function,
 
 ```
 
-<a name="fEDnf"></a>
 ### Gradient Clipping
 Gradient clipping is preset in `flapackage/core/trainers/trainer.py`. When the function `_hook_on_batch_backward`is called, the gradient will be clipped by the parameter `cfg.optimizer.grad_clip`in the config.
 ```python
@@ -85,13 +85,10 @@ cfg.optimizer.lr = 0.1
 cfg.optimizer.weight_decay = .0
 cfg.optimizer.grad_clip = -1.0  # negative numbers indicate we do not clip grad
 ```
-<a name="HWuqz"></a>
-# <br />
-<a name="AOJIY"></a>
-## Implementation of DP
-NbAFL [2] is a DP algorithm designed for federated learning, which protects both the upload and download channels with $(\epsilon-\delta)$-DP. Taking NbAFL as an example, we show how to implement DP algorithm in FederatedScope. 
 
-<a name="Ehipa"></a>
+## Implementation of DP
+NbAFL [2] is a DP algorithm designed for federated learning, which protects both the upload and download channels with $(\epsilon, \delta)$-DP. Taking NbAFL as an example, we show how to implement DP algorithm in FederatedScope. 
+
 ### Prepare DP Parameters
 Add parameters into `federatedscope/config.py`. Note FederatedScope supports at most two levels of config, e.g., `cfg.data.type`. 
 ```python
@@ -108,7 +105,6 @@ cfg.nbafl.w_clip = 1.
 cfg.nbafl.constant = 30.
 ```
 
-<a name="HjxGS"></a>
 ### Prepare DP Functions
 Then developers should design their own DP functions. For NbAFL, the following three hook functions are required for client`Trainer`.  The functions`record_initialization`and `del_initialization`maintain the initialization received from the server, and `inject_noise_in_upload`injects noise into the model before upload.
 ```python
@@ -166,9 +162,7 @@ def inject_noise_in_broadcast(cfg, sample_client_num, model):
 
 
 ```
-<a name="w5vs3"></a>
-## 
-<a name="eOmOx"></a>
+
 ### Register DP Functions
 The wrap function `wrap_nbafl_trainer` initializes parameters related to NbAFL and registers the above hook functions. 
 ```python
@@ -209,6 +203,7 @@ def wrap_nbafl_trainer(
                                         insert_pos=-1)
     return base_trainer
 ```
+
 Finally, in `federatedscope/core/auxiliaries/trainer_builder.py`, the function `get_trainer`wraps the basic trainer with NbAFL variables and functions. 
 ```python
 def get_trainer(model=None,
@@ -225,7 +220,7 @@ def get_trainer(model=None,
     ...
 ```
 
-<a name="KD2IU"></a>
+
 ## Run an Example
 Run the  following command to call NbAFL on the dataset Femnist.
 ```bash
@@ -236,26 +231,25 @@ python federatedscope/main.py --cfg federatedscope/cv/baseline/fedavg_convnet2_o
   nbafl.epsilon 10
 ```
 
-<a name="bNCuG"></a>
+
 ## Evaluation
-Take the dataset Femnist as an example, the accuracy with different $(\epsilon-\delta)$-DP is shown as follows. 
+Take the dataset Femnist as an example, the accuracy with different $(\epsilon, \delta)$-DP is shown as follows. 
 
 | Task | $\epsilon$ | $\delta$ | Accuracy(%) |
-| --- | --- | --- | --- |
-| FEMNIST | 10 | 0.01 | 11.73 |
-|  |  | 0.17 | 24.82 |
-|  |  | 0.76 | 41.71 |
-|  | 50 | 0.01 | 54.85 |
-|  |  | 0.17 | 67.98 |
-|  |  | 0.76 | 80.58 |
-|  | 100 | 0.01 | 74.80 |
-|  |  | 0.17 | 80.39 |
-|  |  | 0.76 | 80.58 |
+| --- |------------| --- | --- |
+| FEMNIST | 10         | 0.01 | 11.73 |
+|  | 10         | 0.17 | 24.82 |
+|  | 10         | 0.76 | 41.71 |
+|  | 50         | 0.01 | 54.85 |
+|  | 50         | 0.17 | 67.98 |
+|  | 50         | 0.76 | 80.58 |
+|  | 100        | 0.01 | 74.80 |
+|  | 100        | 0.17 | 80.39 |
+|  | 100        | 0.76 | 80.58 |
 
 
----
-
-<a name="RpfyB"></a>
+***
 ## References
 [1] Dwork C, Roth A. "The Algorithmic Foundations of Differential Privacy". Foundations and Trends in Theoretical Computer Science, 2014, 9(3-4): 211-407.
+
 [2] Wei K, Li J, Ding M, et al. "Federated Learning With Differential Privacy: Algorithms and Performance Analysis". IEEE Transactions on Information Forensics and Security, 2020, 15: 3454-3469. 

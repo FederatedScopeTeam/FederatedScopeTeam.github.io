@@ -43,7 +43,8 @@ python federatedscope/main.py --cfg federatedscope/cv/baseline/fedavg_convnet2_o
 # next-character prediction on Shackespeare
 python federatedscope/main.py --cfg federatedscope/nlp/baseline/fedavg_lstm_on_shakespeare.yaml
 ```
-<a name="r0M1W"></a>
+
+
 #### FedOpt
 FedOpt [2] is an advanced distributed optimization method in federated learning. Compare with FedAvg, it permits the server to update weights rather than simply averaging the collected weights. More details can be found in `federatedscope/core/aggregator.py`.
 
@@ -56,7 +57,6 @@ Similar with FedAvg, we perform some evaluation of FedAvg on different tasks.
 | Next-character Prediction | Shakespeare | 0.5 | 47.39 |
 
 
-<a name="VrjwR"></a>
 #### FedProx
 FedProx [3] is designed to solve the problem of heterogeneity, which updates model with a proximal regularizer. FederatedScope provides build-in FedProx implementation and it can easily be combined with other algorithms. More details can be found in `federatedscope/core/trainer/flpackage/core/trainers/trainer_fedprox.py`.
 
@@ -69,10 +69,9 @@ The evaluation results are presented as follows.
 | Next-character Prediction | Shakespeare | 0.01 | 47.85 |
 
 
-<a name="gNMeP"></a>
 ### Personalization Methods
 
-<a name="yppqG"></a>
+
 #### FedBN
 
 [FedBN](https://arxiv.org/abs/2102.07623) [4] is a simple yet effective approach to address feature shift non-iid challenge, in which the client BN parameters are trained locally, without communication and aggregation via server. FederatedScope provides simple configuration to implement FedBN and other variants that need to keep parameters of some model sub-modules local.
@@ -85,7 +84,6 @@ We provide some evaluation results for FedBN on different tasks as follows, in w
 | Graph classification | multi-task-molecule | 72.90 |
 
 
-<a name="If1FP"></a>
 #### pFedMe
 
 [pFedMe](https://arxiv.org/abs/2006.08848) [5]  is an effective pFL approach to address data heterogeneity, in which<br />the personalized model and global model are decoupled with Moreau envelops. FederatedScope implements pFedMe in `federatedscope/core/trainers/trainer_pFedMe.py` and `ServerClientsInterpolateAggregator` in `federatedscope/core/aggregator.py`.
@@ -99,7 +97,6 @@ We provide some evaluation results for pFedMe on different tasks as follows. Com
 | Next-character Prediction | Shakespeare | 37.40  |
 
 
-<a name="FvPRi"></a>
 #### Ditto
 
 [Ditto](https://arxiv.org/abs/2012.04221) [6] is a SOTA pFL approach that improves fairness and robustness of FL via training local personalized model and global model simultaneously, in which the local model update is based on regularization to global model parameters. FederatedScope provides built-in Ditto implementation and users can easily extend to other pFL methods by re-using the model-para regularization. More details can be found in `federatedscope/core/trainers/trainer_Ditto.py`.
@@ -113,9 +110,8 @@ We provide some evaluation results for Ditto on different tasks as follows. Comp
 | Next-character Prediction | Shakespeare | 45.14 |
 
 
-<a name="XLiPv"></a>
-#### FedEM
 
+#### FedEM
 [FedEM](https://arxiv.org/abs/2108.10252) [7] is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. FederatedScope provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in `federatedscope/core/trainers/trainer_FedEM.py`.
 
 We provide some evaluation results for FedBN on different tasks as follows. Complete results, config files and running scripts can be found in `scripts/personalization_exp_scripts/fedem`.
@@ -126,9 +122,8 @@ We provide some evaluation results for FedBN on different tasks as follows. Comp
 | Image classification | FEMNIST | 84.79 |
 | Next-character Prediction | Shakespeare | 48.06 |
 
-<a name="QAqz4"></a>
+
 ## Implementation
-<a name="EDJzS"></a>
 ### Preliminary
 Before implementing a new federated algorithm, you need to realize the structure of [Trainer]({{ "/docs/trainer/#trainer-structure" | relative_url }})  and [Context]({{ "/docs/trainer/#trainer-context" | relative_url }}). If you already have the knowledge about them, in this part we'll learn how to add an algorithm in FederatedScope.
 
@@ -138,11 +133,11 @@ In FederatedScope, there are three steps to implement a new federated algorithm:
 - Prepare hook functions: split your algorithm into several functions according to their insert positions within Trainer/Server,
 - Assemble algorithm: create a warp function to assemble your algorithm before create the trainer object. 
 
-<a name="yVJzz"></a>
+
 ### Example (Fedprox)
 Let's take FedProx as an example to show how to implement a new federated algorithm. 
 
-<a name="M3wrE"></a>
+
 #### Prepare parameters
 First, FedProx requires to set proximal regularizer and its factor `ctx.regularizer.mu`. 
 ```python
@@ -237,8 +232,6 @@ def get_trainer(model=None,
 ## Run an Example
 Generally, build-in algorithms are called by setting the parameter `$cfg.{METHOD_NAME}.use` as True. For more infomation about their parameters, you can refer to `federatedscope/config.py`. Similarily, taking FedProx as an exmple, its parameters in `federatedscope/core/config.py` are
 ```python
-...
-
 # ------------------------------------------------------------------------ #
 # fedprox related options
 # ------------------------------------------------------------------------ #
@@ -246,8 +239,6 @@ cfg.fedprox = CN()
 
 cfg.fedprox.use = True		# Whether to use fedprox
 cfg.fedprox.mu = 0. 		# The regularizer factor within fedprox
-
-...
 ```
 You can call FedProx by the following command in the terminal
 ```bash
@@ -255,19 +246,27 @@ python federatedscope/main.py --cfg {YOUR_CONFIG_FILE} fedprox.use True fedprox.
 ```
 More example scripts are refer to`federatedscope/example_configs/.`
 
-<a name="rL9rC"></a>
+
+
 ### Note
 Most combinations of the buildin methods have been tested. When implementing your own methods, it is suggested to carefully check the code to avoid conflicts (e.g. duplication of variables).
 
----
 
-<a name="Gy7PK"></a>
+
+
+***
 # References
-[1] McMahan B, Moore E, Ramage D, et al. "Communication-efficient learning of deep networks from decentralized data". International Conference on Artificial Intelligence and Statistics, 2017. 
+[1] McMahan B, Moore E, Ramage D, et al. "Communication-efficient learning of deep networks from decentralized data". International Conference on Artificial Intelligence and Statistics, 2017.
+
 [2] Reddi S J, Charles Z, Zaheer M, et al. "Adaptive federated optimization". Intertional Conference on Learning Representations, 2021.
-[3] Li T, Sahu A K, Zaheer M, et al. "Federated optimization in heterogeneous networks". Proceedings of Machine Learning and Systems, 2020. 
+
+[3] Li T, Sahu A K, Zaheer M, et al. "Federated optimization in heterogeneous networks". Proceedings of Machine Learning and Systems, 2020.
+
 [4] Li X, Jiang M, Zhang X, et al. "Fedbn: Federated learning on non-iid features via local batch normalization". arXiv preprint arXiv:2102.07623 (2021).
+
 [5] Dinh C T, Tran N H, and Nguyen T D. "Personalized federated learning with moreau envelopes". Advances in Neural Information Processing Systems 33 (2020): 21394-21405.
+
 [6] Li T, Hu S, Beirami A, et al. "Ditto: Fair and robust federated learning through personalization". International Conference on Machine Learning. PMLR, 2021.
+
 [7] Marfoq O, Neglia G, Bellet A, et al. "Federated multi-task learning under a mixture of distributions". Advances in Neural Information Processing Systems 34 (2021).
 

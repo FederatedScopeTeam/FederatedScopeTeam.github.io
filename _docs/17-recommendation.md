@@ -7,14 +7,15 @@ toc: true
 layout: tuto
 ---
 
-<a name="U7cD5"></a>
+
 ## Matrix Factorization
 FederatedScope has built in the matrix factorization (MF) task for recommendation, which provides flexible supports for MF models, datasets and federated settings. In this tutorial, we will introduce 
 
-- the supports of MF tasks, 
-- how to implement matrix factorization task with FederatedScope, and
-- the privacy preserving techniques used in FederatedScope.
-<a name="L9eHO"></a>
+- The matrix factorization task in FederatedScope
+- How to implement matrix factorization task with FederatedScope
+- The privacy preserving techniques used in FederatedScope
+
+
 ### Background
 Matrix factorization (MF) [1-3] is a fundamental building block in recommendation system. For a matrix, a row corresponds to a user, while a column corresponds to an item. The target of matrix factorization is to approximate unobserved ratings by constructing user embedding $U\in{\mathbb{R}^{n\times{d}}}$ and item embedding $V\in{\mathbb{R}^{m\times{d}}}$. 
 
@@ -22,9 +23,9 @@ Matrix factorization (MF) [1-3] is a fundamental building block in recommendatio
  
 Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the target is formalized as minimizing the loss function $\mathcal{L}(X,U,V)$:
 
-$\frac{1}{|\Omega|}\sum_{(i,j)\in\Omega}\mathcal{L}_{i,j}(X,U,V)=\frac{1}{|\Omega|}\sum_{(i,j)\in\Omega}(X_{i,j}-<u_i,v_j>)^2$
-where $u_i\in{\mathbb{R}^{n\times1}}$ and $v_j\in{\mathbb{R}^{m\times1}}$ are the user and item vectors of $U$ and $V$.
-<a name="SCGUt"></a>
+$\frac{1}{|\Omega|} \sum_{(i,j) \in \Omega} \mathcal{L}_{i,j}(X,U,V) = \frac{1}{|\Omega|} \sum_{(i,j) \in \Omega}( X_{i,j} - <u_i, v_j>)^2$
+where $u_i \in{\mathbb{R}^{n \times 1}}$ and $v_j \in{\mathbb{R}^{m \times 1}}$ are the user and item vectors of $U$ and $V$.
+
 ### MF in Federated Learning
 In federated learning, the dataset is distributed in different clients. The vanilla federated matrix factorization algorithm runs as follows
 
@@ -36,20 +37,23 @@ In federated learning, the dataset is distributed in different clients. The vani
 
 With different data partitions, matrix factorization has three FL settings: **Vertical FL**(VFL), **Horizontal FL**(HFL) and **Local FL**(LFL). 
 
-<a name="AcF3D"></a>
+
 #### Vertical FL
 In VFL, the set of users is the same across different databases, and each participators only has partial items. In this setting, the user embedding is shared across all participators and each client maintains its own item embedding.  <br />![VFL setting [3]](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1647842481181-dd8bb1bf-44f2-47a9-aac7-e7cc7226d258.png#crop=0&crop=0&crop=1&crop=1&from=url&height=262&id=Gb7zt&margin=%5Bobject%20Object%5D&originHeight=600&originWidth=732&originalType=binary&ratio=1&rotation=0&showTitle=true&status=done&style=none&title=VFL%20setting%20%5B3%5D&width=320 "VFL setting [3]")
-<a name="R33VJ"></a>
+
+
 #### Horizontal FL
 In HFL, the set of items is the same across different participators, and they only share the item embedding with the coordination server. <br />![截屏2022-03-21 下午2.03.06.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648018555853-f80b0128-83c6-4acd-9d41-a63571053cbf.png#clientId=u2fd8d2dc-4f3e-4&crop=0&crop=0&crop=1&crop=0.8809&from=ui&height=314&id=uc6843663&margin=%5Bobject%20Object%5D&name=%E6%88%AA%E5%B1%8F2022-03-21%20%E4%B8%8B%E5%8D%882.03.06.png&originHeight=638&originWidth=650&originalType=binary&ratio=1&rotation=0&showTitle=true&size=139863&status=done&style=none&taskId=u058a337e-fc56-4087-863a-957ce056aeb&title=HFL%20setting%20%5B3%5D&width=320 "HFL setting [3]")
-<a name="pgOAT"></a>
+
+
 #### Local FL
 LFL is a special case of HFL, where each user owns her/his own ratings. It's a common scenario on mobile devices. <br />![截屏2022-03-23 下午2.59.34.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648018785541-5623924c-ef1f-49f4-9ce5-025bb46cb970.png#clientId=u2fd8d2dc-4f3e-4&crop=0&crop=0&crop=1&crop=1&from=ui&height=266&id=u3e77b969&margin=%5Bobject%20Object%5D&name=%E6%88%AA%E5%B1%8F2022-03-23%20%E4%B8%8B%E5%8D%882.59.34.png&originHeight=652&originWidth=784&originalType=binary&ratio=1&rotation=0&showTitle=true&size=110371&status=done&style=none&taskId=uf480945a-2c26-4d93-912b-909acadcc62&title=LFL%20setting%20%5B3%5D&width=320 "LFL setting [3]")
-<a name="vAW11"></a>
+
+
 ### Support of MF
 To support federated MF, FederatedScope builds in MF models, datasets and trainer in different federated learning settings. 
 
-<a name="b1IUy"></a>
+
 #### MF models
 MF model has two trainable parameters: user embedding and item embedding. Based on the given federated setting, they share different embedding with the other participators. FederatedScope achieves `VMFNet`and `HMFNet`to support the settings of VFL and HFL.
 ```python
@@ -86,7 +90,7 @@ class BasicMFNet(Module):
     ...
 ```
 
-<a name="RwWMo"></a>
+
 #### MF Datasets
 MovieLens is series of movie recommendation datasets collected from the website [MovieLens](https://movielens.org). <br />To satisify the requirement of different FL settings, FederatedScope splits the dataset into `VFLMoviesLens`and `HFLMovieLens`as follows. For example, if your want to use the dataset MovieLens1M in VFL settings, just set `cfg.data.type='VFLMovieLens1M'`.
 ```python
@@ -119,9 +123,8 @@ class HFLMovieLens10M(MovieLens10M, HMFDataset):
 ```
 
 The parent classes of the above datasets define the data information and the FL setting respectively.
-<a name="rFhUC"></a>
-#### 
-<a name="NGR3t"></a>
+
+
 ##### Data information
 The first parent class `MovieLens1M` and `MovieLens10M`provide the details (e.g. url, md5, filename).
 ```python
@@ -177,9 +180,7 @@ class MovieLens10M(MovieLensData):
     raw_file = "ratings.dat"
     raw_file_md5 = "3f317698625386f66177629fa5c6b2dc"
 ```
-<a name="PXyQL"></a>
-#### 
-<a name="sxniP"></a>
+
 ##### FL Setting
 `VMFDataset`and `HMFDataset`specific the spliting of MF datasets (VFL or HFL).
 ```python
@@ -219,7 +220,7 @@ class HMFDataset:
         self.data = data
 ```
 
-<a name="XAlhf"></a>
+
 #### MF Trainer
 Considering the target rating matrix is large and sparse, FederatedScope achieves`MFTrainer`to support MF tasks during federated training.
 ```python
@@ -274,7 +275,7 @@ class MFTrainer(GeneralTrainer):
         ctx.batch_size = len(ratings)
 ```
 
-<a name="bd3A7"></a>
+
 ### Start an Example
 Taking the combination of dataset `MovieLen1M`and VFL setting as an example, the running command is as follows.
 ```bash
@@ -289,12 +290,12 @@ More running scripts can be found in `federatedscope/scripts`. Partial experimen
 | HFL | MovieLens1M | 5 | 1.13 |
 
 
-<a name="Yb6U1"></a>
+
 ### Privacy Protection
 To protect the user privacy, FederatedScope implements two differential privacy algorithms, VFL-SGDMF and HFL-SGDMF in [vldb22] as plug-ins. 
-<a name="JdvEb"></a>
+
 #### VFL-SGDMF
-VFL-SGDMF is a DP based algorithm for privacy preserving in VFL setting. It satisifies $(\epsilon-\delta)$privacy by injecting noise into the embedding matrix. More details please refer to [3]. The related parameters are shown as follows.
+VFL-SGDMF is a DP based algorithm for privacy preserving in VFL setting. It satisfies $(\epsilon, \delta)$privacy by injecting noise into the embedding matrix. More details please refer to [3]. The related parameters are shown as follows.
 ```python
 # ------------------------------------------------------------------------ #
 # VFL-SGDMF(dp) related options
@@ -325,8 +326,8 @@ def wrap_MFTrainer(base_trainer: Type[MFTrainer]) -> Type[MFTrainer]:
                                        target_hook_name="_hook_on_batch_backward")
 
     return base_trainer
-...
 ```
+
 The embedding clipping and noise injection is finished in the new hook function `hook_on_batch_backward`.
 ```python
 def hook_on_batch_backward(ctx):
@@ -360,17 +361,15 @@ def hook_on_batch_backward(ctx):
         embedding_clip(ctx.model.embed_user, ctx.sgdmf_R)
         embedding_clip(ctx.model.embed_item, ctx.sgdmf_R)
 ```
-<a name="LeypM"></a>
-#### 
-<a name="pZEVg"></a>
+
+
 ##### Start an Example
 Similarly, taking `MovieLens1M` as an example, the running script is shown as follows. 
 ```bash
 python federatedscope/main.py --cfg federatedscope/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
 ```
-<a name="xwxxt"></a>
-#### 
-<a name="ow9gP"></a>
+
+
 ##### Evaluation
 Take the dataset `MovieLens1M` as an example, the detailed settings are listed in `federatedscope/mf/baseline/vfl_fedavg_standalone_on_movielens1m.yaml` and `federatedscope/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml`. VFL-SGDMF is evaluated as follows.
 
@@ -378,15 +377,14 @@ Take the dataset `MovieLens1M` as an example, the detailed settings are listed i
 | --- | --- | --- | --- |
 | VFL | - | - | 1.16 |
 | VFL-SGDMF | 4 | 0.75 | 1.47 |
-|  | 4 | 0.25 | 1.54 |
-|  | 2 | 0.75 | 1.55 |
-|  | 2 | 0.25 | 1.56 |
-|  | 0.5 | 0.75 | 1.68 |
-|  | 0.5 | 0.25 | 1.84 |
+| VFL-SGDMF | 4 | 0.25 | 1.54 |
+| VFL-SGDMF | 2 | 0.75 | 1.55 |
+| VFL-SGDMF | 2 | 0.25 | 1.56 |
+| VFL-SGDMF | 0.5 | 0.75 | 1.68 |
+| VFL-SGDMF | 0.5 | 0.25 | 1.84 |
 
 
 
-<a name="uVVYN"></a>
 #### HFL-SGDMF
 On the other side,  HFL-SGDMF protects privacy in HFL setting in the same way, and share the same parameters with VFL-SGDMF.
 ```python
@@ -404,14 +402,13 @@ cfg.sgdmf.theta = -1     # -1 means per-rating privacy, otherwise per-user priva
 ```
 
 
-<a name="uqrq4"></a>
 ##### Start and Example
 Run an example of HFL-SGDMF by the following command. 
 ```bash
 python federatedscope/main.py --cfg federatedscope/mf/baseline/hfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
 ```
 
-<a name="GjjQv"></a>
+
 ##### Evaluation
 The evaluation results of HFL-SGDMF on the dataset MovieLens1M are shown as follows. 
 
@@ -419,17 +416,17 @@ The evaluation results of HFL-SGDMF on the dataset MovieLens1M are shown as foll
 | --- | --- | --- | --- |
 | HFL | - | - | 1.13 |
 | HFL-SGDMF | 4 | 0.75 | 1.56 |
-|  | 4 | 0.25 | 1.62 |
-|  | 2 | 0.75 | 1.60 |
-|  | 2 | 0.25 | 1.64 |
-|  | 0.5 | 0.75 | 1.66 |
-|  | 0.5 | 0.25 | 1.73 |
+| HFL-SGDMF | 4 | 0.25 | 1.62 |
+| HFL-SGDMF | 2 | 0.75 | 1.60 |
+| HFL-SGDMF | 2 | 0.25 | 1.64 |
+| HFL-SGDMF | 0.5 | 0.75 | 1.66 |
+| HFL-SGDMF | 0.5 | 0.25 | 1.73 |
 
 
 ---
-
-<a name="DHOTy"></a>
 ### References
 [1] Ma H, Yang H, Lyu M R, et al. "SoRec: social recommendation using probabilistic matrix factorization". Proceedings of the ACM Conference on Information and Knowledge Management, 2008.
+
 [2] Jamali M, Ester M. "A matrix factorization technique with trust propagation for recommendation in social networks". Proceedings of the ACM Conference on Recommender Systems, 2010.
+
 [3] Li Z, Ding B, Zhang C, et al. "Federated matrix factorization with privacy guarantee". Proceedings of the VLDB Endowment, 2022.
