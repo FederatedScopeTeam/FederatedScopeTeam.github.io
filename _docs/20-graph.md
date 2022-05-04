@@ -496,7 +496,7 @@ We provide several `Trainers` for different models and for different tasks.
 
 FederatedScope provides comprehensive support to help you develop federated GNN algorithms. Here we will go through `FedSage+` [14] and `GCFL+` [15] as examples.
 
--  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. Based on our message-oriented framework, we need to define new message types and the corresponding handler functions.
+-  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. In FederatedScope, we need to define new message types and the corresponding handler functions.
 
 ```python
 # FedSagePlusServer
