@@ -23,8 +23,9 @@ Matrix factorization (MF) [1-3] is a fundamental building block in recommendatio
  
 Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the target is formalized as minimizing the loss function $\mathcal{L}(X,U,V)$:
 
-$\frac{1}{|\Omega|} \sum_{(i,j) \in \Omega} \mathcal{L}_{i,j}(X,U,V) = \frac{1}{|\Omega|} \sum_{(i,j) \in \Omega}( X_{i,j} - <u_i, v_j>)^2$
-where $u_i \in{\mathbb{R}^{n \times 1}}$ and $v_j \in{\mathbb{R}^{m \times 1}}$ are the user and item vectors of $U$ and $V$.
+$\frac{1}{| \Omega |} \sum_{(i,j) \in \Omega} \mathcal{L}_{i,j} (X,U,V) = \frac{1}{| \Omega |} \sum_{(i,j) \in \Omega}( X_{i,j} - <u_i, v_j>)^2$
+
+where $u_i \in{\mathbb{R}^{n \times{1}}}$ and $v_j \in{\mathbb{R}^{m \times{1}}}$ are the user and item vectors of $U$ and $V$.
 
 ### MF in Federated Learning
 In federated learning, the dataset is distributed in different clients. The vanilla federated matrix factorization algorithm runs as follows
