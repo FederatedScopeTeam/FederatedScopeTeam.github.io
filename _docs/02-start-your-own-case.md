@@ -105,7 +105,7 @@ We provide a function `federatedscope.register.register_data` to make your datas
 
 -  Step3: put this `.py` file in the `federatedscope/contrib/data/` folder, and set `cfg.data.type = "mydata"` to use it. 
 
-Also,  you can modify the source code to make the FederatedScope support your dataset. Please see [federatedscope.core.auxiliaries.data_builder](federatedscope/core/auxiliaries/data_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
+Also,  you can modify the source code to make the FederatedScope support your dataset. Please see `federatedscope.core.auxiliaries.data_builder` , and you can add an `elif` to skip `Step2` and `Step3` above.
 
 
 ## <span id="model">Build a model</span>
@@ -173,7 +173,7 @@ We provide a function `federatedscope.register.register_model` to make your mode
 
 -  Step3: put this `.py` file in the `federatedscope/contrib/model/` folder, and set `cfg.model.type = "mynet"` to use it. 
 
-Also,  you can modify the source code to make the FederatedScope support your model. Please see [federatedscope.core.auxiliaries.model_builder](/federatedscope/core/auxiliaries/model_builder.py) , and you can add an `elif` to skip `Step2` and `Step3` above.
+Also,  you can modify the source code to make the FederatedScope support your model. Please see `federatedscope.core.auxiliaries.model_builder` , and you can add an `elif` to skip `Step2` and `Step3` above.
 
 
 ## <span id="trainer">Create a trainer</span>
@@ -211,11 +211,11 @@ Also,  you can modify the source code to make the FederatedScope support your m
 
 ## <span id="metric">Introduce more evaluation metrics</span>
 
-We provide a number of metrics to monitor the entire federal learning process. You just need to list the name of the metric you want in `cfg.eval.metrics`. We currently support metrics such as loss, accuracy, etc. (See [federatedscope.core.evaluator](federatedscope/core/evaluator.py) for more details).
+We provide a number of metrics to monitor the entire federal learning process. You just need to list the name of the metric you want in `cfg.eval.metrics`. We currently support metrics such as loss, accuracy, etc. (See `federatedscope.core.monitors.metric_calculator` for more details).
 
 We also provide a function `federatedscope.register.register_metric` to make your evaluation metrics available with three steps:
 
--  Step1: build your metric (see [federatedscope.core.context](federatedscope/core/context.py) for more about `ctx`)
+-  Step1: build your metric (see `federatedscope.core.trainers.context` for more about `ctx`)
 
     ```python
     def cal_my_metric(ctx, **kwargs):
