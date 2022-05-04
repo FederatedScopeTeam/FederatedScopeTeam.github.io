@@ -461,8 +461,8 @@ Existing graph datasets are a valuable source to meet the need for more FL datas
 -  Link-level task 
    -  `label_space_splitter`: **Split by latent dirichlet allocation** `cfg.data.splitter = 'rel_type'`<br />It is designed to provide label distribution skew via latent dirichlet allocation (LDA). 
 -  Graph-level task 
-   -  `instance_space_splitter`: **Split by index **`cfg.data.splitter = 'scaffold' or 'rand_chunk'`<br />It is responsible for creating feature distribution skew (i.e., covariate shift). To realize this, we sort the graphs based on their values of a certain aspect. 
-   -  `multi_task_splitter`: **Split by dataset **`cfg.data.splitter = 'louvain'`<br />Different clients have different tasks. 
+   -  `instance_space_splitter`: **Split by index** `cfg.data.splitter = 'scaffold' or 'rand_chunk'`<br />It is responsible for creating feature distribution skew (i.e., covariate shift). To realize this, we sort the graphs based on their values of a certain aspect. 
+   -  `multi_task_splitter`: **Split by dataset** `cfg.data.splitter = 'louvain'`<br />Different clients have different tasks. 
 
 
 ## <span id="model">ModelZoo</span>
