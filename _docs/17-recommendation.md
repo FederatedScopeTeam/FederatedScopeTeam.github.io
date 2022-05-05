@@ -21,10 +21,13 @@ Matrix factorization (MF) [1-3] is a fundamental building block in recommendatio
 
  ![mf_task.png](https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648197184171-dca7f204-192f-424d-9794-52e8bf0d195c.png#clientId=u9a669a0e-153f-4&crop=0&crop=0&crop=1&crop=1&from=ui&height=200&id=udb15df61&margin=%5Bobject%20Object%5D&name=mf_task.png&originHeight=368&originWidth=1031&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16721&status=done&style=none&taskId=udbf3570a-b126-41e7-bb07-0479a3c4cf7&title=&width=559)
  
-Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the target is formalized as minimizing the loss function $\mathcal{L}(X,U,V)$:
+Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the task aims at minimizing the loss function:
 
-$\frac{1}{|\Omega|} \sum_{(i,j) \in \Omega} \mathcal{L}_{i,j}(X,U,V) = \frac{1}{|\Omega|} \sum_{(i,j) \in \Omega}( X_{i,j} - <u_i, v_j>)^2$
-where $u_i \in{\mathbb{R}^{n \times 1}}$ and $v_j \in{\mathbb{R}^{m \times 1}}$ are the user and item vectors of $U$ and $V$.
+$$
+\frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}} \mathcal{L}_{i,j} (X,U,V) = \frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}}( X_{i,j} - <u_i, v_j>)^2
+$$
+
+where $u_i \in{\mathbb{R}^{n \times{1}}}$ and $v_j \in{\mathbb{R}^{m \times{1}}}$ are the user and item vectors of $U$ and $V$.
 
 ### MF in Federated Learning
 In federated learning, the dataset is distributed in different clients. The vanilla federated matrix factorization algorithm runs as follows

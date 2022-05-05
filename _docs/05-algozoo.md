@@ -14,9 +14,12 @@ FederatedScope has built in various advanced federated learning algorithms. All 
 
 In this tutorial, you will learn the buildin algorithms, and how to implement a new federated algorithm in FederatedScope. 
 
+
 ## Buildin Methods
+
 ### Distributed Optimization Methods
 To tackle the challenge of statistical heterogeneity, we implement the following distributed optimization methods: FedAvg (Default), FedProx and FedOpt. Set the parameter `cfg.{METHOD_NAME}.use`as `True` to call them.
+
 
 #### FedAvg
 FedAvg [1] is a basic distributed optimization method in federated learning. During federated training, it broadcasts the initialized model to all clients, and aggregates the updated weights collected from several clients. FederatedScope implements it with a fedavg aggregator. More details can be found in `federatedscope/core/aggregator.py`.
@@ -137,6 +140,7 @@ Let's take FedProx as an example to show how to implement a new federated algori
 
 #### Prepare parameters
 First, FedProx requires to set proximal regularizer and its factor `ctx.regularizer.mu`. 
+
 ```python
 # ------------------------------------------------------------------------ #
 # Init variables for FedProx algorithm
@@ -151,6 +155,7 @@ def init_fedprox_ctx(base_trainer):
     from federatedscope.core.auxiliaries.regularizer_builder import get_regularizer
     ctx.regularizer = get_regularizer(cfg.regularizer.type)
 ```
+
 
 #### Prepare Hook Functions
 During training,`FredProx`requires to record the initalized weights before local updating. Therefore, we create two hook functions to maintain the initialized weights. 
@@ -170,6 +175,7 @@ def record_initialization(ctx):
 def del_initialization(ctx):
     ctx.weight_init = None
 ```
+
 
 #### Assemble algorithm
 After preparing parameters and hook functions, we assemble FedProx within the function `wrap_fedprox_trainer` in two steps:
@@ -226,6 +232,7 @@ def get_trainer(model=None,
         trainer = wrap_fedprox_trainer(trainer)
 ```
 
+
 ## Run an Example
 Generally, build-in algorithms are called by setting the parameter `$cfg.{METHOD_NAME}.use` as True. For more infomation about their parameters, you can refer to `federatedscope/config.py`. Similarily, taking FedProx as an exmple, its parameters in `federatedscope/core/config.py` are
 
@@ -238,11 +245,13 @@ cfg.fedprox = CN()
 cfg.fedprox.use = True		# Whether to use fedprox
 cfg.fedprox.mu = 0. 		# The regularizer factor within fedprox
 ```
+
 You can call FedProx by the following command in the terminal
 
 ```bash
 python federatedscope/main.py --cfg {YOUR_CONFIG_FILE} fedprox.use True fedprox.mu 0.1
 ```
+
 More example scripts are refer to`federatedscope/example_configs/.`
 
 

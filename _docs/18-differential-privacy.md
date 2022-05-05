@@ -16,7 +16,7 @@ Differential privacy (DP) [1] is a powerful theoretical criterion metric for pri
 A randomized algorithm $\mathcal{M}$ satisfies $(\epsilon, \delta)$-DP if for all 
 $S \subseteq{Range(\mathcal{M})}$
 and all neighboring datasets 
-$x, y$:
+$(x, y)$:
 
 $Pr( \mathcal{M} (x) \in{S}) \leq{exp(\epsilon) Pr(\mathcal{M} (y) \in{S})} + \delta$.
 
