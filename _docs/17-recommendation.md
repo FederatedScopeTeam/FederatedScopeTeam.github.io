@@ -23,7 +23,9 @@ Matrix factorization (MF) [1-3] is a fundamental building block in recommendatio
  
 Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the task aims at minimizing the loss function:
 
-$\frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}} \mathcal{L}_{i,j} (X,U,V) = \frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}}( X_{i,j} - <u_i, v_j>)^2$
+$$
+\frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}} \mathcal{L}_{i,j} (X,U,V) = \frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}}( X_{i,j} - <u_i, v_j>)^2
+$$
 
 where $u_i \in{\mathbb{R}^{n \times{1}}}$ and $v_j \in{\mathbb{R}^{m \times{1}}}$ are the user and item vectors of $U$ and $V$.
 
