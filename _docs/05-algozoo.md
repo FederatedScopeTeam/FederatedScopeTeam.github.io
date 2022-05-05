@@ -14,13 +14,10 @@ FederatedScope has built in various advanced federated learning algorithms. All 
 
 In this tutorial, you will learn the buildin algorithms, and how to implement a new federated algorithm in FederatedScope. 
 
-<a name="NA3Sd"></a>
 ## Buildin Methods
-<a name="QTBV1"></a>
 ### Distributed Optimization Methods
 To tackle the challenge of statistical heterogeneity, we implement the following distributed optimization methods: FedAvg (Default), FedProx and FedOpt. Set the parameter `cfg.{METHOD_NAME}.use`as `True` to call them.
 
-<a name="xJfCS"></a>
 #### FedAvg
 FedAvg [1] is a basic distributed optimization method in federated learning. During federated training, it broadcasts the initialized model to all clients, and aggregates the updated weights collected from several clients. FederatedScope implements it with a fedavg aggregator. More details can be found in `federatedscope/core/aggregator.py`.
 
@@ -155,12 +152,12 @@ def init_fedprox_ctx(base_trainer):
     ctx.regularizer = get_regularizer(cfg.regularizer.type)
 ```
 
-<a name="ATtAp"></a>
 #### Prepare Hook Functions
 During training,`FredProx`requires to record the initalized weights before local updating. Therefore, we create two hook functions to maintain the initialized weights. 
 
 - `record_initialization`: record initialized weights, and
 - `del_initialization`: delete initialized weights to avoid memory leakage
+
 ```python
 # ------------------------------------------------------------------------ #
 # Additional functions for FedProx algorithm
@@ -174,12 +171,12 @@ def del_initialization(ctx):
     ctx.weight_init = None
 ```
 
-<a name="WGCeG"></a>
 #### Assemble algorithm
 After preparing parameters and hook functions, we assemble FedProx within the function `wrap_fedprox_trainer` in two steps:
 
 - initialize parameters (call function`init_fedprox_ctx`)
 - register hook functions for the given trainer
+
 ```python
 def wrap_fedprox_trainer(
         base_trainer: Type[GeneralTrainer]) -> Type[GeneralTrainer]:
@@ -212,6 +209,7 @@ def wrap_fedprox_trainer(
 ```
 
 Finally, add FedProx into the function `get_trainer`(`federatedscope/core/auxiliaries/trainer_builder.py`). 
+
 ```python
 def get_trainer(model=None,
                 data=None,
@@ -228,9 +226,9 @@ def get_trainer(model=None,
         trainer = wrap_fedprox_trainer(trainer)
 ```
 
-<a name="G1lQ7"></a>
 ## Run an Example
 Generally, build-in algorithms are called by setting the parameter `$cfg.{METHOD_NAME}.use` as True. For more infomation about their parameters, you can refer to `federatedscope/config.py`. Similarily, taking FedProx as an exmple, its parameters in `federatedscope/core/config.py` are
+
 ```python
 # ------------------------------------------------------------------------ #
 # fedprox related options
@@ -241,6 +239,7 @@ cfg.fedprox.use = True		# Whether to use fedprox
 cfg.fedprox.mu = 0. 		# The regularizer factor within fedprox
 ```
 You can call FedProx by the following command in the terminal
+
 ```bash
 python federatedscope/main.py --cfg {YOUR_CONFIG_FILE} fedprox.use True fedprox.mu 0.1
 ```
@@ -255,7 +254,7 @@ Most combinations of the buildin methods have been tested. When implementing you
 
 
 ***
-# References
+## References
 [1] McMahan B, Moore E, Ramage D, et al. "Communication-efficient learning of deep networks from decentralized data". International Conference on Artificial Intelligence and Statistics, 2017.
 
 [2] Reddi S J, Charles Z, Zaheer M, et al. "Adaptive federated optimization". Intertional Conference on Learning Representations, 2021.
