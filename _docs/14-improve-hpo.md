@@ -1,5 +1,5 @@
 ---
-title: "Accelerating Federated Hyperparameter Optimization"
+title: "Accelerating Federated HPO"
 permalink: /docs/improve-hpo/
 excerpt: "About improving HPO."
 last_modified_at: 2022-04-11T10:22:56-04:00

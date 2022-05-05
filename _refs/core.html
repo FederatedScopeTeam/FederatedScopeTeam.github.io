@@ -95,11 +95,22 @@
 <span class="target" id="module-federatedscope.core.fed_runner"></span><dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.core.fed_runner.FedRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.fed_runner.</span></span><span class="sig-name descname"><span class="pre">FedRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_class=&lt;class</span> <span class="pre">'federatedscope.core.worker.server.Server'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_class=&lt;class</span> <span class="pre">'federatedscope.core.worker.client.Client'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#FedRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.FedRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class is used for building up the Federated Learning course</p>
+<dd><p>This class is used to construct an FL course, which includes <cite>_set_up</cite> and <cite>run</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – The data used in the FL courses, which are formatted as {‘ID’:data} for standalone mode. More details can be found in federatedscope.core.auxiliaries.data_builder .</p></li>
+<li><p><strong>server_class</strong> – The server class is used for instantiating a (customized) server.</p></li>
+<li><p><strong>client_class</strong> – The client class is used for instantiating a (customized) client.</p></li>
+<li><p><strong>config</strong> – The configurations of the FL course.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.fed_runner.FedRunner.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#FedRunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.FedRunner.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>To run an FL course, which is called after server/client has been set up</p>
+<dd><p>To run an FL course, which is called after server/client has been set up.
+For the standalone mode, a shared message queue will be set up to simulate <code class="docutils literal notranslate"><span class="pre">receiving</span> <span class="pre">message</span></code>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -111,34 +122,111 @@
 <dt class="sig sig-object py" id="federatedscope.core.worker.Client">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.worker.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Client class, which describes the behaviors of client in an FL course.
-The attributes include:</p>
-<blockquote>
-<div><p>ID: The unique ID of the client, which is assigned by the server when joining the FL course
-server_id: (Default) 0
-state: The training round
-config: the configuration
-data: The data owned by the client
-model: The local model
-device: The device to run local training and evaluation
-strategy: redundant attribute</p>
-</div></blockquote>
-<p>The behaviors are described by the handled functions (named as callback_funcs_for_xxx)</p>
+The behaviors are described by the handling functions (named as callback_funcs_for_xxx)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ID</strong> – The unique ID of the client, which is assigned by the server when joining the FL course</p></li>
+<li><p><strong>server_id</strong> – (Default) 0</p></li>
+<li><p><strong>state</strong> – The training round</p></li>
+<li><p><strong>config</strong> – The configuration</p></li>
+<li><p><strong>data</strong> – The data owned by the client</p></li>
+<li><p><strong>model</strong> – The model maintained locally</p></li>
+<li><p><strong>device</strong> – The device to run local training and evaluation</p></li>
+<li><p><strong>strategy</strong> – redundant attribute</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Client.callback_funcs_for_address">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.callback_funcs_for_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.callback_funcs_for_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving other clients’ IP addresses, which is used for constructing a complex topology</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Client.callback_funcs_for_assign_id">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_assign_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.callback_funcs_for_assign_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.callback_funcs_for_assign_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving the client_ID assigned by the server (during the joining process), which is used in the distributed mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Client.callback_funcs_for_evaluate">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.callback_funcs_for_evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.callback_funcs_for_evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving the request of evaluating</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Client.callback_funcs_for_finish">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.callback_funcs_for_finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.callback_funcs_for_finish" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving the signal of finishing the FL course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Client.callback_funcs_for_join_in_info">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_join_in_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.callback_funcs_for_join_in_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.callback_funcs_for_join_in_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving the request of join in information (such as batch_size, num_of_samples) during the joining process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Client.callback_funcs_for_model_para">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_model_para</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.callback_funcs_for_model_para"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.callback_funcs_for_model_para" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving model parameters, which triggers the local training process. This handling function is widely used in various FL courses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message, which includes sender, receiver, state, and content. More detail can be found in federatedscope.core.message</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Client.join_in">
 <span class="sig-name descname"><span class="pre">join_in</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.join_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.join_in" title="Permalink to this definition">¶</a></dt>
-<dd><p>To send ‘join_in’ message to the server</p>
+<dd><p>To send ‘join_in’ message to the server for joining in the FL course.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Client.register_handlers">
 <span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.register_handlers" title="Permalink to this definition">¶</a></dt>
-<dd><p>To bind a message type with a handled function</p>
+<dd><p>To bind a message type with a handling function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg_type</strong> (<em>str</em>) – The defined message type</p></li>
+<li><p><strong>callback_func</strong> – The handling functions to handle the received message</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Client.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/client.html#Client.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Client.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>To wait for the messages and handle them (for distributed mode)</p>
+<dd><p>To listen to the message and handle them accordingly  (used for distributed mode)</p>
 </dd></dl>
 
 </dd></dl>
@@ -147,19 +235,22 @@ strategy: redundant attribute</p>
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.worker.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_round_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Server class, which describes the behaviors of server in an FL course.
-The attributes include:</p>
-<blockquote>
-<div><p>ID: The unique ID of the server, which is set to 0 by default
-state: The training round
-config: the configuration
-data: The data owned by the server (for global evaluation)
-model: The model used for aggregation
-client_num: The (expected) client num to start the FL course
-total_round_num: The total number of the training round
-device: The device to run local training and evaluation
-strategy: redundant attribute</p>
-</div></blockquote>
-<p>The behaviors are described by the handled functions (named as callback_funcs_for_xxx)</p>
+The behaviors are described by the handled functions (named as callback_funcs_for_xxx).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ID</strong> – The unique ID of the server, which is set to 0 by default</p></li>
+<li><p><strong>state</strong> – The training round</p></li>
+<li><p><strong>config</strong> – the configuration</p></li>
+<li><p><strong>data</strong> – The data owned by the server (for global evaluation)</p></li>
+<li><p><strong>model</strong> – The model used for aggregation</p></li>
+<li><p><strong>client_num</strong> – The (expected) client num to start the FL course</p></li>
+<li><p><strong>total_round_num</strong> – The total number of the training round</p></li>
+<li><p><strong>device</strong> – The device to run local training and evaluation</p></li>
+<li><p><strong>strategy</strong> – redundant attribute</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.broadcast_client_address">
 <span class="sig-name descname"><span class="pre">broadcast_client_address</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.broadcast_client_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.broadcast_client_address" title="Permalink to this definition">¶</a></dt>
@@ -170,30 +261,84 @@ strategy: redundant attribute</p>
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.broadcast_model_para">
 <span class="sig-name descname"><span class="pre">broadcast_model_para</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'model_para'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_client_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.broadcast_model_para"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.broadcast_model_para" title="Permalink to this definition">¶</a></dt>
 <dd><p>To broadcast the message to all clients or sampled clients</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg_type</strong> – ‘model_para’ or other user defined msg_type</p></li>
+<li><p><strong>sample_client_num</strong> – the number of sampled clients in the broadcast behavior. And sample_client_num = -1 denotes to broadcast to all the clients.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.callback_funcs_for_join_in">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_join_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.callback_funcs_for_join_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.callback_funcs_for_join_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving the join in information. The server might request for some information (such as num_of_samples) if necessary, assign IDs for the servers.
+If all the clients have joined in, the training process will be triggered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.callback_funcs_for_metrics">
+<span class="sig-name descname"><span class="pre">callback_funcs_for_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.callback_funcs_for_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.callback_funcs_for_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving the evaluation results, which triggers check_and_move_on (perform aggregation when enough feedback has been received).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.callback_funcs_model_para">
+<span class="sig-name descname"><span class="pre">callback_funcs_model_para</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">federatedscope.core.message.Message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.callback_funcs_model_para"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.callback_funcs_model_para" title="Permalink to this definition">¶</a></dt>
+<dd><p>The handling function for receiving model parameters, which triggers check_and_move_on (perform aggregation when enough feedback has been received).
+This handling function is widely used in various FL courses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> – The received message, which includes sender, receiver, state, and content. More detail can be found in federatedscope.core.message</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.check_and_move_on">
-<span class="sig-name descname"><span class="pre">check_and_move_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">check_eval_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.check_and_move_on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.check_and_move_on" title="Permalink to this definition">¶</a></dt>
-<dd><p>To check the message_buffer, when enough messages are receiving, trigger some events (such as perform aggregation, evaluation, and move to the next training round)</p>
+<span class="sig-name descname"><span class="pre">check_and_move_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">check_eval_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_received_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.check_and_move_on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.check_and_move_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>To check the message_buffer. When enough messages are receiving, some events (such as perform aggregation, evaluation, and move to the next training round) would be triggered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>check_eval_result</strong> (<em>bool</em>) – If True, check the message buffer for evaluation; and check the message buffer for training otherwise.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.check_and_save">
 <span class="sig-name descname"><span class="pre">check_and_save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.check_and_save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.check_and_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>To save the results and save model after each evaluation</p>
+<dd><p>To save the results and save model after each evaluation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.check_buffer">
-<span class="sig-name descname"><span class="pre">check_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_round</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_eval_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.check_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.check_buffer" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">check_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_round</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_received_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_eval_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.check_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.check_buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>To check the message buffer</p>
 <p>Arguments:
 cur_round (int): The current round number
-minimal_number (int): The minimal number of the receiving messages
+min_received_num (int): The minimal number of the receiving messages
 check_eval_result (bool): To check training results for evaluation results
 :returns: Whether enough messages have been received or not
 :rtype: bool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.check_client_join_in">
+<span class="sig-name descname"><span class="pre">check_client_join_in</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.check_client_join_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.check_client_join_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>To check whether all the clients have joined in the FL course.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -205,14 +350,13 @@ check_eval_result (bool): To check training results for evaluation results
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.merge_eval_results_from_all_clients">
 <span class="sig-name descname"><span class="pre">merge_eval_results_from_all_clients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">final_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.merge_eval_results_from_all_clients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.merge_eval_results_from_all_clients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merge evaluation results from all clients,
-update best, log the merged results and save then into eval_results.log</p>
+<dd><p>Merge evaluation results from all clients, update best, log the merged results and save then into eval_results.log</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>final_round</strong> – </p>
+<dd class="field-odd"><p><strong>final_round</strong> (<em>bool</em>) – Whether it is the final round of training</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>the formatted merged results</p>
 </dd>
 </dl>
 </dd></dl>
@@ -220,13 +364,33 @@ update best, log the merged results and save then into eval_results.log</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.register_handlers">
 <span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.register_handlers" title="Permalink to this definition">¶</a></dt>
-<dd><p>To bind a message type with a handled function</p>
+<dd><p>To bind a message type with a handling function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg_type</strong> (<em>str</em>) – The defined message type</p></li>
+<li><p><strong>callback_func</strong> – The handling functions to handle the received message</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Server.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>To start the FL course, listen and handle messages (for distributed mode)</p>
+<dd><p>To start the FL course, listen and handle messages (for distributed mode).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.save_best_results">
+<span class="sig-name descname"><span class="pre">save_best_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.save_best_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.save_best_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>To Save the best evaluation results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.worker.Server.terminate">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'finish'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/server.html#Server.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Server.terminate" title="Permalink to this definition">¶</a></dt>
+<dd><p>To terminate the FL course</p>
 </dd></dl>
 
 <dl class="py method">
@@ -240,7 +404,7 @@ update best, log the merged results and save then into eval_results.log</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.core.worker.Worker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.worker.</span></span><span class="sig-name descname"><span class="pre">Worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/worker/base_worker.html#Worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.worker.Worker" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base worker class</p>
+<dd><p>The base worker class.</p>
 </dd></dl>
 
 </section>
@@ -255,51 +419,51 @@ update best, log the merged results and save then into eval_results.log</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<em>Module</em>) – training model</p></li>
 <li><p><strong>data</strong> (<em>dict</em>) – a dict contains train/val/test dataset or dataloader</p></li>
-<li><p><strong>blind</strong> (<em>#</em>) – </p></li>
 <li><p><strong>device</strong> – running device</p></li>
 </ul>
 </dd>
 </dl>
-<dl>
-<dt>Record attributes:</dt><dd><p>model (Module): the training model
-data (dict): a dict contains train/val/test dataset or dataloader
-device (torch.device): specific device to running to
-criterion: specific loss function
-optimizer: specific optimizer
-mode: maintain the current mode of the model</p>
-<p>data_batch: current batch data from train/test/val data loader</p>
-<p># train
-trainable_para_names (list): a list of the names of the trainable parameters within <code class="docutils literal notranslate"><span class="pre">`ctx.model`</span></code>
-train_data: training dataset
-train_loader: training dataloader
-num_train_data (int): the number of training samples within one epoch
-num_train_epoch (int): the number of total training epochs
-num_train_batch (int): the number of batches within one completed training epoch
-num_train_batch_last_epoch (int): the number of batches within the last epoch</p>
-<p># test
-test_data: test data
-test_loader: test dataloader
-num_test_data (int): the number of test samples within one epoch
-num_test_epoch (int): the number of test epochs, default 1
-num_test_batch (int): the number of batches within one completed test epoch</p>
-<p># val
-val_data: val data
-val_loader: val dataloader
-num_val_data (int): the number of val samples within one epoch
-num_val_epoch (int): the number of val epochs, default 1
-num_val_batch (int): the number of batches within one completed val epoch</p>
+<dl class="simple">
+<dt>Record attributes:</dt><dd><ul class="simple">
+<li><p>model (Module): the training model</p></li>
+<li><p>data (dict): a dict contains train/val/test dataset or dataloader</p></li>
+<li><p>device (torch.device): specific device to running to</p></li>
+<li><p>criterion: specific loss function</p></li>
+<li><p>optimizer: specific optimizer</p></li>
+<li><p>mode: maintain the current mode of the model</p></li>
+<li><p>data_batch: current batch data from train/test/val data loader</p></li>
+<li><p>trainable_para_names (list): a list of the names of the trainable parameters within <code class="docutils literal notranslate"><span class="pre">`ctx.model`</span></code></p></li>
+<li><p>train_data: training dataset</p></li>
+<li><p>train_loader: training dataloader</p></li>
+<li><p>num_train_data (int): the number of training samples within one epoch</p></li>
+<li><p>num_train_epoch (int): the number of total training epochs</p></li>
+<li><p>num_train_batch (int): the number of batches within one completed training epoch</p></li>
+<li><p>num_train_batch_last_epoch (int): the number of batches within the last epoch</p></li>
+<li><p>test_data: test data</p></li>
+<li><p>test_loader: test dataloader</p></li>
+<li><p>num_test_data (int): the number of test samples within one epoch</p></li>
+<li><p>num_test_epoch (int): the number of test epochs, default 1</p></li>
+<li><p>num_test_batch (int): the number of batches within one completed test epoch</p></li>
+<li><p>val_data: val data</p></li>
+<li><p>val_loader: val dataloader</p></li>
+<li><p>num_val_data (int): the number of val samples within one epoch</p></li>
+<li><p>num_val_epoch (int): the number of val epochs, default 1</p></li>
+<li><p>num_val_batch (int): the number of batches within one completed val epoch</p></li>
+</ul>
 </dd>
-<dt>Statistical variables:</dt><dd><p>loss_batch (float): loss of the current data_batch, shared by train/test/val
-loss_regular (float): loss of the regularizer
-loss_task (float): the sum of loss_batch and loss_regular</p>
-<p>loss_total_batch_train (float): accumulated batch loss during training
-loss_total_regular_train (float): accumulated regular loss during training
-num_samples_train (int): accumulated number of training samples involved at present</p>
-<p>loss_total_test (float): accumulated batch loss during test
-num_samples_test (float): accumulated regular loss during test</p>
-<p>loss_total_val (float): accumulated batch loss during val
-num_samples_val (float): accumulated regular loss during val</p>
-<p>eval_metrics (dict): evaluation results</p>
+<dt>Statistical variables:</dt><dd><ul class="simple">
+<li><p>loss_batch (float): loss of the current data_batch, shared by train/test/val</p></li>
+<li><p>loss_regular (float): loss of the regularizer</p></li>
+<li><p>loss_task (float): the sum of loss_batch and loss_regular</p></li>
+<li><p>loss_total_batch_train (float): accumulated batch loss during training</p></li>
+<li><p>loss_total_regular_train (float): accumulated regular loss during training</p></li>
+<li><p>num_samples_train (int): accumulated number of training samples involved at present</p></li>
+<li><p>loss_total_test (float): accumulated batch loss during test</p></li>
+<li><p>num_samples_test (float): accumulated regular loss during test</p></li>
+<li><p>loss_total_val (float): accumulated batch loss during val</p></li>
+<li><p>num_samples_val (float): accumulated regular loss during val</p></li>
+<li><p>eval_metrics (dict): evaluation results</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
