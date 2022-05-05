@@ -461,8 +461,8 @@ Existing graph datasets are a valuable source to meet the need for more FL datas
 -  Link-level task 
    -  `label_space_splitter`: **Split by latent dirichlet allocation** `cfg.data.splitter = 'rel_type'`<br />It is designed to provide label distribution skew via latent dirichlet allocation (LDA). 
 -  Graph-level task 
-   -  `instance_space_splitter`: **Split by index **`cfg.data.splitter = 'scaffold' or 'rand_chunk'`<br />It is responsible for creating feature distribution skew (i.e., covariate shift). To realize this, we sort the graphs based on their values of a certain aspect. 
-   -  `multi_task_splitter`: **Split by dataset **`cfg.data.splitter = 'louvain'`<br />Different clients have different tasks. 
+   -  `instance_space_splitter`: **Split by index** `cfg.data.splitter = 'scaffold' or 'rand_chunk'`<br />It is responsible for creating feature distribution skew (i.e., covariate shift). To realize this, we sort the graphs based on their values of a certain aspect. 
+   -  `multi_task_splitter`: **Split by dataset** `cfg.data.splitter = 'louvain'`<br />Different clients have different tasks. 
 
 
 ## <span id="model">ModelZoo</span>
@@ -496,7 +496,7 @@ We provide several `Trainers` for different models and for different tasks.
 
 FederatedScope provides comprehensive support to help you develop federated GNN algorithms. Here we will go through `FedSage+` [14] and `GCFL+` [15] as examples.
 
--  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. Based on our message-oriented framework, we need to define new message types and the corresponding handler functions.
+-  FedSage+, [_Subgraph Federated Learning with Missing Neighbor Generation_](https://arxiv.org/pdf/2106.13430v6.pdf)_, in NeurIPS_ 2021<br />FedSage+ try to "restore" the missing graph structure by jointly training a `Missing Neighbor Generator`, each client sends `Missing Neighbor Generator` to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in `federatedscope/gfl/fedsageplus` with `FedSagePlusServer` and `FedSagePlusClient`. In FederatedScope, we need to define new message types and the corresponding handler functions.
 
 ```python
 # FedSagePlusServer

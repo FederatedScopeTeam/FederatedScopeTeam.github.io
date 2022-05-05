@@ -14,7 +14,7 @@ minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt"
 locale                   : "en-US"
 title                    : "FederatedScope"
 title_separator          : "-"
-subtitle                 : "Easy federated learning, safe knowledge sharing."
+subtitle                 : ""
 name                     : &name "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy" # &name is a YAML anchor which can be *referenced later
 description              : &description "Easy Federated Learning, Safe Knowledge Sharing."
 url                      : https://federatedscopeteam.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
@@ -106,7 +106,7 @@ author:
       icon: "fas fa-fw fa-link"
       url: "https://damo.alibaba.com/labs/data-analytics-and-intelligence"
     - label: "Email"
-      icon: "fas fa-fw fa-envelope-square"
+      icon: "far fa-fw fa-envelope"
       url: "mailto:bolin.ding@alibaba-inc.com"
 
 
@@ -119,6 +119,12 @@ footer:
     - label: "Team page"
       icon: "fas fa-fw fa-link"
       url: "https://damo.alibaba.com/labs/data-analytics-and-intelligence"
+    - label: "Slack"
+      icon: "fab fa-slack"
+      url: "https://federatedscopeteam.slack.com/archives/C03E5LGQH7S"
+    - label: "Join DingGroup 👉"
+      icon: "dingding"
+      url: "javascript:;"
 
 
 # Reading Files

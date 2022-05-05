@@ -29,7 +29,7 @@ main:
     url: /refs/index
     target: _blank
   - title: "Publications"
-    url: /year-archive/
+    url: /pub/
 
 
 # documentation links
@@ -50,8 +50,8 @@ docs:
         url: /docs/use-hpo/
   - title: Advanced
     children:
-      - title: "Message-oriented Framework"
-        url: /docs/msg-oriented-framework/
+      - title: "Event-driven Architecture"
+        url: /docs/event-driven-architecture/
       - title: "New Types of Messages and Handlers"
         url: /docs/new-type/
       - title: "Privacy Protection for Message"
@@ -64,12 +64,10 @@ docs:
         url: /docs/cross-device/
       - title: "Cross-Silo FL"
         url: /docs/cross-silo/
-      - title: "Accelerating Federated Hyperparameter Optimization"
+      - title: "Accelerating Federated HPO"
         url: /docs/improve-hpo/
       - title: "Simulation and Deployment"
         url: /docs/simulation-and-deployment/
-      - title: "Contributing to FederatedScope"
-        url: /docs/contributor/
   - title: Applications
     children:
       - title: "Recommendation"
@@ -82,6 +80,12 @@ docs:
         url: /docs/graph/
       - title: "NLP and Speech"
         url: /docs/nlp-and-speech/
+  - title: Get Involved
+    children:
+      - title: "Join Our Community"
+        url: /docs/community/
+      - title: "Contributing to FederatedScope"
+        url: /docs/contributor/
 
 # sidebar navigation list sample
 sidebar-sample:

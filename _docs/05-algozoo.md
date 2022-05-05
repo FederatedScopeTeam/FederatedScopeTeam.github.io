@@ -263,7 +263,7 @@ Most combinations of the buildin methods have been tested. When implementing you
 
 
 ***
-# References
+## References
 [1] McMahan B, Moore E, Ramage D, et al. "Communication-efficient learning of deep networks from decentralized data". International Conference on Artificial Intelligence and Statistics, 2017.
 
 [2] Reddi S J, Charles Z, Zaheer M, et al. "Adaptive federated optimization". Intertional Conference on Learning Representations, 2021.

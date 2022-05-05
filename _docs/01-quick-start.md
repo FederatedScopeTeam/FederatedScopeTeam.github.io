@@ -9,9 +9,9 @@ toc: true
 layout: tuto
 ---
 
-Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learning models from isolated data without directly sharing privacy information, which helps to satisfy the requirements of privacy protection of the public. FederatedScope, a comprehensive federated learning platform via message passing, aims to provide easy-to-use and flexible support for users who want to quickly get started and customize task-specific FL procedures.  
+Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learning models from isolated data without directly sharing privacy information, which helps to satisfy the requirements of privacy protection of the public. FederatedScope, a comprehensive federated learning platform with event-driven architecture, aims to provide easy-to-use and flexible support for users who want to quickly get started and customize task-specific FL procedures.  
 
-We first provide an end-to-end example to illustrate how to implement a standard FL course with FederatedScope.
+We first provide an end-to-end example to illustrate how to implement a vanilla FL course with FederatedScope.
 
 ## Installation
 
@@ -54,7 +54,7 @@ We also support users to adopt customized datasets, please refer to [DataZoo]({{
 
 Secondly, you should specify the model architecture that will be federally trained, such as ConvNet or LSTM. FederatedScope provides the ModelZoo that contains the implementation of widely-used model architectures for various FL applications. Users can set up `cfg.model.type = MODEL_NAME` to apply a specific model architecture in FL tasks. We allow users to use customized models via registering without caring about the federated process. You can refer to [ModelZoo]({{ "/docs/modelzoo/" | relative_url }}) for more details about how to customize models.
 
-For a standard FL course, all participants share the same model architecture and training configuration. And FederatedScope also supports adopting client-specific models and training configurations (known as personalized FL) to handle the non-IID issue in practical  FL applications, please refer to [Personalized FL]({{ "/docs/pdf/" | relative_url }}) for more details. 
+For a vanilla FL course, all participants share the same model architecture and training configuration. And FederatedScope also supports adopting client-specific models and training configurations (known as personalized FL) to handle the non-IID issue in practical  FL applications, please refer to [Personalized FL]({{ "/docs/pdf/" | relative_url }}) for more details. 
 
 ## Run an FL course with configurations
 
@@ -64,8 +64,8 @@ Note that FederatedScope provides a unified view for both standalone simulation 
 
 The standalone mode in FederatedScope means to simulate multiple participants (servers and clients) in a single device, while participants' data are isolated from each other and their models might be shared via message passing. 
 
-Here we demonstrate how to run a standard FL course with FederatedScope, with setting `cfg.data.type = 'FEMNIST'`and `cfg.model.type = 'ConvNet2'` to run vanilla FedAvg [1] for an image classification task.
-Users can include more training configurations, such as `cfg.federated.total_round_num`, `cfg.data.batch_size`, and `cfg.optimizer.lr`, in the configuration (a .yaml file), and run a standard FL course as: 
+Here we demonstrate how to run a vanilla FL course with FederatedScope, with setting `cfg.data.type = 'FEMNIST'`and `cfg.model.type = 'ConvNet2'` to run vanilla FedAvg [1] for an image classification task.
+Users can include more training configurations, such as `cfg.federated.total_round_num`, `cfg.data.batch_size`, and `cfg.optimizer.lr`, in the configuration (a .yaml file), and run a vanilla FL course as: 
 
 ```bash
 # Run with default configurations
