@@ -93,7 +93,7 @@ Step 3: Run the FL with the modified configuration;
 The command to run the example attack: 
 
 ```console
-python flpackage/main.py --cfg flpackage/attack/example_attack_config/reconstruct_fedavg_opt_on_femnist.yaml
+python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/reconstruct_fedavg_opt_on_femnist.yaml
 ```
 
 **Results on FedAvg on Femnist example:**
@@ -109,7 +109,7 @@ The reconstructed results at round 31 & 32 is:
 
 Step 1: The users should make sure the FL is set up correctly on the customized dataset. 
 
-Step 2: Add the prior knowledge about the dataset to function  `get_data_info` in `flpackage/attack/auxiliary/utils.py`. An example of femnist dataset is: 
+Step 2: Add the prior knowledge about the dataset to function  `get_data_info` in `federatedscope/attack/auxiliary/utils.py`. An example of femnist dataset is: 
 
 ```python
 def get_data_info(dataset_name):
@@ -125,7 +125,7 @@ The function takes the `dataset_name` as the input, and it should return `data_f
 Step 3: Run the FL with the modified configuration. 
 
 ```python
-python flpackage/main.py --cfg your_own_config.yaml 
+python federatedscope/main.py --cfg your_own_config.yaml 
 ```
 
 ### 2.3 Example of Class Representative Attack
@@ -145,7 +145,7 @@ attack:
 
 The command to run the example attack: 
 ```console
-python flpackage/main.py --cfg flpackage/attack/example_attack_config/CRA_fedavg_convnet2_on_femnist.yaml
+python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/CRA_fedavg_convnet2_on_femnist.yaml
 ```
 
 
@@ -157,13 +157,13 @@ The representative samples is:
 ![](https://img.alicdn.com/imgextra/i2/O1CN01OXyyFT1xbBj0sOfRw_!!6000000006461-2-tps-91-85.png)
 
 #### 2.3.2  Running the attack on the customized dataset
-To run the customized dataset, the users should define the dataset's corresponding generator function, and add it to function 'get_generator' in 'flpackage/attack/auxiliary/utils.py'.
+To run the customized dataset, the users should define the dataset's corresponding generator function, and add it to function 'get_generator' in 'federatedscope/attack/auxiliary/utils.py'.
 
-In the example of Femnist, the generator is defined in 'flpackage/attack/models/gan_based_model.py', and the `get_generator` is: 
+In the example of Femnist, the generator is defined in 'federatedscope/attack/models/gan_based_model.py', and the `get_generator` is: 
 ```python
 def get_generator(dataset_name):
     if dataset_name == 'femnist':
-        from flpackage.attack.models.gan_based_model import GeneratorFemnist
+        from federatedscope.attack.models.gan_based_model import GeneratorFemnist
         return GeneratorFemnist
     else:
         ValueError("The generator to generate data like {} is not defined!".format(dataset_name))
@@ -190,13 +190,13 @@ Where `attack_method` is the attack method name, `attacker_id` is the id of the 
 
 The command to run the example attack: 
 ```console
-python flpackage/main.py --cfg flpackage/attack/example_attack_config/gradient_ascent_MIA_on_femnist.yaml
+python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/gradient_ascent_MIA_on_femnist.yaml
 ```
 
 The results of loss changes on the target data are plotted in the directory of `cfg.outdir`.
 
 #### 2.4.2 Running the attack on a customized dataset
-The users should add the way to get the target data in function `get_target_data` in `flpackage/attack/auxiliary/MIA_get_target_data.py`
+The users should add the way to get the target data in function `get_target_data` in `federatedscope/attack/auxiliary/MIA_get_target_data.py`
 
 
 ### 2.5 Example of Property Inference Attack
@@ -222,7 +222,7 @@ where `attack_method` is the attack method name; `classifier_PIA` is the method 
 
 The command to run the example attack: 
 ```bash
-python flpackage/main.py --cfg flpackage/attack/example_attack_config/PIA_toy.yaml
+python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/PIA_toy.yaml
 ```
 
 
@@ -239,7 +239,7 @@ When the attacker is the server, it requires an overload of the Server class of 
 * If the attack happens in the FL training process, the users should rewrite the `callback_funcs_model_para`, which is the function that called when the server receives the model parameter updates. 
 * If the attack happens at the end of the FL training, the users should check whether it is the last round, and if yes, it will execute the attack actions. 
 
-After overloading the server class, you should add it the function `get_server_cls` in `flpackage/core/auxiliaries/worker_builder.py` .
+After overloading the server class, you should add it the function `get_server_cls` in `federatedscope/core/auxiliaries/worker_builder.py` .
 
 #### 3.2.1 Example of developing property inference attack
 The following is an example in a property inference attack where the attacker (server) performs attack actions both during and after the FL training. The attacker collects the received parameter updates during the FL training and generates the training data for PIA classifier based on the current model. After the FL training, the attacker trains the PIA classifier, and then infers the property based on the collected parameter updates. 
@@ -315,15 +315,15 @@ class PassivePIAServer(Server):
             print(self.pia_results)
 ```
 
-The final step is to add the class ``PassivePIAServer`` into ``get_server_cls`` in ``flpackage/core/auxiliaries/worker_builder.py``.
+The final step is to add the class ``PassivePIAServer`` into ``get_server_cls`` in ``federatedscope/core/auxiliaries/worker_builder.py``.
 
 ```python
 def get_server_cls(cfg):
     if cfg.attack.attack_method.lower() in ['dlg', 'ig']:
-        from flpackage.attack.worker_as_attacker.server_attacker import PassiveServer
+        from federatedscope.attack.worker_as_attacker.server_attacker import PassiveServer
         return PassiveServer
     elif cfg.attack.attack_method.lower() in ['passivepia']:
-        from flpackage.attack.worker_as_attacker.server_attacker import PassivePIAServer
+        from federatedscope.attack.worker_as_attacker.server_attacker import PassivePIAServer
         return PassivePIAServer
 ```
 
@@ -333,13 +333,13 @@ When the attacker is one of the clients:
 * If the attack actions only happen in the local training procedure, users only need to define the wrapping function to wrap the trainer and add the attack actions. 
 * If the attack actions also happen at the end of the FL training, users need to overload the client class and modify its `callback_funcs_for_finish` function. 
 
-After setting the trainer wrapping function, it should be added to the function `wrap_attacker_trainer` in `flpackage/attack/auxiliary/attack_trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `flpackage/core/auxiliaries/worker_builder.py`.
+After setting the trainer wrapping function, it should be added to the function `wrap_attacker_trainer` in `federatedscope/attack/auxiliary/attack_trainer_builder.py`. Similarly, after overloading the client class, it should be added to function `get_client_cls` in `federatedscope/core/auxiliaries/worker_builder.py`.
 
 #### 3.3.1 Example of developing class representative attack
 The following is an example of wrapping the trainer in the implementation of the class representative attack in [[2]](#2). In this method, the attacker holds a local GAN, and at each FL training round, it will first update the GAN's discriminator with the received paramters, and then local trains GAN's generator so that its generated data can be classified as the target class. After that, the client labels the generated data as the class other than the target class and injects them into the training batch to perform the regular local training. 
 
 The following code shows the wrapping function that adds the above procedures to the trainer. The wrapping function takes the trainer instance as the input. 
-It first adds an instance of `GANCRA` class which is the GAN attack class defined in `flpackage/attack/models/gan_based_model.py` to the context of the trainer, i.e., `base_trainer.ctx` . Then it registers different hooks into its corresponding phase: 
+It first adds an instance of `GANCRA` class which is the GAN attack class defined in `federatedscope/attack/models/gan_based_model.py` to the context of the trainer, i.e., `base_trainer.ctx` . Then it registers different hooks into its corresponding phase: 
 * Register the hook `hood_on_fit_start_generator` to the phase'on_fit_start`, so that the trainer will update the round number at the beginning of local training in each round. 
 * Register the hook `hook_on_gan_cra_train` and `hook_on_batch_injected_data_generation` to the phase `on_batch_start`, so that the trainer will train the GAN and inject the generated data to the training batch when preparing the train batch for local training. 
 * Register the hook `hook_on_data_injection_sav_data` to the phase `on_fit_end` , so that at the end of local training, it will save the data generated by GAN. 
@@ -417,15 +417,15 @@ def hook_on_data_injection_sav_data(ctx):
     ctx.gan_cra.generate_and_save_images()
 ```
 
-After defining the trainer wrapping function, the following code adds the ``wrap_GANTrainer`` into ``wrap_attacker_trainer`` in ``flpackage/attack/auxiliary/attack_trainer_builder.py``.
+After defining the trainer wrapping function, the following code adds the ``wrap_GANTrainer`` into ``wrap_attacker_trainer`` in ``federatedscope/attack/auxiliary/attack_trainer_builder.py``.
 
 ```python
 def wrap_attacker_trainer(base_trainer, config):
     if config.attack.attack_method.lower() == 'gan_attack':
-        from flpackage.attack.trainer.GAN_trainer import wrap_GANTrainer
+        from federatedscope.attack.trainer.GAN_trainer import wrap_GANTrainer
         return wrap_GANTrainer(base_trainer)
     elif config.attack.attack_method.lower() == 'gradascent':
-        from flpackage.attack.trainer.MIA_invert_gradient_trainer import wrap_GradientAscentTrainer
+        from federatedscope.attack.trainer.MIA_invert_gradient_trainer import wrap_GradientAscentTrainer
         return wrap_GradientAscentTrainer(base_trainer)
 
     else:
