@@ -13,7 +13,7 @@ excerpt: >
   An easy-to-use federated learning platform providing comprehensive functionalities.<br />
   <!--- <small><a href="https://github.com/alibaba/FederatedScope">View on GitHub</a></small> --->
 feature_row:
-  - image_path: https://gw.alicdn.com/imgextra/i3/O1CN010JLDCC1e2rLjHftq8_!!6000000003814-2-tps-1440-1440.png
+  - image_path: https://gw.alicdn.com/imgextra/i4/O1CN01qeLbqQ2ACzp7YlTMP_!!6000000008168-2-tps-1440-1440.png
     alt: "easy-to-use"
     title: "Easy-to-use"
     excerpt: "Users are allowed to integrate their own components, including datasets, models, etc., into FederatedScope to conduct federated learning for specific applications."
@@ -27,28 +27,28 @@ feature_row:
     url: "/docs/event-driven-architecture/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: https://gw.alicdn.com/imgextra/i1/O1CN01EnHx2Q1X4VSohn7qG_!!6000000002870-2-tps-1440-1440.png
+  - image_path: https://gw.alicdn.com/imgextra/i2/O1CN01OupUsH1qxu4TLP3dq_!!6000000005563-2-tps-1440-1440.png
     alt: "flexible&extendible"
     title: "Flexible&Extendible"
     excerpt: "Developers can flexibly enrich the exchanged data and participants' behaviors, which is helpful for various real-world federated learning applications."
     url: "/docs/new-type/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: https://gw.alicdn.com/imgextra/i4/O1CN01jtlJ5v1acnyImSQWE_!!6000000003351-2-tps-1440-1440.png
+  - image_path: https://gw.alicdn.com/imgextra/i2/O1CN01USI2PM28Ujw19R6Hl_!!6000000007936-2-tps-1440-1440.png
     alt: "personalization"
     title: "Personalization"
     excerpt: "We have implemented state-of-the-art personalized federated learning methods, and the well-designed interfaces make the development of new methods easy."
     url: "/docs/pfl/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: https://gw.alicdn.com/imgextra/i3/O1CN01BadPK123jKT8QBT89_!!6000000007291-2-tps-1440-1440.png
+  - image_path: https://gw.alicdn.com/imgextra/i4/O1CN01MialDn25fKF1Ca80Q_!!6000000007553-2-tps-1440-1440.png
     alt: "auto-tuning"
     title: "Auto-tuning"
     excerpt: "Out-of-the-box HPO functionalities can save users from the tedious loop of model tuning, allowing them to focus on their innovations."
     url: "/docs/use-hpo/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: https://gw.alicdn.com/imgextra/i1/O1CN01uZ1pWF1FUSpOx6Pax_!!6000000000490-2-tps-1440-1440.png
+  - image_path: https://gw.alicdn.com/imgextra/i3/O1CN01ngekU41XZeOi7DszM_!!6000000002938-2-tps-1440-1440.png
     alt: "privacy-protection"
     title: "Privacy Protection"
     excerpt: "Technologies, including differential privacy, encryption, multi-party computation, etc., are provided to enhance the strength of privacy protection."
