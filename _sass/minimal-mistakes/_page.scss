@@ -645,8 +645,8 @@ body {
   height: 1em;
 }
 .archive__item-teaser{
-  width: 6em;
-  height: 6em;
+  width: 6.9em;
+  height: 6.9em;
   margin: 0 auto;
 }
 .initial-content{
@@ -662,7 +662,7 @@ body {
     height: 22em;
     background-color: #fff;
     padding: 1.8em;
-    // margin-bottom: 2em;
+    padding-top: 0;
     margin: 0 auto 2em;
     box-shadow: 0 0 18px 0 #EAEDF1;
     .archive__item{
@@ -676,10 +676,13 @@ body {
           position: absolute;
           bottom: 3em;
           margin-bottom: 0;
+          left: 50%;
+          transform: translate(-50%,0);
           a{
             border: 1px solid #1735E5;
             color: #1735E5;
             background-color: #fff;
+            padding: 0.5em 2em;
             &:hover{
               background-color: #1735E5;
               color: #fff;
