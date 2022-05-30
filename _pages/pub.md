@@ -1,8 +1,9 @@
 ---
-layout: pub
+layout: single
 permalink: /pub/
 title: "Publications"
 author_profile: true
+classes: wide
 ---
 
 - **FederatedScope: A Flexible Federated Learning Platform for Heterogeneity**. [pdf](https://arxiv.org/pdf/2204.05011.pdf)

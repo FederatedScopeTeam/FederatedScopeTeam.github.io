@@ -28,6 +28,8 @@ main:
   - title: "API References"
     url: /refs/index
     target: _blank
+  - title: "News"
+    url: /news/
   - title: "Publications"
     url: /pub/
 
