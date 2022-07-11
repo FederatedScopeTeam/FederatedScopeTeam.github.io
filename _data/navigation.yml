@@ -20,6 +20,8 @@ foo:
 
 # main links
 main:
+  - title: "CIKM'22 Competition"
+    url: /competition/
   - title: "Tutorials"
     url: /docs/quick-start/
   - title: "Playground"
