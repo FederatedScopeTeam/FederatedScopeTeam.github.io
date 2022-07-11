@@ -14,7 +14,7 @@
         <ul class="visible-links">
           {%- for link in site.data.navigation.main -%}
             <li class="masthead__menu-item">
-              <a href="{{ link.url | relative_url }}"{% if link.description %} title="{{ link.description }}"{% endif %} target="{{ link.target | default: _self }}">{{ link.title }}</a>
+              <a href="{{ link.url | relative_url }}"{% if link.description %} title="{{ link.description }}"{% endif %} target="{{ link.target | default: _self }}">{% if link.title == "CIKM'22 Competition" %}<span style="font-weight:bold;color:red">{{ link.title }}</span>{% else %}{{ link.title }}{% endif %}</a>
             </li>
           {%- endfor -%}
         </ul>
