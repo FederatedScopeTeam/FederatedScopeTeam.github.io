@@ -12,7 +12,7 @@ classes: wide
 ## Introduction
 We propose a new task, federated hetero-task learning, which meets the requirements of a wide range of real-world scenarios, while also promoting the interdisciplinary research of Federated Learning with Multi-task Learning, Model Pre-training, and AutoML. We have prepared an easy-to-use toolkit based on **FederatedScope [1,2]** to help participants easily explore this challenging yet manageable task from several perspectives, and also set up a fair testbed and different formats of awards for participants.
 
-**We are going to run this competition on Tianchi competition platform, where the** <span style="color:blue">link</span> **to the dedicated page will be available on July 15, 2022!**
+**We are running this competition on Tianchi competition platform. Please visit this [link](https://tianchi.aliyun.com/competition/entrance/532008/introduction).**
 
 
 ## Awards
