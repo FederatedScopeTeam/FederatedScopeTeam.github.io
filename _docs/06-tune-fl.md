@@ -2,7 +2,7 @@
 title: "Tuning Federated Learning"
 permalink: /docs/use-hpo/
 excerpt: "About using Federated HPO."
-last_modified_at: 2022-04-03
+last_modified_at: 2022-07-21
 toc: true
 layout: tuto
 ---
@@ -16,38 +16,33 @@ Therefore, FederatedScope has provided the functionality of hyperparameter optim
 We encourage our users to try the provided toy example of HPO by:
 
 ```bash
-python federatedscope/hpo.py --cfg federatedscope/example_configs/toy_hpo.yaml
+python demo/bbo.py
 ```
 
-This toy example shows how to use random search [1] algorithm to seek the appropriate learning rate (`optimizer.lr`) and local update steps (`federate.local_update_steps`) for a logistic regression model.
+This toy example shows how to use Gaussian Process (GP) algorithm to seek the appropriate learning rate (`optimizer.lr`) for a logistic regression model.
+There are more such scripts in this `demo/` folder to show how to use popular HPO packages (e.g., [SMAC3](https://github.com/automl/SMAC3) and [HpBandSter](https://github.com/automl/HpBandSter)) to interact with FederatedScope. After reading these script, users would be able to conduct HPO for their own FL cases with FederatedScope.
 
-In this post, we explain what this toy example does in a hands-on manner. After reading this post, users would be able to conduct HPO for their own FL cases with FederatedScope.
+Meanwhile, we have implemented several popular HPO methods in the `autotune` module of FederatedScope, including random search [1], Successive Halving Algorithm (SHA) [2], etc. Users could try the rando search algorithm by:
+
+```bash
+python federatedscope/hpo.py --cfg federatedscope/example_configs/toy_rs.yaml
+```
 
 ### How to declare the search space?
-At first, any HPO procedure starts with declaring the search space, say that, which hyperparameters need to be determined and what are the candidate choices for them. FederatedScope allows users to specify the search space via their configuration file (here 'federatedscope/example_configs/toy_hpo.yaml'). As you can see from this .yaml file, there are two kinds of search space: 
-   - _Continuous_: the candidate choices are a range of real-valued numbers. Here FederatedScope interprets `!contd` as an indicator for continuous search space and parses the value `'0.001,0.5'` as the range [0.001, 0.5].
-   - _Discrete_: the caniddate choices are a few elements. Here FederatedScope interprets `!disc` as an indicator for discrete search space and parses the value `[0.0, 0.0005, 0.005]` as the set of candidates {0.0, 0.0005, 0.005}.
+At first, any HPO procedure starts with declaring the search space, say that, which hyperparameters need to be determined and what are the candidate choices for them. FederatedScope allows users to specify the search space via the argument `hpo.ss` (in the above example, it is specified as 'federatedscope/example_configs/toy_hpo_ss.yaml'). As you can see from this .yaml file, the search space of each hyperparameter is described as a dict:
+
 ```yaml
-use_gpu: True
-federate:
-  mode: 'standalone'
-  total_round_num: 10
-  make_global_eval: False
-  client_num: 5
-trainer:
-  type: 'general'
-eval:
-  freq: 5
-model:
-  type: 'lr'
-data:
-  type: 'toy'
-optimizer:
-  lr: !contd '0.001,0.5'
-  weight_decay: !disc [0.0, 0.0005, 0.005]
-hpo:
-  init_strategy: 'random'
+train.optimizer.lr:
+  type: float
+  lower: 0.001
+  upper: 0.5
+  log: True
+train.optimizer.weight_decay:
+  type: cate
+  choices: [0.0, 0.0005, 0.005]
 ```
+
+where the key `type` specifies whether the search space of this hyperparameter is continuous or categorical. Then other keys and values correspond to the argument names and values for instantiating `UniformFloatHyperparameter` or `CategoricalHyperparameter` objects (see [ConfigureSpace package](https://automl.github.io/ConfigSpace/master/index.html)).
 
 ### How the scheduler interact with the FL runner?
 Up to now, we have declared the search spaces. As random search algorithm has been adopted (`hpo.init_strategy == 'random'`  and default BruteForce scheduler is adopted), FederatedScope will randomly sample a specified number of candidate configurations from the declared search spaces. Specifically, to sample each configuration, the considered hyperparameters are enumerated, and choice for each hyperparameter is sampled from its search space uniformly:
@@ -71,7 +66,7 @@ In addition to the simple search strategies including random search and grid sea
 Taking SHA as an example, we can try it by:
 
 ```bash
-python federatedscope/hpo.py --cfg federatedscope/example_configs/toy_hpo.yaml hpo.scheduler sha
+python federatedscope/hpo.py --cfg federatedscope/example_configs/toy_sha.yaml
 ```
 
 As the default values for SHA are `hpo.sha.elim_round_num=3` and `hpo.sha.elim_rate=3`, the scheduler begins with $3 \times 3=27$ randomly sampled configurations. Then the search procedure continues iteratively. At the first round, all these 27 configurations are evaluated, and then only the top 1/3 candidates are reserved for the next round. In the next round, the reserved 9 configurations are evaluated, where each FL course is restored from the checkpoint resulted from the last round. The scheduler repeat such iterations untill there is only one configuration remaining. We just show the outputs of the final round:
