@@ -222,9 +222,10 @@ where the argument `--cfg xxxx.yaml` specifies the global configuration, and `--
 - By FederatedScope
 
   - The "cikm22competition" branch in FederatedScope supports to save prediction results at the end of training. You can refer to code in  [federatedscope/gfl/trainer/graphtrainer.py](https://github.com/alibaba/FederatedScope/blob/cikm22competition/federatedscope/gfl/trainer/graphtrainer.py) and [federatedscope/core/trainers/torch_trainer.py](https://github.com/alibaba/FederatedScope/blob/cikm22competition/federatedscope/core/trainers/torch_trainer.py). 
-  - You can specify the path of prediction results by modifying `config.eval.prediction_path`, which defaults to "prediction". Taking FedAvg as an example, at the end of training FederatedScope will report the path of prediction results as follows:
+  - The prediction results will be saved in a csv file named `prediction.csv`. For the convenience of users to conduct multiple experiments (e.g., for HPO), `prediction.csv` of each experimental run with a spcific configuration will be placed in this experiment's output directory (specified by `outdir`), which will be automatically appended with a suffix of timestamp if the specified directory has been there.
+  - The training log will report the directory of the prediction results. Taking FedAvg as an example, at the end of training FederatedScope will report the path of prediction results as follows:
   
-    <img src="https://img.alicdn.com/imgextra/i1/O1CN01eb3zR21QUsyjdXAM6_!!6000000001980-2-tps-4920-404.png" width=480>
+    <img src="https://img.alicdn.com/imgextra/i2/O1CN01oTjoJZ1Rup1aW4ADH_!!6000000002172-2-tps-4824-398.png" width=480>
   
   - Then you can refer to the directory for prediction results. 
   
