@@ -225,7 +225,7 @@ where the argument `--cfg xxxx.yaml` specifies the global configuration, and `--
   - The prediction results will be saved in a csv file named `prediction.csv`. For the convenience of users to conduct multiple experiments (e.g., for HPO), `prediction.csv` of each experimental run with a spcific configuration will be placed in this experiment's output directory (specified by `outdir`), which will be automatically appended with a suffix of timestamp if the specified directory has been there.
   - The training log will report the directory of the prediction results. Taking FedAvg as an example, at the end of training FederatedScope will report the path of prediction results as follows:
   
-    <img src="https://img.alicdn.com/imgextra/i2/O1CN01oTjoJZ1Rup1aW4ADH_!!6000000002172-2-tps-4824-398.png" width=480>
+    <img src="https://img.alicdn.com/imgextra/i1/O1CN01L68gve1nGu3BNp5vL_!!6000000005063-2-tps-4766-404.png" width=480>
   
   - Then you can refer to the directory for prediction results. 
   
