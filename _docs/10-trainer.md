@@ -45,8 +45,14 @@ HOOK_TRIGGER = [
 self.hooks_in_train = collections.defaultdict(list)
 # By default, use the same trigger keys
 self.hooks_in_eval = copy.deepcopy(self.hooks_in_train)
+self.hooks_in_ft = copy.deepcopy(self.hooks_in_train)
+
+# register necessary hooks into self.hooks_in_train and
+# self.hooks_in_eval
 if not only_for_eval:
     self.register_default_hooks_train()
+if self.cfg.finetune.before_eval:
+    self.register_default_hooks_ft()
 self.register_default_hooks_eval()
 ```
 
@@ -65,37 +71,59 @@ self.register_default_hooks_eval()
   - We decouple the learning process with several fine-grained point-in-time and calling all registered hooks at specific point-in-times as follows
 
     ```python
-    for hook in hooks_set["on_fit_start"]:
-        hook(self.ctx)
-    
-    for epoch_i in range(self.ctx.get(
-            "num_{}_epoch".format(dataset_name))):
-        self.ctx.cur_epoch_i = epoch_i
-        for hook in hooks_set["on_epoch_start"]:
+    @lifecycle(LIFECYCLE.ROUTINE)
+    def _run_routine(self, mode, hooks_set, dataset_name=None):
+        """Run the hooks_set and maintain the mode
+        Arguments:
+            mode: running mode of client, chosen from train/val/test
+        Note:
+            Considering evaluation could be in ```hooks_set["on_epoch_end"]```, there could be two data loaders in
+        self.ctx, we must tell the running hooks which data_loader to call and which num_samples to count
+        """
+        for hook in hooks_set["on_fit_start"]:
             hook(self.ctx)
-    
-        for batch_i in range(
-                self.ctx.get("num_{}_batch".format(dataset_name))):
-            self.ctx.cur_batch_i = batch_i
+
+        self._run_epoch(hooks_set)
+
+        for hook in hooks_set["on_fit_end"]:
+            hook(self.ctx)
+
+        return self.ctx.num_samples
+
+    @lifecycle(LIFECYCLE.EPOCH)
+    def _run_epoch(self, hooks_set):
+        for epoch_i in range(self.ctx.get(f"num_{self.ctx.cur_split}_epoch")):
+            self.ctx.cur_epoch_i = CtxVar(epoch_i, "epoch")
+
+            for hook in hooks_set["on_epoch_start"]:
+                hook(self.ctx)
+
+            self._run_batch(hooks_set)
+
+            for hook in hooks_set["on_epoch_end"]:
+                hook(self.ctx)
+
+    @lifecycle(LIFECYCLE.BATCH)
+    def _run_batch(self, hooks_set):
+        for batch_i in range(self.ctx.get(f"num_{self.ctx.cur_split}_batch")):
+            self.ctx.cur_batch_i = CtxVar(batch_i, LIFECYCLE.BATCH)
+
             for hook in hooks_set["on_batch_start"]:
                 hook(self.ctx)
+
             for hook in hooks_set["on_batch_forward"]:
                 hook(self.ctx)
-            if self.ctx.cur_mode == 'train':
-                for hook in hooks_set["on_batch_backward"]:
-                    hook(self.ctx)
+
+            for hook in hooks_set["on_batch_backward"]:
+                hook(self.ctx)
+
             for hook in hooks_set["on_batch_end"]:
                 hook(self.ctx)
-    
+
             # Break in the final epoch
-            if self.ctx.cur_mode == 'train' and epoch_i == self.ctx.num_train_epoch - 1:
+            if self.ctx.cur_mode in [MODE.TRAIN, MODE.FINETUNE] and self.ctx.cur_epoch_i == self.ctx.num_train_epoch - 1:
                 if batch_i >= self.ctx.num_train_batch_last_epoch - 1:
                     break
-    
-        for hook in hooks_set["on_epoch_end"]:
-            hook(self.ctx)
-    for hook in hooks_set["on_fit_end"]:
-        hook(self.ctx)
     ```
 
 ### Hooks 
@@ -107,15 +135,23 @@ self.register_default_hooks_eval()
       
     ```python
     def _hook_on_fit_start_init(ctx):
-        # prepare model
+        # prepare model and optimizer
         ctx.model.to(ctx.device)
-    
+
+        if ctx.cur_mode in [MODE.TRAIN, MODE.FINETUNE]:
+            # Initialize optimizer here to avoid the reuse of optimizers
+            # across different routines
+            ctx.optimizer = get_optimizer(ctx.model,
+                                          **ctx.cfg[ctx.cur_mode].optimizer)
+            ctx.scheduler = get_scheduler(ctx.optimizer,
+                                          **ctx.cfg[ctx.cur_mode].scheduler)
+
         # prepare statistics
-        setattr(ctx, "loss_batch_total_{}".format(ctx.cur_data_split), 0)
-        setattr(ctx, "loss_regular_total_{}".format(ctx.cur_data_split), 0)
-        setattr(ctx, "num_samples_{}".format(ctx.cur_data_split), 0)
-        setattr(ctx, "{}_y_true".format(ctx.cur_data_split), [])
-        setattr(ctx, "{}_y_prob".format(ctx.cur_data_split), [])
+        ctx.loss_batch_total = CtxVar(0., LIFECYCLE.ROUTINE)
+        ctx.loss_regular_total = CtxVar(0., LIFECYCLE.ROUTINE)
+        ctx.num_samples = CtxVar(0, LIFECYCLE.ROUTINE)
+        ctx.ys_true = CtxVar([], LIFECYCLE.ROUTINE)
+        ctx.ys_prob = CtxVar([], LIFECYCLE.ROUTINE)
     
     ```
 
@@ -127,11 +163,11 @@ self.register_default_hooks_eval()
         pred = ctx.model(x)
         if len(label.size()) == 0:
             label = label.unsqueeze(0)
-        ctx.loss_batch = ctx.criterion(pred, label)
-        ctx.y_true = label
-        ctx.y_prob = pred
-    
-        ctx.batch_size = len(label)
+
+        ctx.y_true = CtxVar(label, LIFECYCLE.BATCH)
+        ctx.y_prob = CtxVar(pred, LIFECYCLE.BATCH)
+        ctx.loss_batch = CtxVar(ctx.criterion(pred, label), LIFECYCLE.BATCH)
+        ctx.batch_size = CtxVar(len(label), LIFECYCLE.BATCH)
     ```
     
      - update model parameters in backward stage
@@ -141,9 +177,11 @@ self.register_default_hooks_eval()
         ctx.optimizer.zero_grad()
         ctx.loss_task.backward()
         if ctx.grad_clip > 0:
-            torch.nn.utils.clip_grad_norm_(
-              ctx.model.parameters(), ctx.grad_clip)
+            torch.nn.utils.clip_grad_norm_(ctx.model.parameters(),
+                                           ctx.grad_clip)
         ctx.optimizer.step()
+        if ctx.scheduler is not None:
+            ctx.scheduler.step()
     ```
     
 - To customize more trainer behaviors, users can reset and replace existing hooks, or register new hooks
@@ -217,68 +255,177 @@ self.register_default_hooks_eval()
 
 `Context` class is an implementation of messager within the trainer. All variables within it can be called by `ctx.{VARIABLE_NAME}`. 
 
-As stated above, both the training and evluation processes are consisted of independent hook functions, which only receive an instance of `Context` as the sole parameter. Therefore, the parameter `ctx` should 
+As stated above, both the training and evaluation processes are consisted of independent hook functions, which only receive an instance of `Context` as the sole parameter. Therefore, the parameter `ctx` should 
 - maintain the references of objects (e.g. model, data, optimizer), 
 - provide running parameters (e.g. number of training epochs), 
-- indicate the current operating status (e.g. train/test/validate), and 
-- record statistical variables (e.g. loss, output, accuracy). 
+- indicate the current operating status (e.g. train/test/validate) and the current selected data split (e.g. the train/test/validate split), and
+- maintain and manage statistical variables (e.g. loss, output, accuracy). 
 
-### Attributes
-To satisfy the above requirements, an instance of `Context` contains two types of variables: 
-- Static variables: provide the basic references, and most of the time remain unchanged. 
-	- The reference of running model, dataset, dataloader, optimizer, criterion function, regularizer, and so on.
-	
-	  ```python
-	  NAME		TYPE		MEANING
-	  model		Module		Reference to the model
-	  data 		Dict		A dict contains train/val/test dataset or dataloader
-	  device 		Device		The running device, e.g. cpu/gpu
-	  criterion	-			Specific loss function
-	  optimizer	-			Reference to the optimzier
-	  data_batch	-			Current batch data from train/test/val data loader
-	  ```
+### Maintain the References of Objects
+During federated training and evaluation, `Context` needs to maintain some necessary objects, such as 
+- `model`: The FL training/evaluation model,
+- `data`: The dataset used in FL training/evaluation, 
+- `device`: The specific device, and
+- `criterion`: The specific loss function.
 
-	- The running parameters.
-	
-	  ```python
-	  NAME						TYPE		MEANING
-	  num_train_epoch				Int			The number of training epochs
-	  num_train_batch				Int			The number of training batchs within one epoch
-	  num_train_batch_last_epoch	Int			The number of training batchs within the last training epoch
-	  grad_clip					Float		The threshold of gradient clipping
-	  ```
+Note the above references of objects are all **shared across different routines**. 
 
-- Dynamic variables: 
-	- Indicators of current dataset and running mode
+### Provide running parameters
+Some parameters are calculated within the routine, such as 
+- the number of training/test/validate epochs, 
+- the total number of training/test/valiate batches, 
+- the number of the batches within the last training epoch,
 
-	  ```python
-	  NAME			TYPE		MEANING
-	  cur_mode		-			The current running mode, used to distinguish the statiscal variables, e.g. loss_train/loss_test/loss_val
-	  cur_dataset		-			The current dataset
-	  ```
-
-	- Statistical variables to monitor the running status. 
-	
-	  ```python
-	  NAME					TYPE		MEANING
-	  loss_batch				Float		The loss of current batch		
-	  loss_regular			Float		The loss of current regular term
-	  loss_task				Float		The sum of loss_batch and loss_regular, used to compute the gradients
-	  loss_total_train		Float		The sum of loss_batch during local training
-	  pred					Tensor		The predict tensor output by the model
-	  label					Tensor		The labels of current batch_data
-	  num_samples_train		Int			The count of samples during local training
-	  ```
-
-### Note
-Developers can add any variables to `Context` as they want. 
-
+For now, the above running parameters are calculated by the `setup_vars` function in `Context`. 
 ```python
-ctx.{VARIABLE_NAME} = {value}
+def setup_vars(self):
+    if self.cfg.backend == 'torch':
+        self.trainable_para_names = get_trainable_para_names(self.model)
+        self.criterion = get_criterion(self.cfg.criterion.type,
+                                       self.device)
+        self.regularizer = get_regularizer(self.cfg.regularizer.type)
+        self.grad_clip = self.cfg.grad.grad_clip
+    elif self.cfg.backend == 'tensorflow':
+        self.trainable_para_names = self.model.trainable_variables()
+        self.criterion = None
+        self.regularizer = None
+        self.optimizer = None
+        self.grad_clip = None
+
+    # Process training data
+    if self.get('train_data', None) is not None or self.get(
+            'train_loader', None) is not None:
+        # Calculate the number of update steps during training given the
+        # local_update_steps
+        self.num_train_batch, self.num_train_batch_last_epoch, self.num_train_epoch, self.num_total_train_batch = calculate_batch_epoch_num(
+            self.cfg.train.local_update_steps,
+            self.cfg.train.batch_or_epoch, self.num_train_data,
+            self.cfg.data.batch_size, self.cfg.data.drop_last)
+
+    # Process evaluation data
+    for mode in ["val", "test"]:
+        setattr(self, "num_{}_epoch".format(mode), 1)
+        if self.get("{}_data".format(mode)) is not None or self.get(
+                "{}_loader".format(mode)) is not None:
+            setattr(
+                self, "num_{}_batch".format(mode),
+                getattr(self, "num_{}_data".format(mode)) //
+                self.cfg.data.batch_size +
+                int(not self.cfg.data.drop_last and bool(
+                    getattr(self, "num_{}_data".format(mode)) %
+                    self.cfg.data.batch_size)))
 ```
 
-However, you must check the lifecycle of the record varibales carefully, and release them once they are not used. An unreleased variable may cause memory leakage during federated learning. 
+### Indicate the Current Operating Status and the Selected Dataset
+The `Context` class uses two attributes to indicate the current operating status (`cur_mode`) and selected dataset (`cur_split`). 
 
+#### cur_mode
+The value of `cur_mode` is selected among `MODE.TRAIN`, `MODE.FINETUNE`, `MODE.TEST` and `MODE.VAL` as follows. 
+You can find the enum class in `federatedscope/core/auxiliaries/enums.py`. 
+```python
+class MODE:
+    """
+
+    Note:
+        Currently StrEnum cannot be imported with the environment
+        `sys.version_info < (3, 11)`, so we simply create a MODE class here.
+    """
+    TRAIN = 'train'
+    TEST = 'test'
+    VAL = 'val'
+    FINETUNE = 'finetune'
+```
+At the beginning of one routine, we will check `cur_mode` to 
+- change the status of the models 
+  - execute `model.train()` if `cur_mode` equals `MODE.TRAIN` or `MODE.FINETUNE`, and 
+  - execute `model.eval()` if `cur_mode` equals `MODE.TEST` or `MODE.VAL`
+
+#### cur_split
+The attribute `cur_split` indicates which part of dataset that the routine will use, and the printed metrics will be named with a `cur_split` prefix.
+In general setting, the dataset is divided into train, test and validate splits. 
+```python
+class MetricCalculator(object):
+    ...
+    def eval(self, ctx):
+        results = {}
+        y_true, y_pred, y_prob = self._check_and_parse(ctx)
+        for metric, func in self.eval_metric.items():
+            results["{}_{}".format(ctx.cur_split,
+                                   metric)] = func(ctx=ctx,
+                                                   y_true=y_true,
+                                                   y_pred=y_pred,
+                                                   y_prob=y_prob,
+                                                   metric=metric)
+```
+
+By default, the training routine will execute on the train split, and the evaluation routine will execute on the test and validate splits. 
+However, you can also specify the split by the argument `target_data_split_name`.
+```python
+def train(self, target_data_split_name="train", hooks_set=None):
+    ...
+
+def evaluate(self, target_data_split_name="test", hooks_set=None):
+    ...
+
+def finetune(self, target_data_split_name="train", hooks_set=None):
+    ...
+```
+
+### Maintain and Manage Statistical Variables
+The statistical variables include average/total training/test loss, number of training/test samples and so on. 
+Theoretically, the lifecycle of all the statistical variables should be within the routine. 
+FederatedScope achieves **automatic** lifecycle management by a wrapper class `CtxVar` and a decorator `@lifecycle`. 
+
+The class `CtxVar` takes two arguments, where `obj` is the value of the statistical variable, and `lifecycle` is chosen from the enum class `federatedscope.core.auxiliaries.enums.LIFECYCLE`. 
+```python
+class CtxVar(object):
+    """Basic variable class
+    Arguments:
+        lifecycle: specific lifecycle of the attribute
+    """
+
+    LIEFTCYCLES = ["batch", "epoch", "routine", None]
+
+    def __init__(self, obj, lifecycle=None):
+        assert lifecycle in CtxVar.LIEFTCYCLES
+        self.obj = obj
+        self.lifecycle = lifecycle
+```
+Taking the average loss as an example, you can initialize a statistical variable `loss_total` as follows, 
+```python
+def _hook_on_fit_start(ctx):
+    ctx.loss_total = CtxVar(0., LIFECYCLE.ROUTINE)
+```
+`LIFECYCLE.ROUTINE` indicates the variable `loss_total` will be deleted automatically at the end of the routine.
+
+#### Note 
+- The wrapper class `CtxVar` is only used to record the lifecycle and **won't influence the usage of the variable**. 
+e.g. in the above example `type(ctx.loss_total)` still equals `float`.
+
+
+
+While the decorator `@lifecycle(lifecycle)` decides which variables will be deleted after running the decorated function. 
+In the following example the variables created with `CtxVar(xxx, LIFECYCLE.EPOCH)` will be deleted after executing `_run_epoch`.
+```python
+@lifecycle(LIFECYCLE.EPOCH)
+def _run_epoch(self, hooks_set):
+    for epoch_i in range(self.ctx.get(f"num_{self.ctx.cur_split}_epoch")):
+        self.ctx.cur_epoch_i = CtxVar(epoch_i, "epoch")
+
+        for hook in hooks_set["on_epoch_start"]:
+            hook(self.ctx)
+
+        self._run_batch(hooks_set)
+
+        for hook in hooks_set["on_epoch_end"]:
+            hook(self.ctx)
+```
+
+#### NOTE
+- The users can also manage the variables all by themselves. However, you must check the lifecycle of the record varibales carefully, and release them once they are not used. An unreleased variable may cause memory leakage during federated learning. 
+Feel free to implement your own algorithm in FederatedScope!
+
+  
 ## Multi-model Trainer 
 
 Several learning methods may leverage multiple models in each client such as clustering based method [1] and multi-task learning based method [2], FederatedScope implements the `MultiModelTrainer` class to meet this requirement.
