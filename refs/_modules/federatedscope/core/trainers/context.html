@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.context &mdash; federatedscope 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>federatedscope.core.trainers.context</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.context</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.criterion_builder</span> <span class="kn">import</span> <span class="n">get_criterion</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.optimizer_builder</span> <span class="kn">import</span> <span class="n">get_optimizer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.model_builder</span> <span class="kn">import</span> <span class="n">get_trainable_para_names</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.regularizer_builder</span> <span class="kn">import</span> <span class="n">get_regularizer</span>
+
+
+<div class="viewcode-block" id="Context"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Context">[docs]</a><span class="k">class</span> <span class="nc">Context</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Record and pass variables among different hook functions.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        model (Module): training model</span>
+<span class="sd">        data (dict): a dict contains train/val/test dataset or dataloader</span>
+<span class="sd">        device: running device</span>
+
+<span class="sd">    Record attributes:</span>
+<span class="sd">        - model (Module): the training model</span>
+<span class="sd">        - data (dict): a dict contains train/val/test dataset or dataloader</span>
+<span class="sd">        - device (torch.device): specific device to running to</span>
+<span class="sd">        - criterion: specific loss function</span>
+<span class="sd">        - optimizer: specific optimizer</span>
+<span class="sd">        - mode: maintain the current mode of the model</span>
+
+<span class="sd">        - data_batch: current batch data from train/test/val data loader</span>
+
+<span class="sd">        - trainable_para_names (list): a list of the names of the trainable parameters within ```ctx.model```</span>
+<span class="sd">        - train_data: training dataset</span>
+<span class="sd">        - train_loader: training dataloader</span>
+<span class="sd">        - num_train_data (int): the number of training samples within one epoch</span>
+<span class="sd">        - num_train_epoch (int): the number of total training epochs</span>
+<span class="sd">        - num_train_batch (int): the number of batches within one completed training epoch</span>
+<span class="sd">        - num_train_batch_last_epoch (int): the number of batches within the last epoch</span>
+
+<span class="sd">        - test_data: test data</span>
+<span class="sd">        - test_loader: test dataloader</span>
+<span class="sd">        - num_test_data (int): the number of test samples within one epoch</span>
+<span class="sd">        - num_test_epoch (int): the number of test epochs, default 1</span>
+<span class="sd">        - num_test_batch (int): the number of batches within one completed test epoch</span>
+
+<span class="sd">        - val_data: val data</span>
+<span class="sd">        - val_loader: val dataloader</span>
+<span class="sd">        - num_val_data (int): the number of val samples within one epoch</span>
+<span class="sd">        - num_val_epoch (int): the number of val epochs, default 1</span>
+<span class="sd">        - num_val_batch (int): the number of batches within one completed val epoch</span>
+
+<span class="sd">    Statistical variables:</span>
+<span class="sd">        - loss_batch (float): loss of the current data_batch, shared by train/test/val</span>
+<span class="sd">        - loss_regular (float): loss of the regularizer</span>
+<span class="sd">        - loss_task (float): the sum of loss_batch and loss_regular</span>
+
+<span class="sd">        - loss_total_batch_train (float): accumulated batch loss during training</span>
+<span class="sd">        - loss_total_regular_train (float): accumulated regular loss during training</span>
+<span class="sd">        - num_samples_train (int): accumulated number of training samples involved at present</span>
+
+<span class="sd">        - loss_total_test (float): accumulated batch loss during test</span>
+<span class="sd">        - num_samples_test (float): accumulated regular loss during test</span>
+
+<span class="sd">        - loss_total_val (float): accumulated batch loss during val</span>
+<span class="sd">        - num_samples_val (float): accumulated regular loss during val</span>
+
+<span class="sd">        - eval_metrics (dict): evaluation results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="fm">__setattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span>
+    <span class="fm">__delattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__delitem__</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> is not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">model</span><span class="p">,</span>
+                 <span class="n">cfg</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">init_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">init_attr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">init_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">Context</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">Context</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">init_dict</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_split</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">init_attr</span><span class="p">:</span>
+            <span class="c1"># setup static variables for training/evaluation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_vars</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">setup_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainable_para_names</span> <span class="o">=</span> <span class="n">get_trainable_para_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="n">get_regularizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">regularizer</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">get_optimizer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+                <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">,</span>
+                <span class="n">momentum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">momentum</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">grad_clip</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainable_para_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">trainable_variables</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_splits_used_by_routine</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># Process training data</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Calculate the number of update steps during training given the local_update_steps</span>
+            <span class="n">num_train_batch</span><span class="p">,</span> <span class="n">num_train_batch_last_epoch</span><span class="p">,</span> <span class="n">num_train_epoch</span><span class="p">,</span> <span class="n">num_total_train_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_calculate_batch_epoch_num</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">local_update_steps</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_train_epoch</span> <span class="o">=</span> <span class="n">num_train_epoch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_train_batch</span> <span class="o">=</span> <span class="n">num_train_batch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_train_batch_last_epoch</span> <span class="o">=</span> <span class="n">num_train_batch_last_epoch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_total_train_batch</span> <span class="o">=</span> <span class="n">num_total_train_batch</span>
+
+        <span class="c1"># Process evaluation data</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_epoch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_batch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="o">//</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">+</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop_last</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="o">%</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">pre_calculate_batch_epoch_num</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_update_steps</span><span class="p">):</span>
+        <span class="n">num_train_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_train_data</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop_last</span>
+            <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_train_data</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">batch_size</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">batch_or_epoch</span> <span class="o">==</span> <span class="s2">&quot;epoch&quot;</span><span class="p">:</span>
+            <span class="n">num_train_epoch</span> <span class="o">=</span> <span class="n">local_update_steps</span>
+            <span class="n">num_train_batch_last_epoch</span> <span class="o">=</span> <span class="n">num_train_batch</span>
+            <span class="n">num_total_train_batch</span> <span class="o">=</span> <span class="n">local_update_steps</span> <span class="o">*</span> <span class="n">num_train_batch</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_train_epoch</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">local_update_steps</span> <span class="o">/</span> <span class="n">num_train_batch</span><span class="p">)</span>
+            <span class="n">num_train_batch_last_epoch</span> <span class="o">=</span> <span class="n">local_update_steps</span> <span class="o">%</span> <span class="n">num_train_batch</span>
+            <span class="n">num_total_train_batch</span> <span class="o">=</span> <span class="n">local_update_steps</span>
+        <span class="k">return</span> <span class="n">num_train_batch</span><span class="p">,</span> <span class="n">num_train_batch_last_epoch</span><span class="p">,</span> <span class="n">num_train_epoch</span><span class="p">,</span> <span class="n">num_total_train_batch</span>
+
+    <span class="k">def</span> <span class="nf">append_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pop_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">change_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># change state</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">mode</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;train&#39;</span> <span class="k">else</span> <span class="s1">&#39;eval&#39;</span><span class="p">)()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">track_used_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="c1"># stack-style to enable mixture usage such as evaluation on train dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_splits_used_by_routine</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_splits_used_by_routine</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">reset_used_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_splits_used_by_routine</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_data_splits_used_by_routine</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_data_splits_used_by_routine</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.gfl.trainer.nodetrainer &mdash; federatedscope 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>federatedscope.gfl.trainer.nodetrainer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.gfl.trainer.nodetrainer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">torch_geometric.loader</span> <span class="kn">import</span> <span class="n">DataLoader</span> <span class="k">as</span> <span class="n">PyGDataLoader</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.loader</span> <span class="kn">import</span> <span class="n">GraphSAINTRandomWalkSampler</span><span class="p">,</span> <span class="n">NeighborSampler</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_trainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.trainer</span> <span class="kn">import</span> <span class="n">GeneralTorchTrainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.ReIterator</span> <span class="kn">import</span> <span class="n">ReIterator</span>
+
+
+<div class="viewcode-block" id="NodeFullBatchTrainer"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.trainer.NodeFullBatchTrainer">[docs]</a><span class="k">class</span> <span class="nc">NodeFullBatchTrainer</span><span class="p">(</span><span class="n">GeneralTorchTrainer</span><span class="p">):</span>
+<div class="viewcode-block" id="NodeFullBatchTrainer.parse_data"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.trainer.NodeFullBatchTrainer.parse_data">[docs]</a>    <span class="k">def</span> <span class="nf">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Populate &quot;{}_data&quot;, &quot;{}_loader&quot; and &quot;num_{}_data&quot; for different modes</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Data</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="n">PyGDataLoader</span><span class="p">([</span><span class="n">data</span><span class="p">])</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># For node-level task dataloader contains one graph</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Type of data should be PyG data.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">init_dict</span></div>
+
+    <span class="k">def</span> <span class="nf">_hook_on_batch_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="p">)[</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)]]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)]]</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">y_prob</span> <span class="o">=</span> <span class="n">pred</span></div>
+
+
+<div class="viewcode-block" id="NodeMiniBatchTrainer"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.trainer.NodeMiniBatchTrainer">[docs]</a><span class="k">class</span> <span class="nc">NodeMiniBatchTrainer</span><span class="p">(</span><span class="n">GeneralTorchTrainer</span><span class="p">):</span>
+<div class="viewcode-block" id="NodeMiniBatchTrainer.parse_data"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.trainer.NodeMiniBatchTrainer.parse_data">[docs]</a>    <span class="k">def</span> <span class="nf">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Populate &quot;{}_data&quot;, &quot;{}_loader&quot; and &quot;num_{}_data&quot; for different modes</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="n">NeighborSampler</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="n">GraphSAINTRandomWalkSampler</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;train&#39;</span><span class="p">:</span>
+                            <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="n">mode</span><span class="p">)</span>
+                            <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># We need to pass Full Dataloader to model</span>
+                            <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                            <span class="p">]</span>
+                            <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">batch_size</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">{}</span><span class="s2"> is not supported.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">))))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Type of data should be dict.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">init_dict</span></div>
+
+    <span class="k">def</span> <span class="nf">_hook_on_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="c1"># TODO: blind torch</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)),</span>
+                          <span class="n">ReIterator</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)),</span>
+                          <span class="n">NeighborSampler</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_NeighborSampler</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_NeighborSampler</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">),</span>
+                <span class="n">ReIterator</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">))))</span>
+
+    <span class="k">def</span> <span class="nf">_hook_on_batch_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span> <span class="o">==</span> <span class="s1">&#39;train&#39;</span><span class="p">:</span>
+            <span class="c1"># For training</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_NeighborSampler</span><span class="p">:</span>
+                <span class="c1"># For NeighborSamper</span>
+                <span class="n">batch_size</span><span class="p">,</span> <span class="n">n_id</span><span class="p">,</span> <span class="n">adjs</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span>
+                <span class="n">adjs</span> <span class="o">=</span> <span class="p">[</span><span class="n">adj</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">adj</span> <span class="ow">in</span> <span class="n">adjs</span><span class="p">]</span>
+                <span class="n">pred</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">n_id</span><span class="p">],</span> <span class="n">adjs</span><span class="o">=</span><span class="n">adjs</span><span class="p">)</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">n_id</span><span class="p">[:</span><span class="n">batch_size</span><span class="p">]]</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># For GraphSAINTRandomWalkSampler or PyGDataLoader</span>
+                <span class="n">batch</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">pred</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                                 <span class="n">batch</span><span class="o">.</span><span class="n">edge_index</span><span class="p">)[</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                     <span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)]]</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">batch</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)]]</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">[</span><span class="s1">&#39;train_mask&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For inference</span>
+            <span class="n">subgraph_loader</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)]</span>
+            <span class="n">pred</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">subgraph_loader</span><span class="p">,</span>
+                                       <span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_mask&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">cur_data_split</span><span class="p">)])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">y_prob</span> <span class="o">=</span> <span class="n">pred</span></div>
+
+
+<span class="k">def</span> <span class="nf">call_node_level_trainer</span><span class="p">(</span><span class="n">trainer_type</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">trainer_type</span> <span class="o">==</span> <span class="s1">&#39;nodefullbatch_trainer&#39;</span><span class="p">:</span>
+        <span class="n">trainer_builder</span> <span class="o">=</span> <span class="n">NodeFullBatchTrainer</span>
+    <span class="k">elif</span> <span class="n">trainer_type</span> <span class="o">==</span> <span class="s1">&#39;nodeminibatch_trainer&#39;</span><span class="p">:</span>
+        <span class="n">trainer_builder</span> <span class="o">=</span> <span class="n">NodeMiniBatchTrainer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+
+    <span class="k">return</span> <span class="n">trainer_builder</span>
+
+
+<span class="n">register_trainer</span><span class="p">(</span><span class="s1">&#39;nodefullbatch_trainer&#39;</span><span class="p">,</span> <span class="n">call_node_level_trainer</span><span class="p">)</span>
+<span class="n">register_trainer</span><span class="p">(</span><span class="s1">&#39;nodeminibatch_trainer&#39;</span><span class="p">,</span> <span class="n">call_node_level_trainer</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
