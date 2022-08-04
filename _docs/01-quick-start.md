@@ -110,7 +110,7 @@ python federatedscope/main.py --cfg federatedscope/example_configs/femnist.yaml 
 Then users can observe some monitored metrics during the training process as:
 
 ```
-INFO: Server #0 has been set up ...
+INFO: Server has been set up ...
 INFO: Model meta-info: <class 'federatedscope.cv.model.cnn.ConvNet2'>.
 ... ...
 INFO: Client has been set up ...
@@ -123,10 +123,10 @@ INFO: {'Role': 'Client #6', 'Round': 0, 'Results_raw': {'train_loss': 209.438838
 INFO: {'Role': 'Client #9', 'Round': 0, 'Results_raw': {'train_loss': 208.83140087127686, 'train_acc': 0.0, 'train_total': 50, 'train_loss_regular': 0.0, 'train_avg_loss': 4.1766280174255375}}
 INFO: ----------- Starting a new training round (Round #1) -------------
 ... ...
-INFO: Server #0: Training is finished! Starting evaluation.
+INFO: Server: Training is finished! Starting evaluation.
 INFO: Client #1: (Evaluation (test set) at Round #20) test_loss is 163.029045
 ... ...
-INFO: Server #0: Final evaluation is finished! Starting merging results.
+INFO: Server: Final evaluation is finished! Starting merging results.
 ... ...
 ```
 
@@ -137,25 +137,41 @@ To run with distributed mode, you only need to:
 
 - Prepare isolated data file and set up `cfg.distribute.data_file = PATH/TO/DATA` for each participant;
 - Change `cfg.federate.model = 'distributed'`, and specify the role of each participant  by `cfg.distributed.role = 'server'/'client'`.
-- Set up a valid address by `cfg.distribute.host = x.x.x.x` and `cfg.distribute.port = xxxx`. (Note that for a server, you need to set up server_host/server_port for listening message, while for a client, you need to set up client_host/client_port for listening and server_host/server_port for sending join-in applications when building up an FL course)
+- Set up a valid address by `cfg.distribute.server_host/client_host = x.x.x.x` and `cfg.distribute.server_port/client_port = xxxx`. (Note that for a server, you need to set up `server_host` and `server_port` for listening messages, while for a client, you need to set up `client_host` and `client_port` for listening as well as `server_host` and `server_port` for joining in an FL course)
 
-We prepare a synthetic example for running with distributed mode (a script can be found in `scripts/run_distributed_lr.sh`):
+We prepare a synthetic example for running with distributed mode:
 
 ```bash
 # For server
-python main.py --cfg federatedscope/example_configs/distributed_server.yaml distribute.data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx
+python main.py --cfg federatedscope/example_configs/distributed_server.yaml distribute.data_file 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx
 
 # For clients
-python main.py --cfg federatedscope/example_configs/distributed_client_1.yaml distribute.data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
-python main.py --cfg federatedscope/example_configs/distributed_client_2.yaml distribute.data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
-python main.py --cfg federatedscope/example_configs/distributed_client_3.yaml distribute.data_path 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
+python main.py --cfg federatedscope/example_configs/distributed_client_1.yaml distribute.data_file 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
+python main.py --cfg federatedscope/example_configs/distributed_client_2.yaml distribute.data_file 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
+python main.py --cfg federatedscope/example_configs/distributed_client_3.yaml distribute.data_file 'PATH/TO/DATA' distribute.server_host x.x.x.x distribute.server_port xxxx distribute.client_host x.x.x.x distribute.client_port xxxx
+```
+
+An executable example with generated toy data can be run with (a script can be found in `scripts/run_distributed_lr.sh`):
+```bash
+# Generate the toy data
+python scripts/gen_data.py
+
+# Firstly start the server that is waiting for clients to join in
+python federatedscope/main.py --cfg federatedscope/example_configs/distributed_server.yaml distribute.data_file toy_data/server_data distribute.server_host 127.0.0.1 distribute.server_port 50051
+
+# Start the client #1 (with another process)
+python federatedscope/main.py --cfg federatedscope/example_configs/distributed_client_1.yaml distribute.data_file toy_data/client_1_data distribute.server_host 127.0.0.1 distribute.server_port 50051 distribute.client_host 127.0.0.1 distribute.client_port 50052
+# Start the client #2 (with another process)
+python federatedscope/main.py --cfg federatedscope/example_configs/distributed_client_2.yaml distribute.data_file toy_data/client_2_data distribute.server_host 127.0.0.1 distribute.server_port 50051 distribute.client_host 127.0.0.1 distribute.client_port 50053
+# Start the client #3 (with another process)
+python federatedscope/main.py --cfg federatedscope/example_configs/distributed_client_3.yaml distribute.data_file toy_data/client_3_data distribute.server_host 127.0.0.1 distribute.server_port 50051 distribute.client_host 127.0.0.1 distribute.client_port 50054
 ```
 
 And you can observe the results as (the IP addresses are anonymized with 'x.x.x.x'):
 
 ```
-INFO: Server #0: Listen to x.x.x.x:xxxx...
-INFO: Server #0 has been set up ...
+INFO: Server: Listen to x.x.x.x:xxxx...
+INFO: Server has been set up ...
 Model meta-info: <class 'federatedscope.core.lr.LogisticRegression'>.
 ... ...
 INFO: Client: Listen to x.x.x.x:xxxx...
@@ -167,10 +183,10 @@ INFO: Model meta-info: <class 'federatedscope.core.lr.LogisticRegression'>.
 {'Role': 'Client #1', 'Round': 0, 'Results_raw': {'train_total': 64, 'train_loss': 290.9668884277344, 'train_avg_loss': 4.54635763168335}}
 ----------- Starting a new training round (Round #1) -------------
 ... ...
-INFO: Server #0: Training is finished! Starting evaluation.
+INFO: Server: Training is finished! Starting evaluation.
 INFO: Client #1: (Evaluation (test set) at Round #20) test_loss is 30.387419
 ... ...
-INFO: Server #0: Final evaluation is finished! Starting merging results.
+INFO: Server: Final evaluation is finished! Starting merging results.
 ... ...
 ```
 
