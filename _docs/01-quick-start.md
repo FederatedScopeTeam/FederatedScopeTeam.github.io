@@ -24,23 +24,23 @@ cd FederatedScope
 You can install the dependencies from the requirement file:
 ```
 # For minimal version
-conda install --file enviroment/requirements-torch1.10.txt -c pytorch -c conda-forge -c nvidia
+conda install --file environment/requirements-torch1.10.txt -c pytorch -c conda-forge -c nvidia
 
 # For application version
-conda install --file enviroment/requirements-torch1.10-application.txt -c pytorch -c conda-forge -c nvidia -c pyg
+conda install --file environment/requirements-torch1.10-application.txt -c pytorch -c conda-forge -c nvidia -c pyg
 ```
 or build docker image and run with docker env:
 ```
-docker build -f enviroment/docker_files/federatedscope-torch1.10.Dockerfile -t alibaba/federatedscope:base-env-torch1.10 .
+docker build -f environment/docker_files/federatedscope-torch1.10.Dockerfile -t alibaba/federatedscope:base-env-torch1.10 .
 docker run --gpus device=all --rm --it --name "fedscope" -w $(pwd) alibaba/federatedscope:base-env-torch1.10 /bin/bash"
 ```
 Note: if you need to run with down-stream tasks such as graph FL, change the requirement/docker file name into another one when executing the above commands:
 ```
-# enviroment/requirements-torch1.10.txt -> 
+# environment/requirements-torch1.10.txt -> 
 requirements-torch1.10-application.txt
 
-# enviroment/docker_files/federatedscope-torch1.10.Dockerfile ->
-enviroment/docker_files/federatedscope-torch1.10-application.Dockerfile
+# environment/docker_files/federatedscope-torch1.10.Dockerfile ->
+environment/docker_files/federatedscope-torch1.10-application.Dockerfile
 ```
 Finally, after all the dependencies are installed, run:
 ```bash
