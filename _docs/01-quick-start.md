@@ -40,7 +40,7 @@ Note: if you need to run with down-stream tasks such as graph FL, change the req
 requirements-torch1.10-application.txt
 
 # environment/docker_files/federatedscope-torch1.10.Dockerfile ->
-enviroment/docker_files/federatedscope-torch1.10-application.Dockerfile
+environment/docker_files/federatedscope-torch1.10-application.Dockerfile
 ```
 Finally, after all the dependencies are installed, run:
 ```bash
