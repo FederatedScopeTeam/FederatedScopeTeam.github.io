@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Federated Matrix Factorization Module References &mdash; federatedscope 0.0.1 documentation</title>
+  <title>Federated Matrix Factorization Module References &mdash; federatedscope 0.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.0.1
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -115,12 +115,14 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>str</em>) – Root directory of dataset where directory
-<code class="docutils literal notranslate"><span class="pre">MoviesLen1M</span></code> exists or will be saved to if download is set to True.</p></li>
+<code class="docutils literal notranslate"><span class="pre">MoviesLen1M</span></code> exists or will be saved to if download is
+set to True.</p></li>
 <li><p><strong>config</strong> (<em>callable</em>) – Parameters related to matrix factorization.</p></li>
 <li><p><strong>train_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of training data.</p></li>
 <li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of test data.</p></li>
-<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, downloads the dataset from the internet and
-puts it in root directory. If dataset is already downloaded, it is not
+<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, downloads the dataset from the</p></li>
+<li><p><strong>and</strong> (<em>internet</em>) – puts it in root directory. If dataset is already downloaded,
+it is not
 downloaded again.</p></li>
 </ul>
 </dd>
@@ -140,13 +142,15 @@ downloaded again.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>str</em>) – Root directory of dataset where directory
-<code class="docutils literal notranslate"><span class="pre">MoviesLen1M</span></code> exists or will be saved to if download is set to True.</p></li>
+<code class="docutils literal notranslate"><span class="pre">MoviesLen1M</span></code> exists or will be saved to if download is
+set to True.</p></li>
 <li><p><strong>config</strong> (<em>callable</em>) – Parameters related to matrix factorization.</p></li>
 <li><p><strong>train_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of training data.</p></li>
 <li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of test data.</p></li>
-<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, downloads the dataset from the internet and
-puts it in root directory. If dataset is already downloaded, it is not
-downloaded again.</p></li>
+<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, downloads the dataset from the</p></li>
+<li><p><strong>already</strong> (<em>internet and puts it in root directory. If dataset is</em>) – </p></li>
+<li><p><strong>downloaded</strong> – </p></li>
+<li><p><strong>again.</strong> (<em>it is not downloaded</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -218,7 +222,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.mf.model.BasicMFNet.load_state_dict">
-<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OrderedDict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#BasicMFNet.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.BasicMFNet.load_state_dict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#BasicMFNet.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.BasicMFNet.load_state_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies parameters and buffers from <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="federatedscope.mf.model.BasicMFNet.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> into
 this module and its descendants. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">strict</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then
 the keys of <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="federatedscope.mf.model.BasicMFNet.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> must exactly match the keys returned
@@ -283,13 +287,13 @@ included. Keys are corresponding parameter and buffer names.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="federatedscope.mf.model.get_mfnet">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.model.</span></span><span class="sig-name descname"><span class="pre">get_mfnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model_builder.html#get_mfnet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.get_mfnet" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.model.</span></span><span class="sig-name descname"><span class="pre">get_mfnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model_builder.html#get_mfnet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.get_mfnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the MF model according to model configs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_config</strong> – the model related parameters</p></li>
-<li><p><strong>local_data</strong> (<em>dict</em>) – the dataset used for this model</p></li>
+<li><p><strong>data_shape</strong> (<em>int</em>) – the input shape of the model</p></li>
 </ul>
 </dd>
 </dl>
@@ -338,60 +342,6 @@ included. Keys are corresponding parameter and buffer names.</p>
 </section>
 <section id="federatedscope-mf-trainer">
 <h2>federatedscope.mf.trainer<a class="headerlink" href="#federatedscope-mf-trainer" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.mf.trainer"></span><dl class="py class">
-<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">MFTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trainer for MF task</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<em>torch.nn.module</em>) – MF model.</p></li>
-<li><p><strong>data</strong> (<em>dict</em>) – input data</p></li>
-<li><p><strong>device</strong> (<em>str</em>) – device.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer.parse_data">
-<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different modes</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.mf.trainer.embedding_clip">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">embedding_clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#embedding_clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.embedding_clip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clip embedding vector according to $R$</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>param</strong> (<em>tensor</em>) – The embedding vector</p></li>
-<li><p><strong>R</strong> (<em>int</em>) – The upper bound of ratings</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.mf.trainer.hook_on_batch_backward">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">hook_on_batch_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#hook_on_batch_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.hook_on_batch_backward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Private local updates in SGDMF</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.mf.trainer.init_sgdmf_ctx">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">init_sgdmf_ctx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#init_sgdmf_ctx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.init_sgdmf_ctx" title="Permalink to this definition">¶</a></dt>
-<dd><p>Init necessary attributes used in SGDMF,
-some new attributes will be with prefix <cite>SGDMF</cite> optimizer to avoid namespace pollution</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.mf.trainer.wrap_MFTrainer">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">wrap_MFTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.mf.trainer.MFTrainer" title="federatedscope.mf.trainer.trainer.MFTrainer"><span class="pre">federatedscope.mf.trainer.trainer.MFTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.mf.trainer.MFTrainer" title="federatedscope.mf.trainer.trainer.MFTrainer"><span class="pre">federatedscope.mf.trainer.trainer.MFTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#wrap_MFTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.wrap_MFTrainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build <cite>SGDMFTrainer</cite> with a plug-in manner, by registering new functions into specific <cite>MFTrainer</cite></p>
-</dd></dl>
-
 </section>
 </section>
 
