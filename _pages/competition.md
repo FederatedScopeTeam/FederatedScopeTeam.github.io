@@ -95,7 +95,7 @@ You can use Docker or Conda to setup your running environment
     - If your CUDA Version >= 11:
   
       ```shell
-      docker build -f enviroment/docker_files/federatedscope-torch1.10-application.Dockerfile -t alibaba/federatedscope:base-env-torch1.10 .
+      docker build -f environment/docker_files/federatedscope-torch1.10-application.Dockerfile -t alibaba/federatedscope:base-env-torch1.10 .
       
       docker run --gpus device=all --rm -it --name "fedscope" -v $(pwd):$(pwd) -w $(pwd) alibaba/federatedscope:base-env-torch1.10 /bin/bash
       
@@ -105,7 +105,7 @@ You can use Docker or Conda to setup your running environment
     - If your CUDA Version >= 10 but <11:
 
       ```shell
-      docker build -f enviroment/docker_files/federatedscope-torch1.8-application.Dockerfile -t alibaba/federatedscope:base-env-torch1.8 .
+      docker build -f environment/docker_files/federatedscope-torch1.8-application.Dockerfile -t alibaba/federatedscope:base-env-torch1.8 .
       
       docker run --gpus device=all --rm -it --name "fedscope" -v $(pwd):$(pwd) -w $(pwd) alibaba/federatedscope:base-env-torch1.8 /bin/bash
       

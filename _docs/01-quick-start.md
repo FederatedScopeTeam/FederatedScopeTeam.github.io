@@ -24,7 +24,6 @@ cd FederatedScope
 #### Use Docker
 
 You can build docker image and run with docker env (cuda 11 and torch 1.10):
-
 ```
 docker build -f environment/docker_files/federatedscope-torch1.10.Dockerfile -t alibaba/federatedscope:base-env-torch1.10 .
 docker run --gpus device=all --rm -it --name "fedscope" -w $(pwd) alibaba/federatedscope:base-env-torch1.10 /bin/bash
