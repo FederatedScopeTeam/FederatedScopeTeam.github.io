@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Federated Computer Vision Module References &mdash; federatedscope 0.0.1 documentation</title>
+  <title>Federated Computer Vision Module References &mdash; federatedscope 0.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.0.1
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -129,6 +129,25 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.cv.model.ConvNet5">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.cv.model.</span></span><span class="sig-name descname"><span class="pre">ConvNet5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/model/cnn.html#ConvNet5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.model.ConvNet5" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.cv.model.ConvNet5.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/model/cnn.html#ConvNet5.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.model.ConvNet5.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.cv.model.VGG11">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.cv.model.</span></span><span class="sig-name descname"><span class="pre">VGG11</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/model/cnn.html#VGG11"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.model.VGG11" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
@@ -150,7 +169,8 @@ registered hooks while the latter silently ignores them.</p>
 </section>
 <section id="federatedscope-cv-trainer">
 <h2>federatedscope.cv.trainer<a class="headerlink" href="#federatedscope-cv-trainer" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.cv.trainer"></span><p>Copyright (c) 2021 Matthias Fey, Jiaxuan You &lt;<a class="reference external" href="mailto:matthias&#46;fey&#37;&#52;&#48;tu-dortmund&#46;de">matthias<span>&#46;</span>fey<span>&#64;</span>tu-dortmund<span>&#46;</span>de</a>, <a class="reference external" href="mailto:jiaxuan&#37;&#52;&#48;cs&#46;stanford&#46;edu">jiaxuan<span>&#64;</span>cs<span>&#46;</span>stanford<span>&#46;</span>edu</a>&gt;</p>
+<span class="target" id="module-federatedscope.cv.trainer"></span><p>Copyright (c) 2021 Matthias Fey, Jiaxuan You &lt;<a class="reference external" href="mailto:matthias&#46;fey&#37;&#52;&#48;tu-dortmund&#46;de">matthias<span>&#46;</span>fey<span>&#64;</span>tu-dortmund<span>&#46;</span>de</a>,
+<a class="reference external" href="mailto:jiaxuan&#37;&#52;&#48;cs&#46;stanford&#46;edu">jiaxuan<span>&#64;</span>cs<span>&#46;</span>stanford<span>&#46;</span>edu</a>&gt;</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights

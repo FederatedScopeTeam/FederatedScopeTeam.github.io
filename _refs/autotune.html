@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto-tuning Module References &mdash; federatedscope 0.0.1 documentation</title>
+  <title>Auto-tuning Module References &mdash; federatedscope 0.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.0.1
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -164,63 +164,70 @@
 <section id="federatedscope-autotune-algos">
 <h2>federatedscope.autotune.algos<a class="headerlink" href="#federatedscope-autotune-algos" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-federatedscope.autotune.algos"></span><dl class="py class">
-<dt class="sig sig-object py" id="federatedscope.autotune.algos.BruteForce">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">BruteForce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#BruteForce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.BruteForce" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.Scheduler" title="federatedscope.autotune.algos.Scheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.Scheduler</span></code></a></p>
-<p>To attempt a collection of configurations exhaustively.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="federatedscope.autotune.algos.BruteForce.optimize">
-<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#BruteForce.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.BruteForce.optimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>To optimize the hyperparameters, that is, executing the HPO algorithm and then returning the results.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.IterativeScheduler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">IterativeScheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#IterativeScheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.IterativeScheduler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.BruteForce" title="federatedscope.autotune.algos.BruteForce"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.BruteForce</span></code></a></p>
-<p>The base class for HPO algorithms that divide the whole optimization procedure into iterations.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">IterativeScheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#IterativeScheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.IterativeScheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.ModelFreeBase" title="federatedscope.autotune.algos.ModelFreeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.ModelFreeBase</span></code></a></p>
+<p>The base class for HPO algorithms that divide the whole optimization
+procedure into iterations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.IterativeScheduler.optimize">
 <span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#IterativeScheduler.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.IterativeScheduler.optimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>To optimize the hyperparameters, that is, executing the HPO algorithm and then returning the results.</p>
+<dd><p>To optimize the hyperparameters, that is, executing the HPO
+algorithm and then returning the results.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="federatedscope.autotune.algos.PBT">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">PBT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#PBT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.PBT" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.IterativeScheduler" title="federatedscope.autotune.algos.IterativeScheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.IterativeScheduler</span></code></a></p>
-<p>Population-based training (the full paper “Population Based Training of Neural Networks” can be found at <a class="reference external" href="https://arxiv.org/abs/1711.09846">https://arxiv.org/abs/1711.09846</a>)  tailored to FL setting, where, in each iteration, just a limited number of communication rounds are allowed for each trial (We will provide the asynchornous version later).</p>
+<dt class="sig sig-object py" id="federatedscope.autotune.algos.ModelFreeBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">ModelFreeBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#ModelFreeBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.ModelFreeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.Scheduler" title="federatedscope.autotune.algos.Scheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.Scheduler</span></code></a></p>
+<p>To attempt a collection of configurations exhaustively.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.autotune.algos.ModelFreeBase.optimize">
+<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#ModelFreeBase.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.ModelFreeBase.optimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>To optimize the hyperparameters, that is, executing the HPO
+algorithm and then returning the results.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.autotune.algos.SHAWrapFedex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">SHAWrapFedex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#SHAWrapFedex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.SHAWrapFedex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.SuccessiveHalvingAlgo" title="federatedscope.autotune.algos.SuccessiveHalvingAlgo"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.SuccessiveHalvingAlgo</span></code></a></p>
+<p>This SHA is customized as a wrapper for FedEx algorithm.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.Scheduler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">Scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#Scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.Scheduler" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">Scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#Scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.Scheduler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The base class for describing HPO algorithms</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.Scheduler.optimize">
 <span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#Scheduler.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.Scheduler.optimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>To optimize the hyperparameters, that is, executing the HPO algorithm and then returning the results.</p>
+<dd><p>To optimize the hyperparameters, that is, executing the HPO
+algorithm and then returning the results.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.SuccessiveHalvingAlgo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">SuccessiveHalvingAlgo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_search_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#SuccessiveHalvingAlgo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.SuccessiveHalvingAlgo" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">SuccessiveHalvingAlgo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#SuccessiveHalvingAlgo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.SuccessiveHalvingAlgo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#federatedscope.autotune.algos.IterativeScheduler" title="federatedscope.autotune.algos.IterativeScheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">federatedscope.autotune.algos.IterativeScheduler</span></code></a></p>
-<p>Successive Halving Algorithm (SHA) (also known as Hyperband where the full paper “Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization” can be found at <a class="reference external" href="https://jmlr.org/papers/volume18/16-558/16-558.pdf">https://jmlr.org/papers/volume18/16-558/16-558.pdf</a>) tailored to FL setting, where, in each iteration, just a limited number of communication rounds are allowed for each trial.</p>
+<p>Successive Halving Algorithm (SHA) tailored to FL setting, where,
+in each iteration, just a limited number of communication rounds are
+allowed for each trial.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.TrialExecutor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">TrialExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#TrialExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.TrialExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></p>
-<p>This class is responsible for executing the FL procedure with a given trial configuration in another thread.</p>
+<p>This class is responsible for executing the FL procedure with
+a given trial configuration in another thread.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.autotune.algos.TrialExecutor.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#TrialExecutor.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.TrialExecutor.run" title="Permalink to this definition">¶</a></dt>
@@ -234,44 +241,11 @@ from the args and kwargs arguments, respectively.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.autotune.algos.grid_search">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">grid_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#grid_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.grid_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>To produce a given nunber of configurations from a given (producted) search space with grid search strategy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>search_space</strong> (<em>dict</em>) – key-value pairs corresponding to the fields and choices.</p></li>
-<li><p><strong>sample_size</strong> (<em>int</em>) – the number of candidates to be returned.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the sampled configurations to be executed.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.autotune.algos.random_search">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">random_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#random_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.random_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>To produce a given nunber of configurations from a given (producted) search space with random search strategy.
-This algorithm is presented in the paper “Random Search for Hyper-Parameter Optimization” which can be found at <a class="reference external" href="https://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf">https://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>searchs_space</strong> (<em>dict</em>) – key corresponds to config field, and value corresponds to the choices.</p></li>
-<li><p><strong>sample_size</strong> (<em>int</em>) – the number of candidates to be returned.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the sampled configurations to be executed.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="federatedscope.autotune.algos.get_scheduler">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.algos.</span></span><span class="sig-name descname"><span class="pre">get_scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/algos.html#get_scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.algos.get_scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>To instantiate an scheduler object for conducting HPO
+:param init_cfg: configuration.
+:type init_cfg: yacs.Node</p>
 </dd></dl>
 
 </section>
