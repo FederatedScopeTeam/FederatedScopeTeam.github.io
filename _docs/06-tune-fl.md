@@ -25,11 +25,11 @@ There are more such scripts in this `demo/` folder to show how to use popular HP
 Meanwhile, we have implemented several popular HPO methods in the `autotune` module of FederatedScope, including random search [1], Successive Halving Algorithm (SHA) [2], etc. Users could try the rando search algorithm by:
 
 ```bash
-python federatedscope/hpo.py --cfg federatedscope/example_configs/toy_rs.yaml
+python federatedscope/hpo.py --cfg scripts/example_configs/toy_rs.yaml
 ```
 
 ### How to declare the search space?
-At first, any HPO procedure starts with declaring the search space, say that, which hyperparameters need to be determined and what are the candidate choices for them. FederatedScope allows users to specify the search space via the argument `hpo.ss` (in the above example, it is specified as 'federatedscope/example_configs/toy_hpo_ss.yaml'). As you can see from this .yaml file, the search space of each hyperparameter is described as a dict:
+At first, any HPO procedure starts with declaring the search space, say that, which hyperparameters need to be determined and what are the candidate choices for them. FederatedScope allows users to specify the search space via the argument `hpo.ss` (in the above example, it is specified as 'scripts/example_configs/toy_hpo_ss.yaml'). As you can see from this .yaml file, the search space of each hyperparameter is described as a dict:
 
 ```yaml
 train.optimizer.lr:

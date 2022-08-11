@@ -252,7 +252,7 @@ You can call FedProx by the following command in the terminal
 python federatedscope/main.py --cfg {YOUR_CONFIG_FILE} fedprox.use True fedprox.mu 0.1
 ```
 
-More example scripts are refer to`federatedscope/example_configs/.`
+More example scripts are refer to`scripts/example_configs/.`
 
 
 
