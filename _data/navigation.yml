@@ -43,7 +43,7 @@ docs:
       - title: "Installation"
         url: /docs/installation/
       - title: "Start With Examples"
-          url: /docs/examples/
+        url: /docs/examples/
       - title: "Start Your Own Case"
         url: /docs/own-case/
       - title: "DataZoo"

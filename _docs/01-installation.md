@@ -9,7 +9,6 @@ toc: true
 layout: tuto
 ---
 
-## Installation
 
 First of all, users need to clone the source code and install the required packages (we suggest python version >= 3.9). You can choose between the following two installation methods (via docker or conda) to install FederatedScope.
 
@@ -17,7 +16,7 @@ First of all, users need to clone the source code and install the required packa
 git clone https://github.com/alibaba/FederatedScope.git
 cd FederatedScope
 ```
-#### Use Docker
+### Use Docker
 
 You can build docker image and run with docker env (cuda 11 and torch 1.10):
 ```
@@ -35,7 +34,7 @@ environment/docker_files/federatedscope-torch1.10-application.Dockerfile
 Note: You can choose to use cuda 10 and torch 1.8 via changing `torch1.10` to `torch1.8`.
 The docker images are based on the nvidia-docker. Please pre-install the NVIDIA drivers and `nvidia-docker2` in the host machine. See more details [here](https://github.com/alibaba/FederatedScope/tree/master/environment/docker_files).
 
-#### Use Conda
+### Use Conda
 
 We recommend using a new virtual environment to install FederatedScope:
 
@@ -59,7 +58,7 @@ python -m pip install torchvision==0.11.3
 
 Finally, after the backend is installed, you can install FederatedScope from `source`:
 
-##### From source
+### From source
 
 ```bash
 python setup.py install
