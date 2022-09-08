@@ -30,6 +30,7 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
   * [Tuning Federated Learning]({{ "/docs/use-hpo/" | relative_url }})
 
 * For advanced users or developer
+
   * [Event-driven Architecture]({{ "/docs/event-driven-architecture/" | relative_url }})
 
   * [New Types of Messages and Handlers]({{ "/docs/new-type/" | relative_url }})
@@ -49,6 +50,7 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
   * [Simulation and Deployment]({{ "/docs/simulation-and-deployment/" | relative_url }})
 
 * Application with FS
+
   * [Recommendation]({{ "/docs/recommendation/" | relative_url }})
 
   * [Differential Privacy]({{ "/docs/dp/" | relative_url }})
@@ -60,6 +62,7 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
   * [NLP and Speech]({{ "/docs/nlp-and-speech/" | relative_url }})
 
 * Get involved
+
   * [Join Our Community]({{ "/docs/community/" | relative_url }})
 
   * [Contributing to FederatedScope]({{ "/docs/contributor/" | relative_url }})
