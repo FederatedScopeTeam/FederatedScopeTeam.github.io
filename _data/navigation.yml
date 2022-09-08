@@ -23,7 +23,7 @@ main:
   - title: "CIKM'22 Competition"
     url: /competition/
   - title: "Tutorials"
-    url: /docs/quick-start/
+    url: /docs/documentation/
   - title: "Playground"
     url: https://try.federatedscope.io/
     target: _blank
@@ -40,8 +40,10 @@ main:
 docs:
   - title: Beginner
     children:
-      - title: "Quick Start"
-        url: /docs/quick-start/
+      - title: "Installation"
+        url: /docs/installation/
+      - title: "Start With Examples"
+        url: /docs/examples/
       - title: "Start Your Own Case"
         url: /docs/own-case/
       - title: "DataZoo"

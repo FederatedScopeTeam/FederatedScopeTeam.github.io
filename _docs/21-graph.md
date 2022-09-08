@@ -116,20 +116,19 @@ FederatedScope also provides `register` function to set up the FL procedure. Her
 ```python
 # federatedscope/contrib/data/my_cora.py
 
-import torch
 import copy
 import numpy as np
 
 from torch_geometric.datasets import Planetoid
-from federatedscope.gfl.dataset.splitter import LouvainSplitter
+from federatedscope.core.splitters.graph import LouvainSplitter
 from federatedscope.register import register_data
 
 
 def my_cora(config=None):
-  	path = config.data.root
-    
-    num_split = [232, 542, np.inf]
-  	dataset = Planetoid(path,
+    path = config.data.root
+
+    num_split = [232, 542, np.iinfo(np.int64).max]
+    dataset = Planetoid(path,
                         'cora',
                         split='random',
                         num_train_per_class=num_split[0],
@@ -137,18 +136,20 @@ def my_cora(config=None):
                         num_test=num_split[2])
     global_data = copy.deepcopy(dataset)[0]
     dataset = LouvainSplitter(config.federate.client_num)(dataset[0])
-    
+
     data_local_dict = dict()
     for client_idx in range(len(dataset)):
         data_local_dict[client_idx + 1] = dataset[client_idx]
-        
+
     data_local_dict[0] = global_data
     return data_local_dict, config
 
+
 def call_my_data(config):
     if config.data.type == "mycora":
-        data, modified_config = MyData(config)
+        data, modified_config = my_cora(config)
         return data, modified_config
+
 
 register_data("mycora", call_my_data)
 ```
@@ -162,7 +163,7 @@ register_data("mycora", call_my_data)
 import torch
 import torch.nn.functional as F
 
-from torch.nn import Parameter, Linear, ModuleList
+from torch.nn import ModuleList
 from torch_geometric.data import Data
 from torch_geometric.nn import GCNConv
 from federatedscope.register import register_model
@@ -175,7 +176,7 @@ class MyGCN(torch.nn.Module):
                  hidden=64,
                  max_depth=2,
                  dropout=.0):
-        super(GCN_Net, self).__init__()
+        super(MyGCN, self).__init__()
         self.convs = ModuleList()
         for i in range(max_depth):
             if i == 0:
@@ -201,20 +202,25 @@ class MyGCN(torch.nn.Module):
             x = F.relu(F.dropout(x, p=self.dropout, training=self.training))
         return x
 
-def GCNBuilder(model_config, data):
-    model = MyGCN(data.x.shape[-1],
+
+def gcnbuilder(model_config, input_shape):
+    x_shape, num_label, num_edge_features = input_shape
+    model = MyGCN(x_shape[-1],
                   model_config.out_channels,
                   hidden=model_config.hidden,
-                  max_depth=model_config.gnn_layer,
+                  max_depth=model_config.layer,
                   dropout=model_config.dropout)
     return model
 
+
 def call_my_net(model_config, local_data):
-    if model_config.type == "mygcn":
-        model = GCNBuilder(model_config, local_data)
+    # Please name your gnn model with prefix 'gnn_'
+    if model_config.type == "gnn_mygcn":
+        model = gcnbuilder(model_config, local_data)
         return model
 
-register_model("mygcn", call_my_net)
+
+register_model("gnn_mygcn", call_my_net)
 ```
 
 
@@ -1091,7 +1097,6 @@ We've conducted extensive experiments to build the benchmarks of FedGraph, which
     </tr>
   </tbody>
   </table>
-
 
 ## References
 
