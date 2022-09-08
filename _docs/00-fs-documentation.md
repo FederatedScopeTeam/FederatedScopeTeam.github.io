@@ -15,54 +15,54 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
 
 * For beginner
 
-  * [Installation](https://federatedscope.io/docs/installation/)
+  * [Installation]({{ "/docs/installation/" | relative_url }})
 
-  * [Start With Examples](https://federatedscope.io/docs/examples/)
+  * [Start With Examples]({{ "/docs/examples/" | relative_url }})
 
-  * [Start Your Own Case](https://federatedscope.io/docs/own-case/)
+  * [Start Your Own Case]({{ "/docs/own-case/" | relative_url }})
 
-  * [DataZoo](https://federatedscope.io/docs/datazoo/)
+  * [DataZoo]({{ "/docs/datazoo/" | relative_url }})
 
-  * [ModelZoo](https://federatedscope.io/docs/modelzoo/)
+  * [ModelZoo]({{ "/docs/modelzoo/" | relative_url }})
 
-  * [AlgoZoo](https://federatedscope.io/docs/algozoo/)
+  * [AlgoZoo]({{ "/docs/algozoo/" | relative_url }})
 
-  * [Tuning Federated Learning](https://federatedscope.io/docs/use-hpo/)
+  * [Tuning Federated Learning]({{ "/docs/use-hpo/" | relative_url }})
 
 * For advanced users or developer
-  * [Event-driven Architecture](https://federatedscope.io/docs/event-driven-architecture/)
+  * [Event-driven Architecture]({{ "/docs/event-driven-architecture/" | relative_url }})
 
-  * [New Types of Messages and Handlers](https://federatedscope.io/docs/new-type/)
+  * [New Types of Messages and Handlers]({{ "/docs/new-type/" | relative_url }})
 
-  * [Privacy Protection for Message](https://federatedscope.io/docs/protected-msg/)
+  * [Privacy Protection for Message]({{ "/docs/protected-msg/" | relative_url }})
 
-  * [Local Learning Abstraction: Trainer](https://federatedscope.io/docs/trainer/)
+  * [Local Learning Abstraction: Trainer]({{ "/docs/trainer/" | relative_url }})
 
-  * [Personalized FL](https://federatedscope.io/docs/pfl/)
+  * [Personalized FL]({{ "/docs/pfl/" | relative_url }})
 
-  * [Cross-Device FL](https://federatedscope.io/docs/cross-device/)
+  * [Cross-Device FL]({{ "/docs/cross-device/" | relative_url }})
 
-  * [Cross-Silo FL](https://federatedscope.io/docs/cross-silo/)
+  * [Cross-Silo FL]({{ "/docs/cross-silo/" | relative_url }})
 
-  * [Accelerating Federated HPO](https://federatedscope.io/docs/improve-hpo/)
+  * [Accelerating Federated HPO]({{ "/docs/improve-hpo/" | relative_url }})
 
-  * [Simulation and Deployment](https://federatedscope.io/docs/simulation-and-deployment/)
+  * [Simulation and Deployment]({{ "/docs/simulation-and-deployment/" | relative_url }})
 
 * Application with FS
-  * [Recommendation](https://federatedscope.io/docs/recommendation/)
+  * [Recommendation]({{ "/docs/recommendation/" | relative_url }})
 
-  * [Differential Privacy](https://federatedscope.io/docs/dp/)
+  * [Differential Privacy]({{ "/docs/dp/" | relative_url }})
 
-  * [Privacy Attacks](https://federatedscope.io/docs/privacy-attacks/)
+  * [Privacy Attacks]({{ "/docs/privacy-attacks/" | relative_url }})
 
-  * [Graph](https://federatedscope.io/docs/graph/)
+  * [Graph]({{ "/docs/graph/" | relative_url }})
 
-  * [NLP and Speech](https://federatedscope.io/docs/nlp-and-speech/)
+  * [NLP and Speech]({{ "/docs/nlp-and-speech/" | relative_url }})
 
 * Get involved
-  * [Join Our Community](https://federatedscope.io/docs/community/)
+  * [Join Our Community]({{ "/docs/community/" | relative_url }})
 
-  * [Contributing to FederatedScope](https://federatedscope.io/docs/contributor/)
+  * [Contributing to FederatedScope]({{ "/docs/contributor/" | relative_url }})
 
 
 ## API References

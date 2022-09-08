@@ -1,7 +1,7 @@
 ---
 title: "Start With Examples"
 permalink: /docs/examples/
-excerpt: "Federated Learning (FL) is a learning paradigm for collaboratively learning models from isolated data without directly sharing privacy information, which helps to satisfy the requirements of privacy protection of the public."
+excerpt: "For examples."
 last_modified_at: 2022-08-04T08:48:05-04:00
 redirect_from:
   - /theme-setup/
