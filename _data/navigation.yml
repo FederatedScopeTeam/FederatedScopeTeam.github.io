@@ -56,6 +56,8 @@ docs:
     children:
       - title: "Event-driven Architecture"
         url: /docs/event-driven-architecture/
+      - title: "Workers"
+        url: /docs/workers/
       - title: "New Types of Messages and Handlers"
         url: /docs/new-type/
       - title: "Privacy Protection for Message"
