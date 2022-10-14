@@ -6,13 +6,19 @@ author_profile: true
 classes: wide
 ---
 
+- **pFL-Bench: A Comprehensive Benchmark for Personalized Federated Learning**. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
+
+  Daoyuan Chen, Dawei Gao, Weirui Kuang, Yaliang Li, Bolin Ding.
+
+---
+
 - **FederatedScope: A Flexible Federated Learning Platform for Heterogeneity**. [pdf](https://arxiv.org/pdf/2204.05011.pdf)
 
   Yuexiang Xie, Zhen Wang, Daoyuan Chen, Dawei Gao, Liuyi Yao, Weirui Kuang, Yaliang Li, Bolin Ding, Jingren Zhou.
 
 ---
 
-- **FederatedScope-GNN: Towards a Unified, Comprehensive and Efficient Package for Federated Graph Learning**. [pdf](https://arxiv.org/pdf/2204.05562.pdf)
+- **FederatedScope-GNN: Towards a Unified, Comprehensive and Efficient Package for Federated Graph Learning**. KDD'22. [pdf](https://arxiv.org/pdf/2204.05562.pdf)
 
   Zhen Wang, Weirui Kuang, Yuexiang Xie, Liuyi Yao, Yaliang Li, Bolin Ding, Jingren Zhou.
 

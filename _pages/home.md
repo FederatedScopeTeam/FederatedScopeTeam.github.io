@@ -61,6 +61,8 @@ feature_row:
 
 ## News [(more)]({{ "/news/" | relative_url }})
 
+- 10/2022, Our paper on personalized federated learning benchmark, pFL-Bench, is accepted at NeurIPS'22. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
+
 - 08/2022, Our KDD 2022 paper on federated graph learning receives the KDD Best Paper Award for ADS track!
 
 - 07/2022, We are hosting the CIKM'22 AnalytiCup competition. For more details, please see [link]({{ "/competition/" | relative_url }})
