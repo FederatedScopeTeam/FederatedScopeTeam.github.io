@@ -6,7 +6,7 @@ author_profile: true
 classes: wide
 ---
 
-- **pFL-Bench: A Comprehensive Benchmark for Personalized Federated Learning**. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
+- **pFL-Bench: A Comprehensive Benchmark for Personalized Federated Learning**. NeurIPS'22. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
 
   Daoyuan Chen, Dawei Gao, Weirui Kuang, Yaliang Li, Bolin Ding.
 
