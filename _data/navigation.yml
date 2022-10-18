@@ -55,7 +55,7 @@ docs:
   - title: Advanced
     children:
       - title: "FS data module"
-          url: /docs/fs-data/
+        url: /docs/fs-data/
       - title: "Event-driven Architecture"
         url: /docs/event-driven-architecture/
       - title: "Workers"

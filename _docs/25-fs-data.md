@@ -35,13 +35,16 @@ We will discuss all the concepts of our FS data module from top to bottom.
 fs_data, modified_cfg = get_data(config=init_cfg.clone())
 ```
 
-`get_data` is consist of three components:
+`get_data` consists of three steps:
 
-* **Load Dataset** (`federatedscope.core.data.utils.load_dataset`): 
+* **Load Dataset**
+  * `federatedscope.core.data.utils.load_dataset`
   * Load local file to torch dataset
-* **Translate data** (`federatedscope.core.data.BaseDataTranslator`)
+* **Translate data**
+  * `federatedscope.core.data.BaseDataTranslator`
   * Dataset -> ML split -> FL split ->  FS Dataloader
-* **Convert mode**(`federatedscope.core.data.utils.convert_data_mode`)
+* **Convert mode**
+  * `federatedscope.core.data.utils.convert_data_mode`
   * To adapt simulation mode and distributed mode
 
 ### Data Translator
@@ -55,7 +58,7 @@ In FederatedScope, the input to `Runner` is `ClientData` (in distributed mode) o
 * **FL split**(`split_to_client`) (please see `splitter` for details): 
   * Split global data into local data for each client.
 
-### ClientData(`federatedscope.core.data.ClientData`)
+### ClientData
 
 In FederatedScope, each client will obtain a `ClientData`, which has the following attributes:
 
@@ -79,7 +82,7 @@ In FederatedScope, each client will obtain a `ClientData`, which has the followi
     >> {'train': PyGDataLoader(train_data), 'test': PyGDataLoader(test_data)}
     ```
 
-### StandaloneDataDict(`federatedscope.core.data.StandaloneDataDict`)
+### StandaloneDataDict
 
 In standalone mode,  the input to `Runner` is `StandaloneDataDict`,  which is the return value of calling Data Translator. `StandaloneDataDict` has the following attributes:
 
