@@ -18,7 +18,7 @@ federatedscope/core
 │   ├── dataloader_builder
 │   ├── ...
 ├── data
-│   ├── base_data                       # Building blocks of Client handler
+│   ├── base_data
 │   |   ├── ClientData
 │   |   ├── StandaloneDataDict
 │   ├── base_translator
