@@ -31,6 +31,8 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
 
 * For advanced users or developer
 
+  * [FS Data module]({{ "/docs/fs-data/" | relative_url }})
+
   * [Event-driven Architecture]({{ "/docs/event-driven-architecture/" | relative_url }})
 
   * [New Types of Messages and Handlers]({{ "/docs/new-type/" | relative_url }})

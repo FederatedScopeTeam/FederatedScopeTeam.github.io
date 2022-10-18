@@ -22,70 +22,34 @@ We provide `register` function to help build your own federated learning workflo
 
 We provide a function `federatedscope.register.register_data` to make your dataset available with three steps:
 
--  Step1: set up your data in the following format (standalone):<br />**Note**: This function returns a `dict`, where the `key` is the client's id, and the `value` is the data `dict` of each client with 'train', 'test' or 'val'.  You can also modify the config here. 
-    
+-  Step1: set up your data with **Data Translator** (standalone), which 
+   translates your [torch.utils.data.Dataset](https://pytorch.org/docs/stable/data.html?highlight=dataset#torch.utils.data.Dataset) to FS data format (for more details about FS data module, see [FS Data]({"/docs/fs-data/" | relative_url })): <br />
+   
    ```python
-    def load_my_data(config):
-            r"""
-                NOTE: client_id 0 is SERVER for global evaluation!
-        
-        Returns:
-              dict: {
-                        'client_id': {
-                            'train': DataLoader or Data,
-                            'test': DataLoader or Data,
-                            'val': DataLoader or Data,
-                        }
-                    }
-        """
-        ...
-        return data_dict, config	
-    ```
+   def load_my_data(config, client_cfgs=None):
+       from federatedscope.core.data import BaseDataTranslator
+       # Load a dataset, whose class is `torch.utils.data.Dataset`
+       dataset = ...
+   		# Instantiate a translator according to config
+       translator = BaseDataTranslator(config, client_cfgs)
+       # Translate torch dataset to FS data
+       fs_data = translator(dataset)
+       return fs_data, config	
+   ```
 
 * We take `torchvision.datasets.MNIST`, which is split and assigned to two clients, as an example:
 
     ```python
-    def load_my_data(config):
-        import numpy as np
-        from torchvision import transforms
-        from torchvision.datasets import MNIST
-        from torch.utils.data import DataLoader
-    
-        # Build data
+    def load_my_data(config, client_cfgs=None):
         transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.1307], std=[0.3081])
-        ])
+              transforms.ToTensor(),
+              transforms.Normalize(mean=[0.1307], std=[0.3081])
+          ])  
         data_train = MNIST(root='data', train=True, transform=transform, download=True)
         data_test = MNIST(root='data', train=False, transform=transform, download=True)
-    
-        # Split data into dict
-        data_dict = dict()
-        train_per_client = len(data_train) // config.federate.client_num
-        test_per_client = len(data_test) // config.federate.client_num
-    
-        for client_idx in range(1, config.federate.client_num + 1):
-            dataloader_dict = {
-                'train':
-                DataLoader([
-                    data_train[i]
-                    for i in range((client_idx - 1) *
-                                   train_per_client, client_idx * train_per_client)
-                ],
-                           config.data.batch_size,
-                           shuffle=config.data.shuffle),
-                'test':
-                DataLoader([
-                    data_test[i]
-                    for i in range((client_idx - 1) * test_per_client, client_idx *
-                                   test_per_client)
-                ],
-                           config.data.batch_size,
-                           shuffle=False)
-            }
-            data_dict[client_idx] = dataloader_dict
-    
-        return data_dict, config
+        translator = BaseDataTranslator(config, client_cfgs)
+        fs_data = translator([data_train, [], data_test])
+        return fs_data, config
     ```
 
 
@@ -252,7 +216,7 @@ cfg.backend = 'torch'  # level-1 configuration
 cfg.federate = CN()  # level-2 configuration
 cfg.federate.client_num = 0
 ```
-    
+
 The frequently-used APIs include
 - `merge_from_file`, `merge_from_other_cfg` and `merge_from_list` that load configs from a yaml file, another `cfg` instance or a list stores the keys and values.
 - Besides, we can use `freeze` to make the configs immutable and save the configs in a yaml file under the specified `cfg.outdir`.
@@ -264,7 +228,7 @@ As a start, our package will initialize a `global_cfg` instance by default, i.e.
 ```python
 global_cfg = CN()
 init_global_cfg(global_cfg)
-``` 
+```
 see more details in the file `federatedscope/core/configs/config.py`. 
 Users can clone and use their own configuration object as follows:
 
@@ -304,7 +268,7 @@ To add new configuration, you need
        # Trainer related options
        # ------------------------------------------------------------------------ #
        cfg.trainer = CN()
-
+   
        cfg.trainer.type = 'general'
        cfg.trainer.finetune = CN()
        cfg.trainer.finetune.steps = 0
@@ -323,7 +287,7 @@ To add new configuration, you need
                 "Value of 'cfg.backend' must be chosen from ['torch', 'tensorflow']."
            )
    ```
-    
+   
 3. finally, register your own extended function, e.g.,
    
    ```python
@@ -332,5 +296,6 @@ To add new configuration, you need
    ```
    
    
+
 We recommend users put the new customized configuration in `federatedscope/contrib/configs` directory
-  
+
