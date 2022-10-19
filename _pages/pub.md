@@ -14,7 +14,7 @@ classes: wide
 
 - **FederatedScope: A Flexible Federated Learning Platform for Heterogeneity**. [pdf](https://arxiv.org/pdf/2204.05011.pdf)
 
-  Yuexiang Xie, Zhen Wang, Daoyuan Chen, Dawei Gao, Liuyi Yao, Weirui Kuang, Yaliang Li, Bolin Ding, Jingren Zhou.
+  Yuexiang Xie, Zhen Wang, Dawei Gao, Daoyuan Chen, Liuyi Yao, Weirui Kuang, Yaliang Li, Bolin Ding, Jingren Zhou.
 
 ---
 
