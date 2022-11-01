@@ -304,7 +304,7 @@ FederatedScope provides a rich collection of datasets for graph learning researc
     <td>1</td>
     <td>19,717</td>
     <td>44,338</td>
-    <td>5</td>
+    <td>3</td>
     <td>ACC</td>
   </tr>
   <tr>
