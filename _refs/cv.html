@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Federated Computer Vision Module References &mdash; federatedscope 0.2.0 documentation</title>
+  <title>Federated Computer Vision Module References &mdash; federatedscope 0.2.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -30,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -70,8 +71,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Federated Computer Vision  Module References</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Federated Computer Vision  Module References</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/cv.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -82,33 +83,81 @@
            <div itemprop="articleBody">
              
   <section id="federated-computer-vision-module-references">
-<h1>Federated Computer Vision  Module References<a class="headerlink" href="#federated-computer-vision-module-references" title="Permalink to this headline">¶</a></h1>
+<h1>Federated Computer Vision  Module References<a class="headerlink" href="#federated-computer-vision-module-references" title="Permalink to this heading">¶</a></h1>
 <section id="federatedscope-cv-dataset">
-<h2>federatedscope.cv.dataset<a class="headerlink" href="#federatedscope-cv-dataset" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.cv.dataset"></span></section>
-<section id="federatedscope-cv-dataloader">
-<h2>federatedscope.cv.dataloader<a class="headerlink" href="#federatedscope-cv-dataloader" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-federatedscope.cv.dataloader"></span><dl class="py function">
-<dt class="sig sig-object py" id="federatedscope.cv.dataloader.load_cv_dataset">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.cv.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_cv_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/dataloader/dataloader.html#load_cv_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.dataloader.load_cv_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>return {</dt><dd><blockquote>
-<div><dl class="simple">
-<dt>‘client_id’: {</dt><dd><p>‘train’: DataLoader(),
-‘test’: DataLoader(),
-‘val’: DataLoader()</p>
+<h2>federatedscope.cv.dataset<a class="headerlink" href="#federatedscope-cv-dataset" title="Permalink to this heading">¶</a></h2>
+<span class="target" id="module-federatedscope.cv.dataset.leaf"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.cv.dataset.leaf.LEAF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.cv.dataset.leaf.</span></span><span class="sig-name descname"><span class="pre">LEAF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_transform</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/dataset/leaf.html#LEAF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.dataset.leaf.LEAF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for LEAF dataset from “LEAF: A Benchmark for Federated Settings”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>str</em>) – root path.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of dataset, in <cite>LEAF_NAMES</cite>.</p></li>
+<li><p><strong>transform</strong> – transform for x.</p></li>
+<li><p><strong>target_transform</strong> – transform for y.</p></li>
+</ul>
 </dd>
 </dl>
-<p>}</p>
-</div></blockquote>
-<p>}</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.cv.dataset.leaf.LocalDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.cv.dataset.leaf.</span></span><span class="sig-name descname"><span class="pre">LocalDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_process</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/dataset/leaf.html#LocalDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.dataset.leaf.LocalDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert data list to torch Dataset to save memory usage.</p>
+</dd></dl>
+
+<span class="target" id="module-federatedscope.cv.dataset.leaf_cv"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.cv.dataset.leaf_cv.LEAF_CV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.cv.dataset.leaf_cv.</span></span><span class="sig-name descname"><span class="pre">LEAF_CV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_tasks_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">123</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/dataset/leaf_cv.html#LEAF_CV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.dataset.leaf_cv.LEAF_CV" title="Permalink to this definition">¶</a></dt>
+<dd><p>LEAF CV dataset from “LEAF: A Benchmark for Federated Settings”</p>
+<p>leaf.cmu.edu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>str</em>) – root path.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of dataset, ‘femnist’ or ‘celeba’.</p></li>
+<li><p><strong>s_frac</strong> (<em>float</em>) – fraction of the dataset to be used; default=0.3.</p></li>
+<li><p><strong>tr_frac</strong> (<em>float</em>) – train set proportion for each task; default=0.8.</p></li>
+<li><p><strong>val_frac</strong> (<em>float</em>) – valid set proportion for each task; default=0.0.</p></li>
+<li><p><strong>train_tasks_frac</strong> (<em>float</em>) – fraction of test tasks; default=1.0.</p></li>
+<li><p><strong>transform</strong> – transform for x.</p></li>
+<li><p><strong>target_transform</strong> – transform for y.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
+<section id="federatedscope-cv-dataloader">
+<h2>federatedscope.cv.dataloader<a class="headerlink" href="#federatedscope-cv-dataloader" title="Permalink to this heading">¶</a></h2>
+<span class="target" id="module-federatedscope.cv.dataloader"></span><dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.cv.dataloader.load_cv_dataset">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.cv.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_cv_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/dataloader/dataloader.html#load_cv_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.dataloader.load_cv_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dataset of <code class="docutils literal notranslate"><span class="pre">femnist</span></code> or <code class="docutils literal notranslate"><span class="pre">celeba</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – configurations for FL, see <code class="docutils literal notranslate"><span class="pre">federatedscope.core.configs</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>FL dataset dict, with <code class="docutils literal notranslate"><span class="pre">client_id</span></code> as key.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">load_cv_dataset()</span></code> will return a dict as shown below:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">{'client_id':</span> <span class="pre">{'train':</span> <span class="pre">dataset,</span> <span class="pre">'test':</span> <span class="pre">dataset,</span> <span class="pre">'val':</span> <span class="pre">dataset}}</span>
+<span class="pre">`</span></code></p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</section>
 <section id="module-federatedscope.cv.model">
-<span id="federatedscope-cv-model"></span><h2>federatedscope.cv.model<a class="headerlink" href="#module-federatedscope.cv.model" title="Permalink to this headline">¶</a></h2>
+<span id="federatedscope-cv-model"></span><h2>federatedscope.cv.model<a class="headerlink" href="#module-federatedscope.cv.model" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.cv.model.ConvNet2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.cv.model.</span></span><span class="sig-name descname"><span class="pre">ConvNet2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/cv/model/cnn.html#ConvNet2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.cv.model.ConvNet2" title="Permalink to this definition">¶</a></dt>
@@ -168,7 +217,7 @@ registered hooks while the latter silently ignores them.</p>
 
 </section>
 <section id="federatedscope-cv-trainer">
-<h2>federatedscope.cv.trainer<a class="headerlink" href="#federatedscope-cv-trainer" title="Permalink to this headline">¶</a></h2>
+<h2>federatedscope.cv.trainer<a class="headerlink" href="#federatedscope-cv-trainer" title="Permalink to this heading">¶</a></h2>
 <span class="target" id="module-federatedscope.cv.trainer"></span><p>Copyright (c) 2021 Matthias Fey, Jiaxuan You &lt;<a class="reference external" href="mailto:matthias&#46;fey&#37;&#52;&#48;tu-dortmund&#46;de">matthias<span>&#46;</span>fey<span>&#64;</span>tu-dortmund<span>&#46;</span>de</a>,
 <a class="reference external" href="mailto:jiaxuan&#37;&#52;&#48;cs&#46;stanford&#46;edu">jiaxuan<span>&#64;</span>cs<span>&#46;</span>stanford<span>&#46;</span>edu</a>&gt;</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
