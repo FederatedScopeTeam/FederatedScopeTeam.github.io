@@ -6,6 +6,8 @@ author_profile: false
 classes: wide
 ---
 
+- 02/2023, Our paper elaborating on FederatedScope is accepted at VLDB'23. [pdf](https://arxiv.org/pdf/2204.05011.pdf)
+
 - 10/2022, Our paper on personalized federated learning benchmark, pFL-Bench, is accepted at NeurIPS'22. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
 
 - 08/2022, Our KDD 2022 paper on federated graph learning receives the KDD Best Paper Award for ADS track!
