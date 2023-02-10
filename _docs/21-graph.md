@@ -47,8 +47,6 @@ federate:
   client_num: 5
   # Number of communication round
   total_round_num: 400
-  # Number of local update steps
-  local_update_steps: 4
 
 # Dataset related options
 data:
@@ -58,6 +56,9 @@ data:
   type: cora
   # Use Louvain algorithm to split `Cora`
   splitter: 'louvain'
+dataloader:
+  # Type of sampler
+  type: pyg
   # Use fullbatch training, batch_size should be `1`
   batch_size: 1
 
@@ -71,26 +72,30 @@ model:
   dropout: 0.5
   # Number of Class of `Cora`
   out_channels: 7
-    
-# Optimizer related options
-optimizer:
-  # Learning rate
-  lr: 0.25
-  # Weight decay
-  weight_decay: 0.0005
-  # Optimizer type
-  type: SGD
-    
+
 # Criterion related options
 criterion:
   # Criterion type
   type: CrossEntropyLoss
-    
+
 # Trainer related options
 trainer:
   # Trainer type
   type: nodefullbatch_trainer
-    
+
+# Train related options
+train:
+  # Number of local update steps
+  local_update_steps: 4
+  # Optimizer related options
+  optimizer:
+    # Learning rate
+    lr: 0.25
+    # Weight decay
+    weight_decay: 0.0005
+    # Optimizer type
+    type: SGD
+
 # Evaluation related options
 eval:
   # Frequency of evaluation
