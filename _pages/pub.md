@@ -6,15 +6,15 @@ author_profile: true
 classes: wide
 ---
 
-- **pFL-Bench: A Comprehensive Benchmark for Personalized Federated Learning**. NeurIPS'22. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
+- **FederatedScope: A Flexible Federated Learning Platform for Heterogeneity**. VLDB'23 [pdf](https://arxiv.org/pdf/2204.05011.pdf)
 
-  Daoyuan Chen, Dawei Gao, Weirui Kuang, Yaliang Li, Bolin Ding.
+  Yuexiang Xie, Zhen Wang, Dawei Gao, Daoyuan Chen, Liuyi Yao, Weirui Kuang, Yaliang Li, Bolin Ding, Jingren Zhou.
 
 ---
 
-- **FederatedScope: A Flexible Federated Learning Platform for Heterogeneity**. [pdf](https://arxiv.org/pdf/2204.05011.pdf)
+- **pFL-Bench: A Comprehensive Benchmark for Personalized Federated Learning**. NeurIPS'22. [pdf](https://arxiv.org/pdf/2206.03655.pdf)
 
-  Yuexiang Xie, Zhen Wang, Dawei Gao, Daoyuan Chen, Liuyi Yao, Weirui Kuang, Yaliang Li, Bolin Ding, Jingren Zhou.
+  Daoyuan Chen, Dawei Gao, Weirui Kuang, Yaliang Li, Bolin Ding.
 
 ---
 
