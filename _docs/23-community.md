@@ -19,4 +19,4 @@ You can join our Slack channel via this [link](https://federatedscopeteam.slack.
 ## DingDing
 Please scan the following QR code to join our DingDing group.
 
-<img src="https://img.alicdn.com/imgextra/i4/O1CN01heXHpf1zuXhcOCgGF_!!6000000006774-2-tps-860-861.png" alt="QR code for our DingDing group" width="150" height="150">
+<img src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="QR code for our DingDing group" width="150" height="150">
