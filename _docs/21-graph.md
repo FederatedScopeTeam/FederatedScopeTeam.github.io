@@ -127,6 +127,7 @@ import numpy as np
 from torch_geometric.datasets import Planetoid
 from federatedscope.core.splitters.graph import LouvainSplitter
 from federatedscope.register import register_data
+from federatedscope.core.data import DummyDataTranslator
 
 
 def my_cora(config=None):
@@ -144,13 +145,27 @@ def my_cora(config=None):
 
     data_local_dict = dict()
     for client_idx in range(len(dataset)):
-        data_local_dict[client_idx + 1] = dataset[client_idx]
+        local_data = dataset[client_idx]
+        data_local_dict[client_idx + 1] = {
+            'data': local_data,
+            'train': [local_data],
+            'val': [local_data],
+            'test': [local_data]
+        }
 
-    data_local_dict[0] = global_data
-    return data_local_dict, config
+    data_local_dict[0] = {
+        'data': global_data,
+        'train': [global_data],
+        'val': [global_data],
+        'test': [global_data]
+    }
+
+    translator = DummyDataTranslator(config)
+
+    return translator(data_local_dict), config
 
 
-def call_my_data(config):
+def call_my_data(config, client_cfgs):
     if config.data.type == "mycora":
         data, modified_config = my_cora(config)
         return data, modified_config
