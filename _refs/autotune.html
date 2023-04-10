@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto-tuning Module References &mdash; federatedscope 0.2.1 documentation</title>
+  <title>Auto-tuning Module References &mdash; federatedscope 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.2.1
+                0.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -443,6 +443,23 @@ id = (iteration, budget index, running index) with the following meaning:
 <section id="federatedscope-autotune-utils">
 <h2>federatedscope.autotune.utils<a class="headerlink" href="#federatedscope-autotune-utils" title="Permalink to this heading">¶</a></h2>
 <span class="target" id="module-federatedscope.autotune.utils"></span><dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.autotune.utils.arm2dict">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.utils.</span></span><span class="sig-name descname"><span class="pre">arm2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kvs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/utils.html#arm2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.utils.arm2dict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kvs</strong> (<em>dict</em>) – key is hyperparameter name in the form aaa.bb.cccc,
+and value is the choice.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the same specification for creating a cfg node.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>config (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="federatedscope.autotune.utils.config2cmdargs">
 <span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.utils.</span></span><span class="sig-name descname"><span class="pre">config2cmdargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/utils.html#config2cmdargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.utils.config2cmdargs" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -478,17 +495,58 @@ id = (iteration, budget index, running index) with the following meaning:
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.autotune.utils.eval_in_fs">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.utils.</span></span><span class="sig-name descname"><span class="pre">eval_in_fs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_cfgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/utils.html#eval_in_fs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.utils.eval_in_fs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> – fs cfg</p></li>
+<li><p><strong>config</strong> – sampled trial CS.Configuration</p></li>
+<li><p><strong>budget</strong> – budget round for this trial</p></li>
+<li><p><strong>client_cfgs</strong> – client-wise cfg</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The best results returned from FedRunner</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.autotune.utils.parse_condition_param">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.utils.</span></span><span class="sig-name descname"><span class="pre">parse_condition_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ss</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/utils.html#parse_condition_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.utils.parse_condition_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse conditions param to generate <code class="docutils literal notranslate"><span class="pre">ConfigSpace.conditions</span></code></p>
+<p>Condition parameters: EqualsCondition, NotEqualsCondition,     LessThanCondition, GreaterThanCondition, InCondition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition</strong> (<em>dict</em>) – configspace condition dict, which is supposed to</p></li>
+<li><p><strong>for</strong> (<em>have four keys</em>) – </p></li>
+<li><p><strong>ss</strong> (<em>CS.ConfigurationSpace</em>) – configspace</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the conditions for configspace</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ConfigSpace.conditions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="federatedscope.autotune.utils.parse_search_space">
 <span class="sig-prename descclassname"><span class="pre">federatedscope.autotune.utils.</span></span><span class="sig-name descname"><span class="pre">parse_search_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/autotune/utils.html#parse_search_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.autotune.utils.parse_search_space" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse yaml format configuration to generate search space
-:param config_path: the path of the yaml file.
-:type config_path: str</p>
+<dd><p>Parse yaml format configuration to generate search space</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the search space.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>str</em>) – the path of the yaml file.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ConfigSpace object</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the search space.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ConfigSpace object</p>
 </dd>
 </dl>
 </dd></dl>

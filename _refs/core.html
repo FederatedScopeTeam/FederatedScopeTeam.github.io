@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Module References &mdash; federatedscope 0.2.1 documentation</title>
+  <title>Core Module References &mdash; federatedscope 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.2.1
+                0.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -236,6 +236,12 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.fed_runner.BaseRunner.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#BaseRunner.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.BaseRunner.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the completeness of Server and Client.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.fed_runner.BaseRunner.run">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#BaseRunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.BaseRunner.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Launch the FL course</p>
@@ -297,7 +303,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.fed_runner.DistributedRunner._set_up">
 <span class="sig-name descname"><span class="pre">_set_up</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#DistributedRunner._set_up"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.DistributedRunner._set_up" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up and instantiate the client/server.</p>
+<dd><p>To set up server or client for distributed mode.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -365,6 +371,12 @@ standalone mode)</p>
 <dt class="sig sig-object py" id="federatedscope.core.fed_runner.FedRunner._setup_server">
 <span class="sig-name descname"><span class="pre">_setup_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_resource_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#FedRunner._setup_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.FedRunner._setup_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up the server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.fed_runner.FedRunner.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#FedRunner.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.FedRunner.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the completeness of Server and Client.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -443,7 +455,7 @@ Any broadcast operation would be executed client-by-clien to avoid         the e
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.fed_runner.StandaloneRunner._set_up">
 <span class="sig-name descname"><span class="pre">_set_up</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/fed_runner.html#StandaloneRunner._set_up"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.fed_runner.StandaloneRunner._set_up" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up and instantiate the client/server.</p>
+<dd><p>To set up server and client for standalone mode.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -596,7 +608,7 @@ Any broadcast operation would be executed client-by-clien to avoid         the e
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.workers.BaseClient.register_handlers">
-<span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/base_client.html#BaseClient.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.BaseClient.register_handlers" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/base_client.html#BaseClient.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.BaseClient.register_handlers" title="Permalink to this definition">¶</a></dt>
 <dd><p>To bind a message type with a handling function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -691,7 +703,7 @@ Any broadcast operation would be executed client-by-clien to avoid         the e
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.workers.BaseServer.register_handlers">
-<span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/base_server.html#BaseServer.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.BaseServer.register_handlers" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/base_server.html#BaseServer.register_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.BaseServer.register_handlers" title="Permalink to this definition">¶</a></dt>
 <dd><p>To bind a message type with a handling function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -894,6 +906,12 @@ Any broadcast operation would be executed client-by-clien to avoid         the e
 <dt class="sig sig-object py" id="federatedscope.core.workers.Client.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/client.html#Client.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.Client.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>To listen to the message and handle them accordingly (used for         distributed mode)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.workers.Client.run_standalone">
+<span class="sig-name descname"><span class="pre">run_standalone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/client.html#Client.run_standalone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.Client.run_standalone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run in standalone mode</p>
 </dd></dl>
 
 </dd></dl>
@@ -1162,6 +1180,12 @@ Any broadcast operation would be executed client-by-clien to avoid         the e
 <dt class="sig sig-object py" id="federatedscope.core.workers.Server.terminate">
 <span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'finish'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/server.html#Server.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.Server.terminate" title="Permalink to this definition">¶</a></dt>
 <dd><p>To terminate the FL course</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.workers.Server.trigger_for_feat_engr">
+<span class="sig-name descname"><span class="pre">trigger_for_feat_engr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trigger_train_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_for_trigger_train_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/workers/server.html#Server.trigger_for_feat_engr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.workers.Server.trigger_for_feat_engr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface for feature engineering, the default operation is none</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2404,7 +2428,8 @@ is based on the Algorithm 1 in their paper and official codes:
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Key <code class="docutils literal notranslate"><span class="pre">data</span></code> in <code class="docutils literal notranslate"><span class="pre">ClientData</span></code> is the raw dataset.</p>
+<p>Key <code class="docutils literal notranslate"><span class="pre">{split}_data</span></code> in <code class="docutils literal notranslate"><span class="pre">ClientData</span></code> is the raw dataset.
+Key <code class="docutils literal notranslate"><span class="pre">{split}</span></code> in <code class="docutils literal notranslate"><span class="pre">ClientData</span></code> is the dataloader.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.data.base_data.ClientData.setup">
@@ -2509,7 +2534,7 @@ is based on the Algorithm 1 in their paper and official codes:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="federatedscope.core.data.base_translator.BaseDataTranslator.split_train_val_test">
-<span class="sig-name descname"><span class="pre">split_train_val_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/data/base_translator.html#BaseDataTranslator.split_train_val_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.data.base_translator.BaseDataTranslator.split_train_val_test" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">split_train_val_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/data/base_translator.html#BaseDataTranslator.split_train_val_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.data.base_translator.BaseDataTranslator.split_train_val_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split dataset to train, val, test if not provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -2610,7 +2635,7 @@ is based on the Algorithm 1 in their paper and official codes:
 
 <dl class="py function">
 <dt class="sig sig-object py" id="federatedscope.core.data.utils.load_dataset">
-<span class="sig-prename descclassname"><span class="pre">federatedscope.core.data.utils.</span></span><span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/data/utils.html#load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.data.utils.load_dataset" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">federatedscope.core.data.utils.</span></span><span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_cfgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/data/utils.html#load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.data.utils.load_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the dataset for the given config from branches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -3293,17 +3318,23 @@ see <code class="docutils literal notranslate"><span class="pre">core.monitors.m
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="federatedscope.core.monitors.Monitor.calc_blocal_dissim">
-<span class="sig-name descname"><span class="pre">calc_blocal_dissim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_updated_models</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/monitors/monitor.html#Monitor.calc_blocal_dissim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.monitors.Monitor.calc_blocal_dissim" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="federatedscope.core.monitors.Monitor.add_items_to_best_result">
+<span class="sig-name descname"><span class="pre">add_items_to_best_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/monitors/monitor.html#Monitor.add_items_to_best_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.monitors.Monitor.add_items_to_best_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new key: value item (results-type: new_results) to best_result</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.monitors.Monitor.calc_model_metric">
+<span class="sig-name descname"><span class="pre">calc_model_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_updated_models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/monitors/monitor.html#Monitor.calc_model_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.monitors.Monitor.calc_model_metric" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>last_model</strong> (<em>dict</em>) – the state of last round.</p></li>
-<li><p><strong>local_updated_models</strong> (<em>list</em>) – each element is model.</p></li>
+<li><p><strong>local_updated_models</strong> (<em>list</em>) – each element is (data_size, model).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>b_local_dissimilarity, the measurements proposed in             “Tian Li, Anit Kumar Sahu, Manzil Zaheer, and et al. Federated             Optimization in Heterogeneous Networks”.</p>
+<dd class="field-even"><p>model_metric_dict</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -3492,6 +3523,26 @@ see <code class="docutils literal notranslate"><span class="pre">core.monitors.m
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.BulyanAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">BulyanAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/bulyan_aggregator.html#BulyanAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.BulyanAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of Bulyan refers to <cite>The Hidden Vulnerability
+of Distributed Learning in Byzantium</cite>
+[Mhamdi et al., 2018]
+(<a class="reference external" href="http://proceedings.mlr.press/v80/mhamdi18a/mhamdi18a.pdf">http://proceedings.mlr.press/v80/mhamdi18a/mhamdi18a.pdf</a>)</p>
+<p>It combines the MultiKrum aggregator and the treamedmean aggregator</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.BulyanAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/bulyan_aggregator.html#BulyanAggregator.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.BulyanAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>To preform aggregation with Median aggregation rule
+Arguments:
+agg_info (dict): the feedbacks from clients
+:returns: the aggregated results
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.core.aggregators.ClientsAvgAggregator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">ClientsAvgAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/clients_avg_aggregator.html#ClientsAvgAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.ClientsAvgAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of vanilla FedAvg refer to ‘Communication-efficient     learning of deep networks from decentralized data’ [McMahan et al., 2017]     <a class="reference external" href="http://proceedings.mlr.press/v54/mcmahan17a.html">http://proceedings.mlr.press/v54/mcmahan17a.html</a></p>
@@ -3537,6 +3588,47 @@ see <code class="docutils literal notranslate"><span class="pre">core.monitors.m
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.KrumAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">KrumAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/krum_aggregator.html#KrumAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.KrumAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of Krum/multi-Krum refer to <cite>Machine learning with
+adversaries: Byzantine tolerant gradient descent</cite>
+[Blanchard P et al., 2017]
+(<a class="reference external" href="https://proceedings.neurips.cc/paper/2017/hash/">https://proceedings.neurips.cc/paper/2017/hash/</a>
+f4b9ec30ad9f68f89b29639786cb62ef-Abstract.html)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.KrumAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/krum_aggregator.html#KrumAggregator.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.KrumAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>To preform aggregation with Krum aggregation rule</p>
+<p>Arguments:
+agg_info (dict): the feedbacks from clients
+:returns: the aggregated results
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.MedianAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">MedianAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/median_aggregator.html#MedianAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.MedianAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of median refers to <cite>Byzantine-robust distributed
+learning: Towards optimal statistical rates</cite>
+[Yin et al., 2018]
+(<a class="reference external" href="http://proceedings.mlr.press/v80/yin18a/yin18a.pdf">http://proceedings.mlr.press/v80/yin18a/yin18a.pdf</a>)</p>
+<p>It computes the coordinate-wise median of recieved updates from clients</p>
+<p>The code is adapted from <a class="reference external" href="https://github.com/bladesteam/blades">https://github.com/bladesteam/blades</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.MedianAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/median_aggregator.html#MedianAggregator.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.MedianAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>To preform aggregation with Median aggregation rule
+Arguments:
+agg_info (dict): the feedbacks from clients
+:returns: the aggregated results
+:rtype: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="federatedscope.core.aggregators.NoCommunicationAggregator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">NoCommunicationAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/aggregator.html#NoCommunicationAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.NoCommunicationAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clients do not communicate. Each client work locally</p>
@@ -3559,6 +3651,22 @@ see <code class="docutils literal notranslate"><span class="pre">core.monitors.m
 <dd class="field-odd"><p><strong>model_parameters</strong> (<em>dict</em>) – PyTorch Module object’s state_dict.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.NormboundingAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">NormboundingAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/normbounding_aggregator.html#NormboundingAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.NormboundingAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The server clips each update to reduce the negative impact         of malicious updates.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.NormboundingAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/normbounding_aggregator.html#NormboundingAggregator.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.NormboundingAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>To preform aggregation with normbounding aggregation rule
+Arguments:
+agg_info (dict): the feedbacks from clients
+:returns: the aggregated results
+:rtype: dict</p>
 </dd></dl>
 
 </dd></dl>
@@ -3595,6 +3703,26 @@ see <code class="docutils literal notranslate"><span class="pre">core.monitors.m
 <dt class="sig sig-object py" id="federatedscope.core.aggregators.ServerClientsInterpolateAggregator.aggregate">
 <span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/server_clients_interpolate_aggregator.html#ServerClientsInterpolateAggregator.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.ServerClientsInterpolateAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the aggregated value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.TrimmedmeanAggregator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.core.aggregators.</span></span><span class="sig-name descname"><span class="pre">TrimmedmeanAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/trimmedmean_aggregator.html#TrimmedmeanAggregator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.TrimmedmeanAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of median refer to <cite>Byzantine-robust distributed
+learning: Towards optimal statistical rates</cite>
+[Yin et al., 2018]
+(<a class="reference external" href="http://proceedings.mlr.press/v80/yin18a/yin18a.pdf">http://proceedings.mlr.press/v80/yin18a/yin18a.pdf</a>)</p>
+<p>The code is adapted from <a class="reference external" href="https://github.com/bladesteam/blades">https://github.com/bladesteam/blades</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.core.aggregators.TrimmedmeanAggregator.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/core/aggregators/trimmedmean_aggregator.html#TrimmedmeanAggregator.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.core.aggregators.TrimmedmeanAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>To preform aggregation with trimmedmean aggregation rule
+Arguments:
+agg_info (dict): the feedbacks from clients
+:returns: the aggregated results
+:rtype: dict</p>
 </dd></dl>
 
 </dd></dl>
@@ -4153,7 +4281,6 @@ necessary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – <code class="docutils literal notranslate"><span class="pre">core.data.StandaloneDataDict</span></code> in standalone mode,             <code class="docutils literal notranslate"><span class="pre">core.data.ClientData</span></code> in distribute mode</p></li>
 <li><p><strong>server_class</strong> – server class</p></li>
 <li><p><strong>client_class</strong> – client class</p></li>
 <li><p><strong>config</strong> – configurations for FL, see <code class="docutils literal notranslate"><span class="pre">federatedscope.core.configs</span></code></p></li>
@@ -4169,8 +4296,8 @@ necessary.</p>
 <dl>
 <dt>The key-value pairs of built-in runner and source are shown below:</dt><dd><table class="docutils align-default">
 <colgroup>
-<col style="width: 46%" />
-<col style="width: 54%" />
+<col style="width: 44%" />
+<col style="width: 56%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Mode</p></th>
@@ -4183,6 +4310,10 @@ necessary.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">distributed</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">core.fed_runner.DistributedRunner</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">standalone(process_num&gt;1)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">core.auxiliaries.parallel_runner.</span></code>
+<code class="docutils literal notranslate"><span class="pre">StandaloneMultiGPURunner</span></code></p></td>
 </tr>
 </tbody>
 </table>

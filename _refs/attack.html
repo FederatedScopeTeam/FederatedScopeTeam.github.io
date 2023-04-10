@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Attack Module References &mdash; federatedscope 0.2.1 documentation</title>
+  <title>Attack Module References &mdash; federatedscope 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.2.1
+                0.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -527,6 +527,20 @@ Leakage from Gradients”, link: <a class="reference external" href="https://arx
 <dt class="sig sig-object py" id="federatedscope.attack.trainer.wrap_GANTrainer">
 <span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">wrap_GANTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.torch_trainer.GeneralTorchTrainer"><span class="pre">GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.torch_trainer.GeneralTorchTrainer"><span class="pre">GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/attack/trainer/GAN_trainer.html#wrap_GANTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.wrap_GANTrainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Warp the trainer for gan_based class representative attack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base_trainer</strong> – Type: core.trainers.GeneralTorchTrainer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The wrapped trainer; Type: core.trainers.GeneralTorchTrainer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.attack.trainer.wrap_GaussianAttackTrainer">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.attack.trainer.</span></span><span class="sig-name descname"><span class="pre">wrap_GaussianAttackTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.torch_trainer.GeneralTorchTrainer"><span class="pre">GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.html#federatedscope.core.trainers.GeneralTorchTrainer" title="federatedscope.core.trainers.torch_trainer.GeneralTorchTrainer"><span class="pre">GeneralTorchTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/attack/trainer/gaussian_attack_trainer.html#wrap_GaussianAttackTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.attack.trainer.wrap_GaussianAttackTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrap the gaussian attack trainer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>base_trainer</strong> – Type: core.trainers.GeneralTorchTrainer</p>

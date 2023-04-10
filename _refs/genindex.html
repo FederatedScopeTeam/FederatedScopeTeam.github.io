@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; federatedscope 0.2.1 documentation</title>
+  <title>Index &mdash; federatedscope 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> federatedscope
           </a>
               <div class="version">
-                0.2.1
+                0.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -306,6 +306,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="core.html#federatedscope.core.monitors.Monitor.add_items_to_best_result">add_items_to_best_result() (federatedscope.core.monitors.Monitor method)</a>
+</li>
       <li><a href="attack.html#federatedscope.attack.privacy_attacks.PassivePropertyInference.add_parameter_updates">add_parameter_updates() (federatedscope.attack.privacy_attacks.PassivePropertyInference method)</a>
 </li>
       <li><a href="core.html#federatedscope.core.aggregators.Aggregator.aggregate">aggregate() (federatedscope.core.aggregators.Aggregator method)</a>
@@ -313,15 +315,25 @@
       <ul>
         <li><a href="core.html#federatedscope.core.aggregators.AsynClientsAvgAggregator.aggregate">(federatedscope.core.aggregators.AsynClientsAvgAggregator method)</a>
 </li>
+        <li><a href="core.html#federatedscope.core.aggregators.BulyanAggregator.aggregate">(federatedscope.core.aggregators.BulyanAggregator method)</a>
+</li>
         <li><a href="core.html#federatedscope.core.aggregators.ClientsAvgAggregator.aggregate">(federatedscope.core.aggregators.ClientsAvgAggregator method)</a>
 </li>
         <li><a href="core.html#federatedscope.core.aggregators.FedOptAggregator.aggregate">(federatedscope.core.aggregators.FedOptAggregator method)</a>
 </li>
+        <li><a href="core.html#federatedscope.core.aggregators.KrumAggregator.aggregate">(federatedscope.core.aggregators.KrumAggregator method)</a>
+</li>
+        <li><a href="core.html#federatedscope.core.aggregators.MedianAggregator.aggregate">(federatedscope.core.aggregators.MedianAggregator method)</a>
+</li>
         <li><a href="core.html#federatedscope.core.aggregators.NoCommunicationAggregator.aggregate">(federatedscope.core.aggregators.NoCommunicationAggregator method)</a>
+</li>
+        <li><a href="core.html#federatedscope.core.aggregators.NormboundingAggregator.aggregate">(federatedscope.core.aggregators.NormboundingAggregator method)</a>
 </li>
         <li><a href="core.html#federatedscope.core.aggregators.OnlineClientsAvgAggregator.aggregate">(federatedscope.core.aggregators.OnlineClientsAvgAggregator method)</a>
 </li>
         <li><a href="core.html#federatedscope.core.aggregators.ServerClientsInterpolateAggregator.aggregate">(federatedscope.core.aggregators.ServerClientsInterpolateAggregator method)</a>
+</li>
+        <li><a href="core.html#federatedscope.core.aggregators.TrimmedmeanAggregator.aggregate">(federatedscope.core.aggregators.TrimmedmeanAggregator method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -331,6 +343,8 @@
       <li><a href="core.html#federatedscope.core.workers.Server.aggregators">aggregators (federatedscope.core.workers.Server attribute)</a>
 </li>
       <li><a href="core.html#federatedscope.core.splitters.graph.Analyzer">Analyzer (class in federatedscope.core.splitters.graph)</a>
+</li>
+      <li><a href="autotune.html#federatedscope.autotune.utils.arm2dict">arm2dict() (in module federatedscope.autotune.utils)</a>
 </li>
       <li><a href="core.html#federatedscope.core.configs.CN.assert_cfg">assert_cfg() (federatedscope.core.configs.CN method)</a>
 </li>
@@ -358,10 +372,10 @@
 </li>
       <li><a href="core.html#federatedscope.core.splitters.BaseSplitter">BaseSplitter (class in federatedscope.core.splitters)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.trainers.BaseTrainer">BaseTrainer (class in federatedscope.core.trainers)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mf.html#federatedscope.mf.model.BasicMFNet">BasicMFNet (class in federatedscope.mf.model)</a>
 </li>
       <li><a href="core.html#federatedscope.core.workers.Client.best_results">best_results (federatedscope.core.workers.Client attribute)</a>
@@ -378,13 +392,15 @@
         <li><a href="core.html#federatedscope.core.workers.Server.broadcast_model_para">(federatedscope.core.workers.Server method)</a>
 </li>
       </ul></li>
+      <li><a href="core.html#federatedscope.core.aggregators.BulyanAggregator">BulyanAggregator (class in federatedscope.core.aggregators)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="core.html#federatedscope.core.monitors.Monitor.calc_blocal_dissim">calc_blocal_dissim() (federatedscope.core.monitors.Monitor method)</a>
+      <li><a href="core.html#federatedscope.core.monitors.Monitor.calc_model_metric">calc_model_metric() (federatedscope.core.monitors.Monitor method)</a>
 </li>
       <li><a href="core.html#federatedscope.core.workers.BaseClient.callback_funcs_for_address">callback_funcs_for_address() (federatedscope.core.workers.BaseClient method)</a>
 
@@ -458,6 +474,12 @@
         <li><a href="core.html#federatedscope.core.workers.Server.cfg">(federatedscope.core.workers.Server attribute)</a>
 </li>
         <li><a href="core.html#federatedscope.core.workers.Worker.cfg">(federatedscope.core.workers.Worker attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="core.html#federatedscope.core.fed_runner.BaseRunner.check">check() (federatedscope.core.fed_runner.BaseRunner method)</a>
+
+      <ul>
+        <li><a href="core.html#federatedscope.core.fed_runner.FedRunner.check">(federatedscope.core.fed_runner.FedRunner method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -586,6 +608,8 @@
         <li><a href="core.html#federatedscope.core.workers.Server.eval">(federatedscope.core.workers.Server method)</a>
 </li>
       </ul></li>
+      <li><a href="autotune.html#federatedscope.autotune.utils.eval_in_fs">eval_in_fs() (in module federatedscope.autotune.utils)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1110,6 +1134,10 @@
       <li><a href="gfl.html#federatedscope.gfl.dataset.KG">KG (class in federatedscope.gfl.dataset)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="core.html#federatedscope.core.aggregators.KrumAggregator">KrumAggregator (class in federatedscope.core.aggregators)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
@@ -1163,6 +1191,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="core.html#federatedscope.core.aggregators.MedianAggregator">MedianAggregator (class in federatedscope.core.aggregators)</a>
+</li>
       <li><a href="core.html#federatedscope.core.data.utils.merge_data">merge_data() (in module federatedscope.core.data.utils)</a>
 </li>
       <li><a href="core.html#federatedscope.core.workers.Server.merge_eval_results_from_all_clients">merge_eval_results_from_all_clients() (federatedscope.core.workers.Server method)</a>
@@ -1332,6 +1362,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gfl.html#federatedscope.gfl.trainer.NodeMiniBatchTrainer">NodeMiniBatchTrainer (class in federatedscope.gfl.trainer)</a>
 </li>
+      <li><a href="core.html#federatedscope.core.aggregators.NormboundingAggregator">NormboundingAggregator (class in federatedscope.core.aggregators)</a>
+</li>
       <li><a href="core.html#federatedscope.core.splitters.graph.Analyzer.num_missing_edge">num_missing_edge() (federatedscope.core.splitters.graph.Analyzer method)</a>
 </li>
   </ul></td>
@@ -1360,6 +1392,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autotune.html#federatedscope.autotune.utils.parse_condition_param">parse_condition_param() (in module federatedscope.autotune.utils)</a>
+</li>
       <li><a href="core.html#federatedscope.core.trainers.GeneralTFTrainer.parse_data">parse_data() (federatedscope.core.trainers.GeneralTFTrainer method)</a>
 
       <ul>
@@ -1388,10 +1422,10 @@
 </li>
       <li><a href="attack.html#federatedscope.attack.worker_as_attacker.plot_target_loss">plot_target_loss() (in module federatedscope.attack.worker_as_attacker)</a>
 </li>
-      <li><a href="core.html#federatedscope.core.splitters.graph.Analyzer.portion_ms_node">portion_ms_node() (federatedscope.core.splitters.graph.Analyzer method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="core.html#federatedscope.core.splitters.graph.Analyzer.portion_ms_node">portion_ms_node() (federatedscope.core.splitters.graph.Analyzer method)</a>
+</li>
       <li><a href="core.html#federatedscope.core.data.base_data.StandaloneDataDict.preprocess">preprocess() (federatedscope.core.data.base_data.StandaloneDataDict method)</a>
 </li>
       <li><a href="core.html#federatedscope.core.configs.CN.print_help">print_help() (federatedscope.core.configs.CN method)</a>
@@ -1498,6 +1532,8 @@
         <li><a href="core.html#federatedscope.core.workers.Server.run">(federatedscope.core.workers.Server method)</a>
 </li>
       </ul></li>
+      <li><a href="core.html#federatedscope.core.workers.Client.run_standalone">run_standalone() (federatedscope.core.workers.Client method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1596,10 +1632,10 @@
 </li>
       <li><a href="core.html#federatedscope.core.monitors.Monitor.track_upload_bytes">track_upload_bytes() (federatedscope.core.monitors.Monitor method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.trainers.Trainer">Trainer (class in federatedscope.core.trainers)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="core.html#federatedscope.core.workers.Client.trainer">trainer (federatedscope.core.workers.Client attribute)</a>
 
       <ul>
@@ -1608,9 +1644,13 @@
       </ul></li>
       <li><a href="autotune.html#federatedscope.autotune.algos.TrialExecutor">TrialExecutor (class in federatedscope.autotune.algos)</a>
 </li>
+      <li><a href="core.html#federatedscope.core.workers.Server.trigger_for_feat_engr">trigger_for_feat_engr() (federatedscope.core.workers.Server method)</a>
+</li>
       <li><a href="core.html#federatedscope.core.workers.Server.trigger_for_start">trigger_for_start() (federatedscope.core.workers.Server method)</a>
 </li>
       <li><a href="core.html#federatedscope.core.workers.Server.trigger_for_time_up">trigger_for_time_up() (federatedscope.core.workers.Server method)</a>
+</li>
+      <li><a href="core.html#federatedscope.core.aggregators.TrimmedmeanAggregator">TrimmedmeanAggregator (class in federatedscope.core.aggregators)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1674,9 +1714,11 @@
 </li>
       <li><a href="core.html#federatedscope.core.trainers.wrap_fedprox_trainer">wrap_fedprox_trainer() (in module federatedscope.core.trainers)</a>
 </li>
+      <li><a href="attack.html#federatedscope.attack.trainer.wrap_GANTrainer">wrap_GANTrainer() (in module federatedscope.attack.trainer)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="attack.html#federatedscope.attack.trainer.wrap_GANTrainer">wrap_GANTrainer() (in module federatedscope.attack.trainer)</a>
+      <li><a href="attack.html#federatedscope.attack.trainer.wrap_GaussianAttackTrainer">wrap_GaussianAttackTrainer() (in module federatedscope.attack.trainer)</a>
 </li>
       <li><a href="attack.html#federatedscope.attack.trainer.wrap_GradientAscentTrainer">wrap_GradientAscentTrainer() (in module federatedscope.attack.trainer)</a>
 </li>
