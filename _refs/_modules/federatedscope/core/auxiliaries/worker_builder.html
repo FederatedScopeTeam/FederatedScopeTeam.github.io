@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.auxiliaries.worker_builder &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.auxiliaries.worker_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.auxiliaries.worker_builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.configs</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.workers</span> <span class="kn">import</span> <span class="n">Server</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">import</span> <span class="nn">federatedscope.register</span> <span class="k">as</span> <span class="nn">register</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.contrib.worker</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1"> in `federatedscope.contrib.worker`, some modules are not &#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;available.&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_client_cls"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.auxiliaries.worker_builder.get_client_cls">[docs]</a><span class="k">def</span> <span class="nf">get_client_cls</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return a class of client.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg: configurations for FL, see ``federatedscope.core.configs``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A client class decided by ``cfg``.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      The key-value pairs of client type and source:</span>
+<span class="sd">        ==================== ==============================================</span>
+<span class="sd">        Client type          Source</span>
+<span class="sd">        ==================== ==============================================</span>
+<span class="sd">        ``local``            ``core.workers.Client``</span>
+<span class="sd">        ``fedavg``           ``core.workers.Client``</span>
+<span class="sd">        ``pfedme``           ``core.workers.Client``</span>
+<span class="sd">        ``ditto``            ``core.workers.Client``</span>
+<span class="sd">        ``fedex``            ``autotune.fedex.FedExClient``</span>
+<span class="sd">        ``vfl``              ``vertical_fl.worker.vFLClient``</span>
+<span class="sd">        ``fedsageplus``      ``gfl.fedsageplus.worker.FedSagePlusClient``</span>
+<span class="sd">        ``gcflplus``         ``gfl.gcflplus.worker.GCFLPlusClient``</span>
+<span class="sd">        ``gradascent``       \</span>
+<span class="sd">        ``attack.worker_as_attacker.active_client``</span>
+<span class="sd">        ==================== ==============================================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">worker_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">worker_class</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">worker_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">worker_class</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">fedex</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.fedex</span> <span class="kn">import</span> <span class="n">FedExClient</span>
+        <span class="k">return</span> <span class="n">FedExClient</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">fts</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.fts</span> <span class="kn">import</span> <span class="n">FTSClient</span>
+        <span class="k">return</span> <span class="n">FTSClient</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">pfedhpo</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.pfedhpo</span> <span class="kn">import</span> <span class="n">pFedHPOClient</span>
+        <span class="k">return</span> <span class="n">pFedHPOClient</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">algo</span> <span class="o">==</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.linear_model.worker</span> \
+                <span class="kn">import</span> <span class="nn">vFLClient</span>
+            <span class="k">return</span> <span class="n">vFLClient</span>
+        <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">algo</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xgb&#39;</span><span class="p">,</span> <span class="s1">&#39;gbdt&#39;</span><span class="p">,</span> <span class="s1">&#39;rf&#39;</span><span class="p">]:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.tree_based_models.worker</span> \
+                <span class="kn">import</span> <span class="nn">TreeClient</span>
+            <span class="k">return</span> <span class="n">TreeClient</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No client class for </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">algo</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hetero_nlp_tasks&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.hetero_tasks.worker</span> <span class="kn">import</span> <span class="n">ATCClient</span>
+        <span class="k">return</span> <span class="n">ATCClient</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">constants</span><span class="o">.</span><span class="n">CLIENTS_TYPE</span><span class="p">:</span>
+        <span class="n">client_type</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CLIENTS_TYPE</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">client_type</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s1">&#39;Clients for method </span><span class="si">{}</span><span class="s1"> is not implemented. Will use default one&#39;</span><span class="o">.</span>
+            <span class="nb">format</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">client_type</span> <span class="o">==</span> <span class="s1">&#39;fedsageplus&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.fedsageplus.worker</span> <span class="kn">import</span> <span class="n">FedSagePlusClient</span>
+        <span class="n">client_class</span> <span class="o">=</span> <span class="n">FedSagePlusClient</span>
+    <span class="k">elif</span> <span class="n">client_type</span> <span class="o">==</span> <span class="s1">&#39;gcflplus&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.gcflplus.worker</span> <span class="kn">import</span> <span class="n">GCFLPlusClient</span>
+        <span class="n">client_class</span> <span class="o">=</span> <span class="n">GCFLPlusClient</span>
+    <span class="k">elif</span> <span class="n">client_type</span> <span class="o">==</span> <span class="s1">&#39;fedgc&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.cl.fedgc.client</span> <span class="kn">import</span> <span class="n">GlobalContrastFLClient</span>
+        <span class="n">client_class</span> <span class="o">=</span> <span class="n">GlobalContrastFLClient</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">client_class</span> <span class="o">=</span> <span class="n">Client</span>
+
+    <span class="c1"># add attack related method to client_class</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">constants</span><span class="o">.</span><span class="n">CLIENTS_TYPE</span><span class="p">:</span>
+        <span class="n">client_atk_type</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CLIENTS_TYPE</span><span class="p">[</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">client_atk_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">client_atk_type</span> <span class="o">==</span> <span class="s1">&#39;gradascent&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.worker_as_attacker.active_client</span> <span class="kn">import</span> \
+            <span class="n">add_atk_method_to_Client_GradAscent</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=========== add method to current client class &quot;</span><span class="p">)</span>
+        <span class="n">client_class</span> <span class="o">=</span> <span class="n">add_atk_method_to_Client_GradAscent</span><span class="p">(</span><span class="n">client_class</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">client_class</span></div>
+
+
+<div class="viewcode-block" id="get_server_cls"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.auxiliaries.worker_builder.get_server_cls">[docs]</a><span class="k">def</span> <span class="nf">get_server_cls</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function return a class of server.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg: configurations for FL, see ``federatedscope.core.configs``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A server class decided by ``cfg``.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      The key-value pairs of server type and source:</span>
+<span class="sd">        ==================== ==============================================</span>
+<span class="sd">        Server type          Source</span>
+<span class="sd">        ==================== ==============================================</span>
+<span class="sd">        ``local``            ``core.workers.Server``</span>
+<span class="sd">        ``fedavg``           ``core.workers.Server``</span>
+<span class="sd">        ``pfedme``           ``core.workers.Server``</span>
+<span class="sd">        ``ditto``            ``core.workers.Server``</span>
+<span class="sd">        ``fedex``            ``autotune.fedex.FedExServer``</span>
+<span class="sd">        ``vfl``              ``vertical_fl.worker.vFLServer``</span>
+<span class="sd">        ``fedsageplus``      ``gfl.fedsageplus.worker.FedSagePlusServer``</span>
+<span class="sd">        ``gcflplus``         ``gfl.gcflplus.worker.GCFLPlusServer``</span>
+<span class="sd">        ``attack``           \</span>
+<span class="sd">        ``attack.worker_as_attacker.server_attacker.PassiveServer`` and \</span>
+<span class="sd">        ``attack.worker_as_attacker.server_attacker.PassivePIAServer``</span>
+<span class="sd">        ``backdoor``         \</span>
+<span class="sd">        ``attack.worker_as_attacker.server_attacker.BackdoorServer``</span>
+<span class="sd">        ==================== ==============================================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">worker_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">worker_class</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">worker_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">worker_class</span><span class="p">[</span><span class="s1">&#39;server&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">fedex</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.fedex</span> <span class="kn">import</span> <span class="n">FedExServer</span>
+        <span class="k">return</span> <span class="n">FedExServer</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">fts</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.fts</span> <span class="kn">import</span> <span class="n">FTSServer</span>
+        <span class="k">return</span> <span class="n">FTSServer</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">pfedhpo</span><span class="o">.</span><span class="n">use</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">pfedhpo</span><span class="o">.</span><span class="n">train_fl</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.pfedhpo</span> <span class="kn">import</span> <span class="n">pFedHPOServer</span>
+        <span class="k">return</span> <span class="n">pFedHPOServer</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">pfedhpo</span><span class="o">.</span><span class="n">use</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">pfedhpo</span><span class="o">.</span><span class="n">train_fl</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.autotune.pfedhpo</span> <span class="kn">import</span> <span class="n">pFedHPOFLServer</span>
+        <span class="k">return</span> <span class="n">pFedHPOFLServer</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dlg&#39;</span><span class="p">,</span> <span class="s1">&#39;ig&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.worker_as_attacker.server_attacker</span> <span class="kn">import</span>\
+            <span class="n">PassiveServer</span>
+        <span class="k">return</span> <span class="n">PassiveServer</span>
+    <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;passivepia&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.worker_as_attacker.server_attacker</span> <span class="kn">import</span>\
+            <span class="n">PassivePIAServer</span>
+        <span class="k">return</span> <span class="n">PassivePIAServer</span>
+
+    <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;backdoor&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.worker_as_attacker.server_attacker</span> \
+            <span class="kn">import</span> <span class="nn">BackdoorServer</span>
+        <span class="k">return</span> <span class="n">BackdoorServer</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">algo</span> <span class="o">==</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.linear_model.worker</span> \
+                <span class="kn">import</span> <span class="nn">vFLServer</span>
+            <span class="k">return</span> <span class="n">vFLServer</span>
+        <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">algo</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xgb&#39;</span><span class="p">,</span> <span class="s1">&#39;gbdt&#39;</span><span class="p">,</span> <span class="s1">&#39;rf&#39;</span><span class="p">]:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.tree_based_models.worker</span> \
+                <span class="kn">import</span> <span class="nn">TreeServer</span>
+            <span class="k">return</span> <span class="n">TreeServer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No server class for </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">algo</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hetero_nlp_tasks&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.hetero_tasks.worker</span> <span class="kn">import</span> <span class="n">ATCServer</span>
+        <span class="k">return</span> <span class="n">ATCServer</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">constants</span><span class="o">.</span><span class="n">SERVER_TYPE</span><span class="p">:</span>
+        <span class="n">server_type</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">SERVER_TYPE</span><span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">server_type</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s1">&#39;Server for method </span><span class="si">{}</span><span class="s1"> is not implemented. Will use default one&#39;</span><span class="o">.</span>
+            <span class="nb">format</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">server_type</span> <span class="o">==</span> <span class="s1">&#39;fedsageplus&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.fedsageplus.worker</span> <span class="kn">import</span> <span class="n">FedSagePlusServer</span>
+        <span class="n">server_class</span> <span class="o">=</span> <span class="n">FedSagePlusServer</span>
+    <span class="k">elif</span> <span class="n">server_type</span> <span class="o">==</span> <span class="s1">&#39;gcflplus&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.gcflplus.worker</span> <span class="kn">import</span> <span class="n">GCFLPlusServer</span>
+        <span class="n">server_class</span> <span class="o">=</span> <span class="n">GCFLPlusServer</span>
+    <span class="k">elif</span> <span class="n">server_type</span> <span class="o">==</span> <span class="s1">&#39;fedgc&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.cl.fedgc.server</span> <span class="kn">import</span> <span class="n">GlobalContrastFLServer</span>
+        <span class="n">server_class</span> <span class="o">=</span> <span class="n">GlobalContrastFLServer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">server_class</span> <span class="o">=</span> <span class="n">Server</span>
+
+    <span class="k">return</span> <span class="n">server_class</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

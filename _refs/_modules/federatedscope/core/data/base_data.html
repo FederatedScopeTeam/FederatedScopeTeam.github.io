@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.data.base_data &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.data.base_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.data.base_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">scipy.sparse.csc</span> <span class="kn">import</span> <span class="n">csc_matrix</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.data.utils</span> <span class="kn">import</span> <span class="n">merge_data</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.dataloader_builder</span> <span class="kn">import</span> <span class="n">get_dataloader</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="StandaloneDataDict"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_data.StandaloneDataDict">[docs]</a><span class="k">class</span> <span class="nc">StandaloneDataDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``StandaloneDataDict`` maintain several ``ClientData``, only used in \</span>
+<span class="sd">    ``Standalone`` mode to be passed to ``Runner``, which will conduct \</span>
+<span class="sd">    several preprocess based on ``global_cfg``, see ``preprocess()`` \</span>
+<span class="sd">    for details.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        datadict: ``Dict`` with ``client_id`` as key,  ``ClientData`` as value.</span>
+<span class="sd">        global_cfg: global ``CfgNode``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadict</span><span class="p">,</span> <span class="n">global_cfg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datadict: `Dict` with `client_id` as key,  `ClientData` as value.</span>
+<span class="sd">            global_cfg: global CfgNode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span> <span class="o">=</span> <span class="n">global_cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">datadict</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StandaloneDataDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datadict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StandaloneDataDict.resetup"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_data.StandaloneDataDict.resetup">[docs]</a>    <span class="k">def</span> <span class="nf">resetup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_cfg</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset-up new configs for ``ClientData``, when the configs change \</span>
+<span class="sd">        which might be used in HPO.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            global_cfg: enable new config for ``ClientData``</span>
+<span class="sd">            client_cfgs: enable new client-specific config for ``ClientData``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span> <span class="o">=</span> <span class="n">global_cfg</span><span class="p">,</span> <span class="n">client_cfgs</span>
+        <span class="k">for</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">client_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client_data</span><span class="p">,</span> <span class="n">ClientData</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">client_cfgs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">client_cfg</span> <span class="o">=</span> <span class="n">global_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                    <span class="n">client_cfg</span><span class="o">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span>
+                        <span class="n">client_cfgs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;client_</span><span class="si">{</span><span class="n">client_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">client_cfg</span> <span class="o">=</span> <span class="n">global_cfg</span>
+                <span class="n">client_data</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">client_cfg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;`client_data` is not subclass of &#39;</span>
+                               <span class="s1">&#39;`ClientData`, and cannot re-setup &#39;</span>
+                               <span class="s1">&#39;DataLoader with new configs.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StandaloneDataDict.preprocess"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_data.StandaloneDataDict.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Preprocess for:</span>
+
+<span class="sd">        (1) Global evaluation (merge test data).</span>
+<span class="sd">        (2) Global mode (train with centralized setting, merge all data).</span>
+<span class="sd">        (3) Apply data attack algorithms.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datadict: dict with `client_id` as key,  `ClientData` as value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">merge_test_data</span><span class="p">:</span>
+            <span class="n">merge_split</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">merge_val_data</span><span class="p">:</span>
+                <span class="n">merge_split</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">]</span>
+            <span class="n">server_data</span> <span class="o">=</span> <span class="n">merge_data</span><span class="p">(</span>
+                <span class="n">all_data</span><span class="o">=</span><span class="n">datadict</span><span class="p">,</span>
+                <span class="n">merged_max_data_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span><span class="p">,</span>
+                <span class="n">specified_dataset_name</span><span class="o">=</span><span class="n">merge_split</span><span class="p">)</span>
+            <span class="c1"># `0` indicate Server</span>
+            <span class="n">datadict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClientData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="p">,</span> <span class="o">**</span><span class="n">server_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;global&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">server_holds_all</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">datadict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+                        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">datadict</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> \
+                        <span class="s2">&quot;You specified cfg.data.server_holds_all=True &quot;</span> \
+                        <span class="s2">&quot;but data[0] is None. Please check whether you &quot;</span> \
+                        <span class="s2">&quot;pre-process the data[0] correctly&quot;</span>
+                    <span class="n">datadict</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Will merge data from clients whose ids in &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;[1, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+                    <span class="n">merged_data</span> <span class="o">=</span> <span class="n">merge_data</span><span class="p">(</span>
+                        <span class="n">all_data</span><span class="o">=</span><span class="n">datadict</span><span class="p">,</span>
+                        <span class="n">merged_max_data_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span><span class="p">)</span>
+                    <span class="n">datadict</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClientData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="p">,</span> <span class="o">**</span><span class="n">merged_data</span><span class="p">)</span>
+        <span class="n">datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">datadict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datadict</span></div>
+
+<div class="viewcode-block" id="StandaloneDataDict.attack"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_data.StandaloneDataDict.attack">[docs]</a>    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datadict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply attack to ``StandaloneDataDict``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;backdoor&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span> <span class="ow">and</span> <span class="s1">&#39;edge&#39;</span> <span class="ow">in</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">trigger_type</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">os</span>
+            <span class="kn">import</span> <span class="nn">torch</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary</span> <span class="kn">import</span> \
+                <span class="n">create_ardis_poisoned_dataset</span><span class="p">,</span> <span class="n">create_ardis_test_dataset</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span><span class="p">)</span>
+                <span class="n">poisoned_edgeset</span> <span class="o">=</span> <span class="n">create_ardis_poisoned_dataset</span><span class="p">(</span>
+                    <span class="n">data_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span><span class="p">)</span>
+
+                <span class="n">ardis_test_dataset</span> <span class="o">=</span> <span class="n">create_ardis_test_dataset</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span><span class="p">)</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing poison_data to: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span><span class="p">))</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span> <span class="o">+</span>
+                        <span class="s2">&quot;poisoned_edgeset_training&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">saved_data_file</span><span class="p">:</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">poisoned_edgeset</span><span class="p">,</span> <span class="n">saved_data_file</span><span class="p">)</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">edge_path</span> <span class="o">+</span>
+                        <span class="s2">&quot;ardis_test_dataset.pt&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ardis_data_file</span><span class="p">:</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ardis_test_dataset</span><span class="p">,</span> <span class="n">ardis_data_file</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s1">&#39;please notice: downloading the poisoned dataset </span><span class="se">\</span>
+<span class="s1">                    on cifar-10 from </span><span class="se">\</span>
+<span class="s1">                        https://github.com/ksreenivasan/OOD_Federated_Learning&#39;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;backdoor&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary</span> <span class="kn">import</span> <span class="n">poisoning</span>
+            <span class="n">poisoning</span><span class="p">(</span><span class="n">datadict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datadict</span></div></div>
+
+
+<div class="viewcode-block" id="ClientData"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_data.ClientData">[docs]</a><span class="k">class</span> <span class="nc">ClientData</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``ClientData`` converts split data to ``DataLoader``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        loader: ``Dataloader`` class or data dict which have been built</span>
+<span class="sd">        client_cfg: client-specific ``CfgNode``</span>
+<span class="sd">        data: raw dataset, which will stay raw</span>
+<span class="sd">        train: train dataset, which will be converted to ``Dataloader``</span>
+<span class="sd">        val: valid dataset, which will be converted to ``Dataloader``</span>
+<span class="sd">        test: test dataset, which will be converted to ``Dataloader``</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Key ``{split}_data`` in ``ClientData`` is the raw dataset.</span>
+<span class="sd">        Key ``{split}`` in ``ClientData`` is the dataloader.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SPLIT_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_cfg</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_cfg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="n">train</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_data</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="n">test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">client_cfg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ClientData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ClientData.setup"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_data.ClientData.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_client_cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up ``DataLoader`` in ``ClientData`` with new configurations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_client_cfg: new client-specific CfgNode</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bool: Status for indicating whether the client_cfg is updated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if `batch_size` or `shuffle` change, re-instantiate DataLoader</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_cfg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">new_client_cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_cfg</span> <span class="o">=</span> <span class="n">new_client_cfg</span>
+
+        <span class="k">for</span> <span class="n">split_data</span><span class="p">,</span> <span class="n">split_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAMES</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">split_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># csc_matrix does not have ``__len__`` attributes</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split_data</span><span class="p">,</span> <span class="n">csc_matrix</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">split_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">split_data</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">client_cfg</span><span class="p">,</span>
+                                                      <span class="n">split_name</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">split_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">split_data</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">client_cfg</span><span class="p">,</span>
+                                                      <span class="n">split_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

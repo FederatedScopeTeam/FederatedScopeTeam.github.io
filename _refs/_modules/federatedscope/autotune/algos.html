@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.autotune.algos &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.autotune.algos</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.autotune.algos</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">ConfigSpace</span> <span class="k">as</span> <span class="nn">CS</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.utils</span> <span class="kn">import</span> <span class="n">setup_seed</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.data_builder</span> <span class="kn">import</span> <span class="n">get_data</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.worker_builder</span> <span class="kn">import</span> <span class="n">get_client_cls</span><span class="p">,</span> \
+    <span class="n">get_server_cls</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.runner_builder</span> <span class="kn">import</span> <span class="n">get_runner</span>
+<span class="kn">from</span> <span class="nn">federatedscope.autotune.utils</span> <span class="kn">import</span> <span class="n">parse_search_space</span><span class="p">,</span> \
+    <span class="n">config2cmdargs</span><span class="p">,</span> <span class="n">config2str</span><span class="p">,</span> <span class="n">summarize_hpo_results</span><span class="p">,</span> <span class="n">log2wandb</span><span class="p">,</span> <span class="n">eval_in_fs</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TrialExecutor"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.TrialExecutor">[docs]</a><span class="k">class</span> <span class="nc">TrialExecutor</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class is responsible for executing the FL procedure with</span>
+<span class="sd">    a given trial configuration in another thread.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_idx</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">returns</span><span class="p">,</span> <span class="n">trial_config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">):</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_idx</span> <span class="o">=</span> <span class="n">cfg_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_returns</span> <span class="o">=</span> <span class="n">returns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span> <span class="o">=</span> <span class="n">trial_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client_cfgs</span> <span class="o">=</span> <span class="n">client_cfgs</span>
+
+<div class="viewcode-block" id="TrialExecutor.run"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.TrialExecutor.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">setup_seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="o">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span><span class="n">modified_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+        <span class="n">Fed_runner</span> <span class="o">=</span> <span class="n">get_runner</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                <span class="n">server_class</span><span class="o">=</span><span class="n">get_server_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="p">),</span>
+                                <span class="n">client_class</span><span class="o">=</span><span class="n">get_client_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="p">),</span>
+                                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
+                                <span class="n">client_configs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client_cfgs</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">Fed_runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trial_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">metric</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_returns</span><span class="p">[</span><span class="s1">&#39;perf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key1</span><span class="p">][</span><span class="n">key2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_returns</span><span class="p">[</span><span class="s1">&#39;cfg_idx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="get_scheduler"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.get_scheduler">[docs]</a><span class="k">def</span> <span class="nf">get_scheduler</span><span class="p">(</span><span class="n">init_cfg</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;To instantiate a scheduler object for conducting HPO</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        init_cfg: configuration</span>
+<span class="sd">        client_cfgs: client-specific configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">init_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;sha&#39;</span><span class="p">,</span> <span class="s1">&#39;rs&#39;</span><span class="p">,</span> <span class="s1">&#39;bo_kde&#39;</span><span class="p">,</span> <span class="s1">&#39;bohb&#39;</span><span class="p">,</span> <span class="s1">&#39;hb&#39;</span><span class="p">,</span> <span class="s1">&#39;bo_gp&#39;</span><span class="p">,</span> <span class="s1">&#39;bo_rf&#39;</span>
+    <span class="p">]:</span>
+        <span class="n">scheduler</span> <span class="o">=</span> <span class="n">SuccessiveHalvingAlgo</span><span class="p">(</span><span class="n">init_cfg</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+    <span class="c1"># elif init_cfg.hpo.scheduler == &#39;pbt&#39;:</span>
+    <span class="c1">#     scheduler = PBT(init_cfg)</span>
+    <span class="k">elif</span> <span class="n">init_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;wrap&#39;</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">):</span>
+        <span class="n">scheduler</span> <span class="o">=</span> <span class="n">SHAWrapFedex</span><span class="p">(</span><span class="n">init_cfg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scheduler</span></div>
+
+
+<div class="viewcode-block" id="Scheduler"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.Scheduler">[docs]</a><span class="k">class</span> <span class="nc">Scheduler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The base class for describing HPO algorithms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Arguments:</span>
+<span class="sd">                cfg (federatedscope.core.configs.config.CN): dict \</span>
+<span class="sd">                like object, where each key-value pair corresponds to a \</span>
+<span class="sd">                field and its choices.</span>
+<span class="sd">                client_cfgs: client-specific configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client_cfgs</span> <span class="o">=</span> <span class="n">client_cfgs</span>
+
+        <span class="c1"># Create hpo working folder</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span> <span class="o">=</span> <span class="n">parse_search_space</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">ss</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Scheduler._setup"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.Scheduler._setup">[docs]</a>    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare the initial configurations based on the search space.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Scheduler._evaluate"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.Scheduler._evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To evaluate (i.e., conduct the FL procedure) for a given</span>
+<span class="sd">        collection of configurations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Scheduler.optimize"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.Scheduler.optimize">[docs]</a>    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To optimize the hyperparameters, that is, executing the HPO</span>
+<span class="sd">        algorithm and then returning the results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="ModelFreeBase"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.ModelFreeBase">[docs]</a><span class="k">class</span> <span class="nc">ModelFreeBase</span><span class="p">(</span><span class="n">Scheduler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;To attempt a collection of configurations exhaustively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ModelFreeBase._setup"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.ModelFreeBase._setup">[docs]</a>    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">seed</span> <span class="o">+</span> <span class="mi">19</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">sample_configuration</span><span class="p">(</span>
+                <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">init_cand_num</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="ModelFreeBase._evaluate"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.ModelFreeBase._evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">num_workers</span><span class="p">:</span>
+            <span class="c1"># execute FL in parallel by multi-threading</span>
+            <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flags</span><span class="p">)):</span>
+                <span class="n">flags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flags</span><span class="p">))]</span>
+            <span class="n">thread_results</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flags</span><span class="p">))]</span>
+
+            <span class="n">perfs</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>
+                <span class="n">available_worker</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="n">flags</span><span class="p">[</span><span class="n">available_worker</span><span class="p">]</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="n">available_worker</span> <span class="o">=</span> <span class="p">(</span><span class="n">available_worker</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">threads</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">thread_results</span><span class="p">[</span><span class="n">available_worker</span><span class="p">]:</span>
+                    <span class="n">completed_trial_results</span> <span class="o">=</span> <span class="n">thread_results</span><span class="p">[</span><span class="n">available_worker</span><span class="p">]</span>
+                    <span class="n">cfg_idx</span> <span class="o">=</span> <span class="n">completed_trial_results</span><span class="p">[</span><span class="s1">&#39;cfg_idx&#39;</span><span class="p">]</span>
+                    <span class="n">perfs</span><span class="p">[</span><span class="n">cfg_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">completed_trial_results</span><span class="p">[</span><span class="s1">&#39;perf&#39;</span><span class="p">]</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Evaluate the </span><span class="si">{}</span><span class="s2">-th config </span><span class="si">{}</span><span class="s2"> and get performance </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
+                        <span class="nb">format</span><span class="p">(</span><span class="n">cfg_idx</span><span class="p">,</span> <span class="n">configs</span><span class="p">[</span><span class="n">cfg_idx</span><span class="p">],</span> <span class="n">perfs</span><span class="p">[</span><span class="n">cfg_idx</span><span class="p">]))</span>
+                    <span class="n">thread_results</span><span class="p">[</span><span class="n">available_worker</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+                <span class="n">trial_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                <span class="n">trial_cfg</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">config2cmdargs</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+                <span class="n">flags</span><span class="p">[</span><span class="n">available_worker</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">trial</span> <span class="o">=</span> <span class="n">TrialExecutor</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">flags</span><span class="p">[</span><span class="n">available_worker</span><span class="p">],</span>
+                                      <span class="n">thread_results</span><span class="p">[</span><span class="n">available_worker</span><span class="p">],</span>
+                                      <span class="n">trial_cfg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_cfgs</span><span class="p">)</span>
+                <span class="n">trial</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="n">threads</span><span class="p">[</span><span class="n">available_worker</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flags</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">flags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="n">threads</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">thread_results</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">thread_results</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">completed_trial_results</span> <span class="o">=</span> <span class="n">thread_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">cfg_idx</span> <span class="o">=</span> <span class="n">completed_trial_results</span><span class="p">[</span><span class="s1">&#39;cfg_idx&#39;</span><span class="p">]</span>
+                    <span class="n">perfs</span><span class="p">[</span><span class="n">cfg_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">completed_trial_results</span><span class="p">[</span><span class="s1">&#39;perf&#39;</span><span class="p">]</span>
+                    <span class="c1"># TODO: Support num_worker in WandB</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Evaluate the </span><span class="si">{}</span><span class="s2">-th config </span><span class="si">{}</span><span class="s2"> and get performance </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
+                        <span class="nb">format</span><span class="p">(</span><span class="n">cfg_idx</span><span class="p">,</span> <span class="n">configs</span><span class="p">[</span><span class="n">cfg_idx</span><span class="p">],</span> <span class="n">perfs</span><span class="p">[</span><span class="n">cfg_idx</span><span class="p">]))</span>
+                    <span class="n">thread_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tmp_configs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">perfs</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>
+                <span class="n">tmp_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+                <span class="n">trial_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                <span class="n">trial_cfg</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">config2cmdargs</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">eval_in_fs</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">trial_cfg</span><span class="p">,</span>
+                                     <span class="n">client_cfgs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client_cfgs</span><span class="p">)</span>
+                <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="n">trial_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">metric</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+                <span class="n">perfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key1</span><span class="p">][</span><span class="n">key2</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Evaluate the </span><span class="si">{}</span><span class="s2">-th config </span><span class="si">{}</span><span class="s2"> and get performance </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">perfs</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+                    <span class="n">tmp_results</span> <span class="o">=</span> \
+                        <span class="n">summarize_hpo_results</span><span class="p">(</span><span class="n">tmp_configs</span><span class="p">,</span>
+                                              <span class="n">perfs</span><span class="p">,</span>
+                                              <span class="n">white_list</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                                              <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">,</span>
+                                              <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">log2wandb</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">trial_cfg</span><span class="p">,</span> <span class="n">tmp_results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">perfs</span></div>
+
+<div class="viewcode-block" id="ModelFreeBase.optimize"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.ModelFreeBase.optimize">[docs]</a>    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">summarize_hpo_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="p">,</span>
+                                        <span class="n">perfs</span><span class="p">,</span>
+                                        <span class="n">white_list</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                                        <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">,</span>
+                                        <span class="n">use_wandb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;========================== HPO Final ==========================&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span> <span class="s1">&#39;results.csv&#39;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;====================================================&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+
+<div class="viewcode-block" id="IterativeScheduler"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.IterativeScheduler">[docs]</a><span class="k">class</span> <span class="nc">IterativeScheduler</span><span class="p">(</span><span class="n">ModelFreeBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The base class for HPO algorithms that divide the whole optimization</span>
+<span class="sd">    procedure into iterations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="IterativeScheduler._setup"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.IterativeScheduler._setup">[docs]</a>    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stage</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">IterativeScheduler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IterativeScheduler._stop_criterion"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.IterativeScheduler._stop_criterion">[docs]</a>    <span class="k">def</span> <span class="nf">_stop_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">,</span> <span class="n">last_results</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To determine whether the algorithm should be terminated.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            configs (list): each element is a trial configuration.</span>
+<span class="sd">            last_results (DataFrame): each row corresponds to a specific</span>
+<span class="sd">            configuration as well as its latest performance.</span>
+<span class="sd">        :returns: whether to terminate.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="IterativeScheduler._iteration"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.IterativeScheduler._iteration">[docs]</a>    <span class="k">def</span> <span class="nf">_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To evaluate the given collection of configurations at this stage.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            configs (list): each element is a trial configuration.</span>
+<span class="sd">        :returns: the performances of the given configurations.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">perfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">perfs</span></div>
+
+<div class="viewcode-block" id="IterativeScheduler._generate_next_population"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.IterativeScheduler._generate_next_population">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_next_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">,</span> <span class="n">perfs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To generate the configurations for the next stage.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            configs (list): the configurations of last stage.</span>
+<span class="sd">            perfs (list): their corresponding performances.</span>
+<span class="sd">        :returns: configuration for the next stage.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="IterativeScheduler.optimize"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.IterativeScheduler.optimize">[docs]</a>    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">current_configs</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="p">)</span>
+        <span class="n">last_results</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_criterion</span><span class="p">(</span><span class="n">current_configs</span><span class="p">,</span> <span class="n">last_results</span><span class="p">):</span>
+            <span class="n">current_perfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span><span class="p">(</span><span class="n">current_configs</span><span class="p">)</span>
+            <span class="n">last_results</span> <span class="o">=</span> <span class="n">summarize_hpo_results</span><span class="p">(</span>
+                <span class="n">current_configs</span><span class="p">,</span>
+                <span class="n">current_perfs</span><span class="p">,</span>
+                <span class="n">white_list</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">,</span>
+                <span class="n">use_wandb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stage</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;========================== Stage</span><span class="si">{}</span><span class="s2"> ==========================&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stage</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">last_results</span><span class="p">))</span>
+            <span class="n">last_results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span> <span class="s1">&#39;results.csv&#39;</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;====================================================&quot;</span><span class="p">)</span>
+            <span class="n">current_configs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_next_population</span><span class="p">(</span>
+                <span class="n">current_configs</span><span class="p">,</span> <span class="n">current_perfs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">current_configs</span></div></div>
+
+
+<div class="viewcode-block" id="SuccessiveHalvingAlgo"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.SuccessiveHalvingAlgo">[docs]</a><span class="k">class</span> <span class="nc">SuccessiveHalvingAlgo</span><span class="p">(</span><span class="n">IterativeScheduler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Successive Halving Algorithm (SHA) tailored to FL setting, where,</span>
+<span class="sd">    in each iteration, just a limited number of communication rounds are</span>
+<span class="sd">    allowed for each trial.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SuccessiveHalvingAlgo._setup"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.SuccessiveHalvingAlgo._setup">[docs]</a>    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">init_configs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SuccessiveHalvingAlgo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">trial_cfg</span> <span class="ow">in</span> <span class="n">init_configs</span><span class="p">:</span>
+            <span class="n">trial_cfg</span><span class="p">[</span><span class="s1">&#39;federate.save_to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.pth&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config2str</span><span class="p">(</span><span class="n">trial_cfg</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">trial_cfg</span> <span class="ow">in</span> <span class="n">init_configs</span><span class="p">:</span>
+                <span class="n">rnd</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">elim_rate</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_stage</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">trial_cfg</span><span class="p">[</span><span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnd</span>
+                <span class="n">trial_cfg</span><span class="p">[</span><span class="s1">&#39;eval.freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnd</span>
+
+        <span class="k">return</span> <span class="n">init_configs</span></div>
+
+<div class="viewcode-block" id="SuccessiveHalvingAlgo._stop_criterion"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.SuccessiveHalvingAlgo._stop_criterion">[docs]</a>    <span class="k">def</span> <span class="nf">_stop_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">,</span> <span class="n">last_results</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="SuccessiveHalvingAlgo._generate_next_population"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.SuccessiveHalvingAlgo._generate_next_population">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_next_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">,</span> <span class="n">perfs</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">perfs</span><span class="p">)]</span>
+        <span class="n">indices</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">)</span>
+        <span class="n">next_population</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">configs</span><span class="p">[</span><span class="n">tp</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span>
+            <span class="n">indices</span><span class="p">[:</span><span class="n">math</span><span class="o">.</span>
+                    <span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">elim_rate</span><span class="p">)]</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">trial_cfg</span> <span class="ow">in</span> <span class="n">next_population</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;federate.restore_from&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">trial_cfg</span><span class="p">:</span>
+                <span class="n">trial_cfg</span><span class="p">[</span><span class="s1">&#39;federate.restore_from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_cfg</span><span class="p">[</span>
+                    <span class="s1">&#39;federate.save_to&#39;</span><span class="p">]</span>
+            <span class="n">rnd</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">elim_rate</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_stage</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span> <span class="ow">and</span> <span class="n">rnd</span> <span class="o">&lt;</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">trial_cfg</span><span class="p">[</span><span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnd</span>
+                <span class="n">trial_cfg</span><span class="p">[</span><span class="s1">&#39;eval.freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnd</span>
+
+        <span class="k">return</span> <span class="n">next_population</span></div></div>
+
+
+<div class="viewcode-block" id="SHAWrapFedex"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.SHAWrapFedex">[docs]</a><span class="k">class</span> <span class="nc">SHAWrapFedex</span><span class="p">(</span><span class="n">SuccessiveHalvingAlgo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This SHA is customized as a wrapper for FedEx algorithm.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_make_local_perturbation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="n">neighbor</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;fedex&#39;</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">or</span> <span class="s1">&#39;fedopt&#39;</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">or</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="s1">&#39;federate.save_to&#39;</span><span class="p">,</span> <span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">,</span> <span class="s1">&#39;eval.freq&#39;</span>
+            <span class="p">]:</span>
+                <span class="c1"># a workaround</span>
+                <span class="k">continue</span>
+            <span class="n">hyper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyper</span><span class="p">,</span> <span class="n">CS</span><span class="o">.</span><span class="n">UniformFloatHyperparameter</span><span class="p">):</span>
+                <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">hyper</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">hyper</span><span class="o">.</span><span class="n">upper</span>
+                <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="n">ub</span> <span class="o">-</span> <span class="n">lb</span><span class="p">)</span>
+                <span class="n">new_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span>
+                           <span class="mf">0.5</span> <span class="o">*</span> <span class="n">diameter</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span> <span class="o">*</span> <span class="n">diameter</span>
+                <span class="n">neighbor</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">new_val</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyper</span><span class="p">,</span> <span class="n">CS</span><span class="o">.</span><span class="n">UniformIntegerHyperparameter</span><span class="p">):</span>
+                <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">hyper</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">hyper</span><span class="o">.</span><span class="n">upper</span>
+                <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="n">ub</span> <span class="o">-</span> <span class="n">lb</span><span class="p">)</span>
+                <span class="n">new_val</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+                    <span class="nb">float</span><span class="p">((</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">diameter</span><span class="p">)</span> <span class="o">+</span>
+                          <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span> <span class="o">*</span> <span class="n">diameter</span><span class="p">))</span>
+                <span class="n">neighbor</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">new_val</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyper</span><span class="p">,</span> <span class="n">CS</span><span class="o">.</span><span class="n">CategoricalHyperparameter</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyper</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">neighbor</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span>
+                        <span class="n">hyper</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hyper</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">rn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span>
+                    <span class="n">new_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="n">hyper</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="k">if</span> <span class="n">rn</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="k">else</span> <span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]:</span>
+                        <span class="n">neighbor</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+                        <span class="n">neighbor</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">neighbor</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Value of </span><span class="si">{}</span><span class="s2"> has an invalid type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">])))</span>
+
+        <span class="k">return</span> <span class="n">neighbor</span>
+
+<div class="viewcode-block" id="SHAWrapFedex._setup"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.algos.SHAWrapFedex._setup">[docs]</a>    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># self._cache_yaml()</span>
+        <span class="n">init_configs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SHAWrapFedex</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+        <span class="n">new_init_configs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">trial_cfg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">init_configs</span><span class="p">):</span>
+            <span class="n">arms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="s2">&quot;arm</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">j</span><span class="p">),</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">_make_local_perturbation</span><span class="p">(</span><span class="n">trial_cfg</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">arms</span><span class="p">[</span><span class="s1">&#39;arm0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">trial_cfg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">arms</span><span class="p">[</span><span class="s1">&#39;arm1&#39;</span><span class="p">])</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">_tmp_grid_search_space.yaml&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">arms</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">new_trial_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">trial_cfg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arms</span><span class="p">[</span><span class="s1">&#39;arm0&#39;</span><span class="p">]:</span>
+                    <span class="n">new_trial_cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">new_trial_cfg</span><span class="p">[</span><span class="s1">&#39;hpo.table.idx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="n">new_trial_cfg</span><span class="p">[</span><span class="s1">&#39;hpo.fedex.ss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_trial_cfg</span><span class="p">[</span><span class="s1">&#39;hpo.table.idx&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_tmp_grid_search_space.yaml&quot;</span><span class="p">)</span>
+            <span class="n">new_trial_cfg</span><span class="p">[</span><span class="s1">&#39;federate.save_to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span> <span class="s2">&quot;idx_</span><span class="si">{}</span><span class="s2">.pth&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+            <span class="n">new_init_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_trial_cfg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_space</span><span class="o">.</span><span class="n">add_hyperparameter</span><span class="p">(</span>
+            <span class="n">CS</span><span class="o">.</span><span class="n">CategoricalHyperparameter</span><span class="p">(</span><span class="s2">&quot;hpo.table.idx&quot;</span><span class="p">,</span>
+                                         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span>
+                                             <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_init_configs</span><span class="p">)))))</span>
+
+        <span class="k">return</span> <span class="n">new_init_configs</span></div></div>
+
+
+<span class="c1"># TODO: refactor PBT to enable async parallel</span>
+<span class="c1"># class PBT(IterativeScheduler):</span>
+<span class="c1">#    &quot;&quot;&quot;Population-based training (the full paper &quot;Population Based Training</span>
+<span class="c1">#    of Neural Networks&quot; can be found at https://arxiv.org/abs/1711.09846)</span>
+<span class="c1">#    tailored to FL setting, where, in each iteration, just a limited number</span>
+<span class="c1">#    of communication rounds are allowed for each trial (We will provide the</span>
+<span class="c1">#    asynchornous version later).</span>
+<span class="c1">#    &quot;&quot;&quot;</span>
+<span class="c1">#    def _setup(self, raw_search_space):</span>
+<span class="c1">#        _ = super(PBT, self)._setup(raw_search_space)</span>
+<span class="c1">#</span>
+<span class="c1">#        if global_cfg.hpo.init_strategy == &#39;random&#39;:</span>
+<span class="c1">#            init_configs = random_search(</span>
+<span class="c1">#                raw_search_space,</span>
+<span class="c1">#                sample_size=global_cfg.hpo.sha.elim_rate**</span>
+<span class="c1">#                global_cfg.hpo.sha.elim_round_num)</span>
+<span class="c1">#        elif global_cfg.hpo.init_strategy == &#39;grid&#39;:</span>
+<span class="c1">#            init_configs = grid_search(raw_search_space, \</span>
+<span class="c1">#                sample_size=global_cfg.hpo.sha.elim_rate \</span>
+<span class="c1">#                **global_cfg.hpo.sha.elim_round_num)</span>
+<span class="c1">#        else:</span>
+<span class="c1">#            raise ValueError(</span>
+<span class="c1">#                &quot;SHA needs to use random/grid search to pick {} configs</span>
+<span class="c1">#                from the search space as initial candidates, but `{}` is</span>
+<span class="c1">#                specified as `hpo.init_strategy`&quot;</span>
+<span class="c1">#                .format(</span>
+<span class="c1">#                    global_cfg.hpo.sha.elim_rate**</span>
+<span class="c1">#                    global_cfg.hpo.sha.elim_round_num,</span>
+<span class="c1">#                    global_cfg.hpo.init_strategy))</span>
+<span class="c1">#</span>
+<span class="c1">#        for trial_cfg in init_configs:</span>
+<span class="c1">#            trial_cfg[&#39;federate.save_to&#39;] = os.path.join(</span>
+<span class="c1">#                global_cfg.hpo.working_folder,</span>
+<span class="c1">#                &quot;{}.pth&quot;.format(config2str(trial_cfg)))</span>
+<span class="c1">#</span>
+<span class="c1">#        return init_configs</span>
+<span class="c1">#</span>
+<span class="c1">#    def _stop_criterion(self, configs, last_results):</span>
+<span class="c1">#        if last_results is not None:</span>
+<span class="c1">#            if (global_cfg.hpo.larger_better</span>
+<span class="c1">#                    and last_results.iloc[0][&#39;performance&#39;] &gt;=</span>
+<span class="c1">#                    global_cfg.hpo.pbt.perf_threshold) or (</span>
+<span class="c1">#                        (not global_cfg.hpo.larger_better)</span>
+<span class="c1">#                        and last_results.iloc[0][&#39;performance&#39;] &lt;=</span>
+<span class="c1">#                        global_cfg.hpo.pbt.perf_threshold):</span>
+<span class="c1">#                return True</span>
+<span class="c1">#        return self._stage &gt;= global_cfg.hpo.pbt.max_stage</span>
+<span class="c1">#</span>
+<span class="c1">#    def _generate_next_population(self, configs, perfs):</span>
+<span class="c1">#        next_generation = []</span>
+<span class="c1">#        for i in range(len(configs)):</span>
+<span class="c1">#            new_cfg = deepcopy(configs[i])</span>
+<span class="c1">#            # exploit</span>
+<span class="c1">#            j = np.random.randint(len(configs))</span>
+<span class="c1">#            if i != j and (</span>
+<span class="c1">#                (global_cfg.hpo.larger_better and perfs[j] &gt; perfs[i]) or</span>
+<span class="c1">#                ((not global_cfg.hpo.larger_better) and perfs[j] &lt; perfs[i])):</span>
+<span class="c1">#                new_cfg[&#39;federate.restore_from&#39;] = configs[j][</span>
+<span class="c1">#                    &#39;federate.save_to&#39;]</span>
+<span class="c1">#                # explore</span>
+<span class="c1">#                for k in new_cfg:</span>
+<span class="c1">#                    if isinstance(new_cfg[k], float):</span>
+<span class="c1">#                        # according to the exploration strategy of the PBT</span>
+<span class="c1">#                        paper</span>
+<span class="c1">#                        new_cfg[k] *= float(np.random.choice([0.8, 1.2]))</span>
+<span class="c1">#            else:</span>
+<span class="c1">#                new_cfg[&#39;federate.restore_from&#39;] = configs[i][</span>
+<span class="c1">#                    &#39;federate.save_to&#39;]</span>
+<span class="c1">#</span>
+<span class="c1">#            # update save path</span>
+<span class="c1">#            tmp_cfg = dict()</span>
+<span class="c1">#            for k in new_cfg:</span>
+<span class="c1">#                if k in self._original_search_space:</span>
+<span class="c1">#                    tmp_cfg[k] = new_cfg[k]</span>
+<span class="c1">#            new_cfg[&#39;federate.save_to&#39;] = os.path.join(</span>
+<span class="c1">#                global_cfg.hpo.working_folder,</span>
+<span class="c1">#                &quot;{}.pth&quot;.format(config2str(tmp_cfg)))</span>
+<span class="c1">#</span>
+<span class="c1">#            next_generation.append(new_cfg)</span>
+<span class="c1">#</span>
+<span class="c1">#        return next_generation</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

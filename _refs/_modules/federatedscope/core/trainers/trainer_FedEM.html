@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.trainer_FedEM &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.trainers.trainer_FedEM</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.trainer_FedEM</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch.nn.functional</span> <span class="kn">import</span> <span class="n">softmax</span> <span class="k">as</span> <span class="n">f_softmax</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.enums</span> <span class="kn">import</span> <span class="n">LIFECYCLE</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.context</span> <span class="kn">import</span> <span class="n">CtxVar</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.torch_trainer</span> <span class="kn">import</span> <span class="n">GeneralTorchTrainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.trainer_multi_model</span> <span class="kn">import</span> \
+    <span class="n">GeneralMultiModelTrainer</span>
+
+
+<div class="viewcode-block" id="FedEMTrainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer">[docs]</a><span class="k">class</span> <span class="nc">FedEMTrainer</span><span class="p">(</span><span class="n">GeneralMultiModelTrainer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The FedEM implementation, &quot;Federated Multi-Task Learning under a \</span>
+<span class="sd">    Mixture of Distributions (NeurIPS 2021)&quot; \</span>
+<span class="sd">    based on the Algorithm 1 in their paper and official codes:</span>
+<span class="sd">    https://github.com/omarfoq/FedEM</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">model_nums</span><span class="p">,</span>
+                 <span class="n">models_interact_mode</span><span class="o">=</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTorchTrainer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FedEMTrainer</span><span class="p">,</span>
+              <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model_nums</span><span class="p">,</span> <span class="n">models_interact_mode</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
+                             <span class="n">device</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">base_trainer</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span>
+
+        <span class="c1"># --------------- attribute-level modifications ----------------------</span>
+        <span class="c1"># used to mixture the internal models</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights_internal_models</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span> <span class="o">/</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights_data_sample</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch</span><span class="p">)</span> <span class="o">/</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">all_losses_model_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># `ctx[f&quot;{cur_data}_y_prob_ensemble&quot;] = 0` in</span>
+        <span class="c1">#   func `_hook_on_fit_end_ensemble_eval`</span>
+        <span class="c1">#   -&gt; self.ctx.test_y_prob_ensemble = 0</span>
+        <span class="c1">#   -&gt; self.ctx.train_y_prob_ensemble = 0</span>
+        <span class="c1">#   -&gt; self.ctx.val_y_prob_ensemble = 0</span>
+
+        <span class="c1"># ---------------- action-level modifications -----------------------</span>
+        <span class="c1"># see register_multiple_model_hooks(),</span>
+        <span class="c1"># which is called in the __init__ of `GeneralMultiModelTrainer`</span>
+
+<div class="viewcode-block" id="FedEMTrainer.register_multiple_model_hooks"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer.register_multiple_model_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">register_multiple_model_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            customized multiple_model_hooks, which is called</span>
+<span class="sd">            in the __init__ of `GeneralMultiModelTrainer`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># First register hooks for model 0</span>
+        <span class="c1"># ---------------- train hooks -----------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+            <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_start_mixture_weights_update</span><span class="p">,</span>
+            <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_start&quot;</span><span class="p">,</span>
+            <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># insert at the front</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+            <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_start_flop_count</span><span class="p">,</span>
+            <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_start&quot;</span><span class="p">,</span>
+            <span class="n">insert_pos</span><span class="o">=</span><span class="mi">1</span>  <span class="c1"># follow the mixture operation</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_end_flop_count</span><span class="p">,</span>
+                                    <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">,</span>
+                                    <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+            <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_forward_weighted_loss</span><span class="p">,</span>
+            <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_forward&quot;</span><span class="p">,</span>
+            <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+            <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_start_track_batch_idx</span><span class="p">,</span>
+            <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">,</span>
+            <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># insert at the front</span>
+        <span class="c1"># ---------------- eval hooks -----------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+            <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_end_gather_loss</span><span class="p">,</span>
+            <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_end&quot;</span><span class="p">,</span>
+            <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>  <span class="c1"># insert at the front, (we need gather the loss before clean it)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+            <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_start_track_batch_idx</span><span class="p">,</span>
+            <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">,</span>
+            <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># insert at the front</span>
+        <span class="c1"># replace the original evaluation into the ensemble one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replace_hook_in_eval</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_end_ensemble_eval</span><span class="p">,</span>
+                                  <span class="n">target_trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">,</span>
+                                  <span class="n">target_hook_name</span><span class="o">=</span><span class="s2">&quot;_hook_on_fit_end&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Then for other models, set the same hooks as model 0</span>
+        <span class="c1"># since we differentiate different models in the hook</span>
+        <span class="c1"># implementations via ctx.cur_model_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span>
+        <span class="p">])</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_batch_start_track_batch_idx"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_batch_start_track_batch_idx">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_batch_start_track_batch_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.optimizer_for_global_model``  False</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for both train &amp; eval</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_idx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_idx</span> <span class="o">+</span>
+                             <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_batch_forward_weighted_loss"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_batch_forward_weighted_loss">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_batch_forward_weighted_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.loss_batch``                  Multiply by \</span>
+<span class="sd">            ``weights_internal_models``</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for only train</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_internal_models</span><span class="p">[</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_batch_end_gather_loss"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_batch_end_gather_loss">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_batch_end_gather_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.all_losses_model_batch``      Gather loss</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for only eval</span>
+        <span class="c1"># before clean the loss_batch; we record it</span>
+        <span class="c1"># for further weights_data_sample update</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">all_losses_model_batch</span><span class="p">[</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span><span class="p">][</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_fit_start_mixture_weights_update"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_fit_start_mixture_weights_update">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_fit_start_mixture_weights_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.mode``                        Evaluate</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for only train</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># do the mixture_weights_update once</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># gathers losses for all sample in iterator</span>
+            <span class="c1"># for each internal model, calling `evaluate()`</span>
+            <span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_switch_model_ctx</span><span class="p">(</span><span class="n">model_idx</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">target_data_split_name</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights_data_sample</span> <span class="o">=</span> <span class="n">f_softmax</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_internal_models</span><span class="p">)</span> <span class="o">-</span>
+                 <span class="n">ctx</span><span class="o">.</span><span class="n">all_losses_model_batch</span><span class="o">.</span><span class="n">T</span><span class="p">),</span>
+                <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights_internal_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_data_sample</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># restore the model_ctx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_switch_model_ctx</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_fit_start_flop_count"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_fit_start_flop_count">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_fit_start_flop_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.monitor``                     Count total_flops</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">total_flops</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">flops_per_sample</span> <span class="o">*</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">*</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_data</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_fit_end_flop_count"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_fit_end_flop_count">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_fit_end_flop_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.monitor``                     Count total_flops</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">total_flops</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">flops_per_sample</span> <span class="o">*</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">*</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_data</span></div>
+
+<div class="viewcode-block" id="FedEMTrainer._hook_on_fit_end_ensemble_eval"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.FedEMTrainer._hook_on_fit_end_ensemble_eval">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_fit_end_ensemble_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensemble evaluation</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.ys_prob_ensemble``            Ensemble ys_prob</span>
+<span class="sd">            ``ctx.ys_true``                     Concatenate results</span>
+<span class="sd">            ``ctx.ys_prob``                     Concatenate results</span>
+<span class="sd">            ``ctx.eval_metrics``                Get evaluated results from \</span>
+<span class="sd">            ``ctx.monitor``</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ys_prob_ensemble&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob_ensemble</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob_ensemble</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_internal_models</span><span class="p">[</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1"># do metrics calculation after the last internal model evaluation done</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span><span class="p">),</span>
+                                 <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob_ensemble</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

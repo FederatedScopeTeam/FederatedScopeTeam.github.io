@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.monitors.metric_calculator &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.monitors.metric_calculator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.monitors.metric_calculator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">softmax</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">average_precision_score</span><span class="p">,</span> <span class="n">f1_score</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.metric_builder</span> <span class="kn">import</span> <span class="n">get_metric</span>
+
+<span class="c1"># Blind torch</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">torch</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MetricCalculator"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.MetricCalculator">[docs]</a><span class="k">class</span> <span class="nc">MetricCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the metric functions for the monitor. Use ``eval(ctx)`` \</span>
+<span class="sd">    to get evaluation results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        eval_metric: set of metric names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]):</span>
+        <span class="c1"># Add personalized metrics</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eval_metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">eval_metric</span> <span class="o">=</span> <span class="p">{</span><span class="n">eval_metric</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eval_metric</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">eval_metric</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">eval_metric</span><span class="p">)</span>
+
+        <span class="c1"># Default metric is {&#39;loss&#39;, &#39;avg_loss&#39;, &#39;total&#39;}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metric_funcs</span><span class="p">(</span><span class="n">eval_metric</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MetricCalculator.get_metric_funcs"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.MetricCalculator.get_metric_funcs">[docs]</a>    <span class="k">def</span> <span class="nf">get_metric_funcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_metric</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build metrics for evaluation.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            self: write your description</span>
+<span class="sd">            eval_metric: write your description</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        A metric calculator dict, such as \</span>
+<span class="sd">        ``{&#39;loss&#39;: (eval_loss, False), &#39;acc&#39;: (eval_acc, True), ...}``</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">          The key-value pairs of built-in metric and related funcs and \</span>
+<span class="sd">          ``the_larger_the_better`` sign is shown below:</span>
+<span class="sd">            =================  =============================================  =</span>
+<span class="sd">            Metric name        Source                                         \</span>
+<span class="sd">            The larger the better</span>
+<span class="sd">            =================  =============================================  =</span>
+<span class="sd">            ``loss``           ``monitors.metric_calculator.eval_loss``       \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``avg_loss``       ``monitors.metric_calculator.eval_avg_loss``   \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``total``          ``monitors.metric_calculator.eval_total``      \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``correct``        ``monitors.metric_calculator.eval_correct``    \</span>
+<span class="sd">            True</span>
+<span class="sd">            ``acc``            ``monitors.metric_calculator.eval_acc``        \</span>
+<span class="sd">            True</span>
+<span class="sd">            ``ap``             ``monitors.metric_calculator.eval_ap``         \</span>
+<span class="sd">            True</span>
+<span class="sd">            ``f1``             ``monitors.metric_calculator.eval_f1_score``   \</span>
+<span class="sd">            True</span>
+<span class="sd">            ``roc_auc``        ``monitors.metric_calculator.eval_roc_auc``    \</span>
+<span class="sd">            True</span>
+<span class="sd">            ``rmse``           ``monitors.metric_calculator.eval_rmse``       \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``mse``            ``monitors.metric_calculator.eval_mse``        \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``loss_regular``   ``monitors.metric_calculator.eval_regular``    \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``imp_ratio``      ``monitors.metric_calculator.eval_imp_ratio``  \</span>
+<span class="sd">            True</span>
+<span class="sd">            ``std``            ``None``                                       \</span>
+<span class="sd">            False</span>
+<span class="sd">            ``hits@{n}``       ``monitors.metric_calculator.eval_hits``       \</span>
+<span class="sd">            True</span>
+<span class="sd">            =================  =============================================  =</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metric_buildin</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">metric</span><span class="p">:</span> <span class="n">SUPPORT_METRICS</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="s1">&#39;avg_loss&#39;</span><span class="p">,</span> <span class="s1">&#39;total&#39;</span><span class="p">}</span> <span class="o">|</span> <span class="n">eval_metric</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">SUPPORT_METRICS</span>
+        <span class="p">}</span>
+        <span class="n">metric_register</span> <span class="o">=</span> <span class="n">get_metric</span><span class="p">(</span><span class="n">eval_metric</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">SUPPORT_METRICS</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">metric_buildin</span><span class="p">,</span> <span class="o">**</span><span class="n">metric_register</span><span class="p">}</span></div>
+
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_parse</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_metric</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_split</span><span class="p">,</span>
+                                   <span class="n">metric</span><span class="p">)]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span>
+                                                   <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span>
+                                                   <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+                                                   <span class="n">y_prob</span><span class="o">=</span><span class="n">y_prob</span><span class="p">,</span>
+                                                   <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span>
+
+<div class="viewcode-block" id="MetricCalculator._check_and_parse"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.MetricCalculator._check_and_parse">[docs]</a>    <span class="k">def</span> <span class="nf">_check_and_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the format of the prediction and labels</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ctx: context of trainer, see ``core.trainers.context``</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            y_true: The ground truth labels</span>
+<span class="sd">            y_pred: The prediction categories for classification task</span>
+<span class="sd">            y_prob: The output of the model</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ys_true&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Missing key ys_true!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ys_prob&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ys_pred&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Missing key ys_prob and ys_pred!&#39;</span><span class="p">)</span>
+
+        <span class="n">y_true</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span>
+        <span class="k">if</span> <span class="n">torch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">y_true</span> <span class="o">=</span> <span class="n">y_true</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="n">y_prob</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ys_pred&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ys_pred</span>
+            <span class="k">if</span> <span class="n">torch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">y_pred</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">y_true</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_prob</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span>
+            <span class="k">if</span> <span class="n">torch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_prob</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">y_prob</span> <span class="o">=</span> <span class="n">y_prob</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s1">&#39;regression&#39;</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">y_pred</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># classification task</span>
+                <span class="k">if</span> <span class="n">y_true</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">y_prob</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">y_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">y_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># if len(y_prob.shape) &gt; len(y_true.shape):</span>
+                <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># check shape and type</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Type not support!&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">y_true</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Shape not match!&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">y_true</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="s1">&#39;y_true must be 2-dim array, </span><span class="si">{}</span><span class="s1">-dim given&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">y_true</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_prob</span></div></div>
+
+
+<span class="c1"># Metric for performance</span>
+<span class="k">def</span> <span class="nf">eval_correct</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">correct_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_true</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">is_labeled</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_pred</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">correct_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">correct</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">correct_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct_list</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eval_acc</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_true</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">is_labeled</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_pred</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">correct</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">acc_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">acc_list</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eval_ap</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">ap_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_true</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="c1"># AUC is only defined when there is at least one positive data.</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># ignore nan values</span>
+            <span class="n">is_labeled</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">ap</span> <span class="o">=</span> <span class="n">average_precision_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span>
+                                         <span class="n">y_pred</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+
+            <span class="n">ap_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ap_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No positively labeled data available. &#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ap_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">ap_list</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eval_f1_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;macro&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eval_hits</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">hits_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_true</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">y_prob</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pred_rank</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Obtain the label rank</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pred_rank</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="n">pred_rank</span><span class="p">[</span><span class="n">arg</span><span class="p">,</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">hits_num</span> <span class="o">=</span> <span class="p">(</span><span class="n">rank</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">hits_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">hits_num</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">rank</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">hits_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">hits_list</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eval_roc_auc</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">rocauc_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_true</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="c1"># AUC is only defined when there is at least one positive data.</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># ignore nan values</span>
+            <span class="n">is_labeled</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_true</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="c1"># TODO: handle missing label classes</span>
+            <span class="n">rocauc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span>
+                              <span class="n">softmax</span><span class="p">(</span><span class="n">y_prob</span><span class="p">[</span><span class="n">is_labeled</span><span class="p">,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+                              <span class="n">multi_class</span><span class="o">=</span><span class="s1">&#39;ovr&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rocauc_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No positively labeled data available.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">0.5</span>
+
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rocauc_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">rocauc_list</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eval_rmse</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_prob</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">eval_mse</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_prob</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">eval_loss</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch_total</span>
+
+
+<span class="k">def</span> <span class="nf">eval_avg_loss</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch_total</span> <span class="o">/</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span>
+
+
+<span class="k">def</span> <span class="nf">eval_total</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span>
+
+
+<span class="k">def</span> <span class="nf">eval_regular</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">loss_regular_total</span>
+
+
+<span class="k">def</span> <span class="nf">eval_imp_ratio</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">base</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;To use the metric `imp_rato`, please set `eval.base` as the &quot;</span>
+            <span class="s2">&quot;basic performance and it must be greater than zero.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">0.</span>
+
+    <span class="n">base</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">base</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">&#39;regression&#39;</span> <span class="ow">in</span> <span class="n">task</span><span class="p">:</span>
+        <span class="n">perform</span> <span class="o">=</span> <span class="n">eval_mse</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s1">&#39;classification&#39;</span> <span class="ow">in</span> <span class="n">task</span><span class="p">:</span>
+        <span class="n">perform</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">eval_acc</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">base</span> <span class="o">-</span> <span class="n">perform</span><span class="p">)</span> <span class="o">/</span> <span class="n">base</span> <span class="o">*</span> <span class="mf">100.</span>
+
+
+<span class="c1"># SUPPORT_METRICS dict, key: `metric_name`, value: (eval_func,</span>
+<span class="c1"># the_larger_the_better)</span>
+<span class="n">SUPPORT_METRICS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_loss</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s1">&#39;avg_loss&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_avg_loss</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_total</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s1">&#39;correct&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_correct</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s1">&#39;acc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_acc</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s1">&#39;ap&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_ap</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s1">&#39;f1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_f1_score</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s1">&#39;roc_auc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_roc_auc</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_rmse</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s1">&#39;mse&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_mse</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s1">&#39;loss_regular&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_regular</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s1">&#39;imp_ratio&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">eval_imp_ratio</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="o">**</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;hits@</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">)],</span> <span class="p">(</span><span class="n">eval_hits</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Metric for model dissimilarity</span>
+<span class="k">def</span> <span class="nf">calc_blocal_dissim</span><span class="p">(</span><span class="n">last_model</span><span class="p">,</span> <span class="n">local_updated_models</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        last_model (dict): the state of last round.</span>
+<span class="sd">        local_updated_models (list): each element is (data_size, model).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: b_local_dissimilarity, the measurements proposed in \</span>
+<span class="sd">        &quot;Tian Li, Anit Kumar Sahu, Manzil Zaheer, and et al. Federated \</span>
+<span class="sd">        Optimization in Heterogeneous Networks&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># for k, v in last_model.items():</span>
+    <span class="c1">#    print(k, v)</span>
+    <span class="c1"># for i, elem in enumerate(local_updated_models):</span>
+    <span class="c1">#    print(i, elem)</span>
+    <span class="n">local_grads</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">local_gnorms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">local_updated_models</span><span class="p">:</span>
+        <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">grads</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">gnorms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">v</span> <span class="o">-</span> <span class="n">last_model</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">grads</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad</span>
+            <span class="n">gnorms</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">grad</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">local_grads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grads</span><span class="p">)</span>
+        <span class="n">local_gnorms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gnorms</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="n">avg_gnorms</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">global_grads</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">local_updated_models</span><span class="p">)):</span>
+        <span class="n">gnorms</span> <span class="o">=</span> <span class="n">local_gnorms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gnorms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">avg_gnorms</span><span class="p">:</span>
+                <span class="n">avg_gnorms</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mf">.0</span>
+            <span class="n">avg_gnorms</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span>
+        <span class="n">grads</span> <span class="o">=</span> <span class="n">local_grads</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">grads</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">global_grads</span><span class="p">:</span>
+                <span class="n">global_grads</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">global_grads</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span>
+    <span class="n">b_local_dissimilarity</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">avg_gnorms</span><span class="p">:</span>
+        <span class="n">b_local_dissimilarity</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="n">avg_gnorms</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">global_grads</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">b_local_dissimilarity</span>
+
+
+<span class="k">def</span> <span class="nf">calc_l2_dissim</span><span class="p">(</span><span class="n">last_model</span><span class="p">,</span> <span class="n">local_updated_models</span><span class="p">):</span>
+    <span class="n">l2_dissimilarity</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">l2_dissimilarity</span><span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">local_updated_models</span><span class="p">:</span>
+        <span class="n">grads</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">tp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">last_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">grads</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad</span>
+        <span class="n">grad_norm</span> <span class="o">=</span> \
+            <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">grads</span><span class="o">.</span><span class="n">values</span><span class="p">()]))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">l2_dissimilarity</span><span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grad_norm</span><span class="p">)</span>
+    <span class="n">l2_dissimilarity</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">l2_dissimilarity</span><span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">l2_dissimilarity</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

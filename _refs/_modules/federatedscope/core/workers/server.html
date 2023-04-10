@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.workers.server &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.workers.server</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.workers.server</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.monitors.early_stopper</span> <span class="kn">import</span> <span class="n">EarlyStopper</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.communication</span> <span class="kn">import</span> <span class="n">StandaloneCommManager</span><span class="p">,</span> \
+    <span class="n">StandaloneDDPCommManager</span><span class="p">,</span> <span class="n">gRPCCommManager</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.aggregator_builder</span> <span class="kn">import</span> <span class="n">get_aggregator</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.sampler_builder</span> <span class="kn">import</span> <span class="n">get_sampler</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.utils</span> <span class="kn">import</span> <span class="n">merge_dict_of_results</span><span class="p">,</span> \
+    <span class="n">Timeout</span><span class="p">,</span> <span class="n">merge_param_dict</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.trainer_builder</span> <span class="kn">import</span> <span class="n">get_trainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.secret_sharing</span> <span class="kn">import</span> <span class="n">AdditiveSecretSharing</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.workers.base_server</span> <span class="kn">import</span> <span class="n">BaseServer</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Server"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server">[docs]</a><span class="k">class</span> <span class="nc">Server</span><span class="p">(</span><span class="n">BaseServer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Server class, which describes the behaviors of server in an FL \</span>
+<span class="sd">    course. The behaviors are described by the handled functions (named as \</span>
+<span class="sd">    ``callback_funcs_for_xxx``).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ID: The unique ID of the server, which is set to 0 by default</span>
+<span class="sd">        state: The training round</span>
+<span class="sd">        config: the configuration</span>
+<span class="sd">        data: The data owned by the server (for global evaluation)</span>
+<span class="sd">        model: The model used for aggregation</span>
+<span class="sd">        client_num: The (expected) client num to start the FL course</span>
+<span class="sd">        total_round_num: The total number of the training round</span>
+<span class="sd">        device: The device to run local training and evaluation</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ID: ID of worker</span>
+<span class="sd">        state: the training round index</span>
+<span class="sd">        model: the model maintained locally</span>
+<span class="sd">        cfg: the configuration of FL course, \</span>
+<span class="sd">            see ``federatedscope.core.configs``</span>
+<span class="sd">        mode: the run mode for FL, ``distributed`` or ``standalone``</span>
+<span class="sd">        monitor: monite FL course and record metrics, \</span>
+<span class="sd">            see ``federatedscope.core.monitors.monitor.Monitor``</span>
+<span class="sd">        trainer: instantiated trainer, see ``federatedscope.core.trainers``</span>
+<span class="sd">        best_results: best results ever seen</span>
+<span class="sd">        history_results: all evaluation results</span>
+<span class="sd">        early_stopper: determine when to early stop, \</span>
+<span class="sd">            see ``federatedscope.core.monitors.early_stopper.EarlyStopper``</span>
+<span class="sd">        aggregators: a protocol for aggregate all clients&#39; model(s), see \</span>
+<span class="sd">            ``federatedscope.core.aggregators``</span>
+<span class="sd">        sample_client_num: number of client aggregated in each round</span>
+<span class="sd">        msg_buffer: dict buffer for storing message</span>
+<span class="sd">        staled_msg_buffer: list buffer for storing staled message</span>
+<span class="sd">        comm_manager: manager for communication, \</span>
+<span class="sd">            see ``federatedscope.core.communication``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">ID</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">client_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">total_round_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">unseen_clients_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Server</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">strategy</span><span class="p">)</span>
+        <span class="c1"># Register message handlers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_default_handlers</span><span class="p">()</span>
+
+        <span class="c1"># Un-configured worker</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_stopper</span> <span class="o">=</span> <span class="n">EarlyStopper</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">early_stop</span><span class="o">.</span><span class="n">patience</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">early_stop</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">early_stop</span><span class="o">.</span><span class="n">improve_indicator_mode</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">the_larger_the_better</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">share_local_model</span> \
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">process_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># put the model to the specified device</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Build aggregator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">=</span> <span class="n">get_aggregator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+                                         <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                         <span class="n">online</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">online_aggr</span><span class="p">,</span>
+                                         <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">restore_from</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">restore_from</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid `restore_from`:&#39;</span>
+                               <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">restore_from</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">restore_from</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restored the model from </span><span class="si">{}</span><span class="s2">-th round&#39;s ckpt&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_num_per_trainer</span><span class="p">)</span> <span class="o">!=</span> \
+                <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_num_per_trainer</span> <span class="ow">or</span> \
+                <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_num_per_trainer</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;model_num_per_trainer should be integer and &gt;= 1, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_num_per_trainer</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_num_per_trainer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggregators</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aggregators</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">])</span>
+
+        <span class="c1"># function for recovering shared secret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recover_fun</span> <span class="o">=</span> <span class="n">AdditiveSecretSharing</span><span class="p">(</span>
+            <span class="n">shared_party_num</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sample_client_num</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fixedpoint2float</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">use_ss</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">make_global_eval</span><span class="p">:</span>
+            <span class="c1"># set up a trainer for conducting evaluation in server</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="n">get_trainer</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">,</span>
+                <span class="n">only_for_eval</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">monitor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span>
+            <span class="p">)</span>  <span class="c1"># the trainer is only used for global evaluation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainers</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># By default, the evaluation is conducted by calling</span>
+                <span class="c1"># trainer[i].eval over all internal models</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trainers</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                    <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">])</span>
+
+        <span class="c1"># Initialize the number of joined-in clients</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client_num</span> <span class="o">=</span> <span class="n">client_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_round_num</span> <span class="o">=</span> <span class="n">total_round_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_client_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sample_client_num</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join_in_client_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join_in_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># the unseen clients indicate the ones that do not contribute to FL</span>
+        <span class="c1"># process by training on their local data and uploading their local</span>
+        <span class="c1"># model update. The splitting is useful to check participation</span>
+        <span class="c1"># generalization gap in</span>
+        <span class="c1"># [ICLR&#39;22, What Do We Mean by Generalization in Federated Learning?]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unseen_clients_id</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">unseen_clients_id</span> <span class="ow">is</span> <span class="kc">None</span> \
+            <span class="k">else</span> <span class="n">unseen_clients_id</span>
+
+        <span class="c1"># Server state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Sampler</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sampler</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uniform&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">get_sampler</span><span class="p">(</span>
+                <span class="n">sample_strategy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sampler</span><span class="p">,</span>
+                <span class="n">client_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_num</span><span class="p">,</span>
+                <span class="n">client_info</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Some type of sampler would be instantiated in trigger_for_start,</span>
+            <span class="c1"># since they need more information</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Current Timestamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Staleness toleration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">staleness_toleration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">staleness_toleration</span> <span class="k">if</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Device information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_info</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;resource_info&#39;</span><span class="p">]</span> \
+            <span class="k">if</span> <span class="s1">&#39;resource_info&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_resource_info</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;client_resource_info&#39;</span><span class="p">]</span> \
+            <span class="k">if</span> <span class="s1">&#39;client_resource_info&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize communication manager and message buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span> <span class="s1">&#39;eval&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">staled_msg_buffer</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span><span class="p">:</span>
+            <span class="n">comm_queue</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shared_comm_queue&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">process_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">id2comm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id2comm&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span> <span class="o">=</span> <span class="n">StandaloneDDPCommManager</span><span class="p">(</span>
+                    <span class="n">comm_queue</span><span class="o">=</span><span class="n">comm_queue</span><span class="p">,</span>
+                    <span class="n">monitor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="p">,</span>
+                    <span class="n">id2comm</span><span class="o">=</span><span class="n">id2comm</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span> <span class="o">=</span> <span class="n">StandaloneCommManager</span><span class="p">(</span>
+                    <span class="n">comm_queue</span><span class="o">=</span><span class="n">comm_queue</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;distributed&#39;</span><span class="p">:</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span> <span class="o">=</span> <span class="n">gRPCCommManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span>
+                                                <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                                                <span class="n">client_num</span><span class="o">=</span><span class="n">client_num</span><span class="p">,</span>
+                                                <span class="n">cfg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">distribute</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Server: Listen to </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+
+        <span class="c1"># inject noise before broadcast</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise_injector</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">client_num</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_num</span>
+
+    <span class="nd">@client_num</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">client_num</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client_num</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_round_num</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_round_num</span>
+
+    <span class="nd">@total_round_num</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">total_round_num</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_round_num</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">register_noise_injector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise_injector</span> <span class="o">=</span> <span class="n">func</span>
+
+<div class="viewcode-block" id="Server.run"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To start the FL course, listen and handle messages (for distributed \</span>
+<span class="sd">        mode).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Begin: Broadcast model parameters and start to FL train</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_in_client_num</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_handlers</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">msg_type</span><span class="p">](</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># Running: listen for message (updates from clients),</span>
+        <span class="c1"># aggregate and broadcast feedbacks (aggregated model parameters)</span>
+        <span class="n">min_received_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">min_received_num</span> \
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sample_client_num</span>
+        <span class="n">num_failure</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">time_budget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">time_budget</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">with</span> <span class="n">Timeout</span><span class="p">(</span><span class="n">time_budget</span><span class="p">)</span> <span class="k">as</span> <span class="n">time_counter</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>
+                    <span class="n">move_on_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_handlers</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">msg_type</span><span class="p">](</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">move_on_flag</span><span class="p">:</span>
+                        <span class="n">time_counter</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Time out at the training round #</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
+                    <span class="n">move_on_flag_eval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">(</span>
+                        <span class="n">min_received_num</span><span class="o">=</span><span class="n">min_received_num</span><span class="p">,</span>
+                        <span class="n">check_eval_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">move_on_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">(</span>
+                        <span class="n">min_received_num</span><span class="o">=</span><span class="n">min_received_num</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">move_on_flag</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">move_on_flag_eval</span><span class="p">:</span>
+                        <span class="n">num_failure</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="c1"># Terminate the training if the number of failure</span>
+                        <span class="c1"># exceeds the maximum number (default value: 10)</span>
+                        <span class="k">if</span> <span class="n">time_counter</span><span class="o">.</span><span class="n">exceed_max_failure</span><span class="p">(</span><span class="n">num_failure</span><span class="p">):</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;----------- Training fails at round &#39;</span>
+                                        <span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s1">-------------&#39;</span><span class="p">)</span>
+                            <span class="k">break</span>
+
+                        <span class="c1"># Time out, broadcast the model para and re-start</span>
+                        <span class="c1"># the training round</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;----------- Re-starting the training round (&#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;Round #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s1">) for </span><span class="si">{</span><span class="n">num_failure</span><span class="si">}</span><span class="s1"> time &#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;-------------&#39;</span><span class="p">)</span>
+                        <span class="c1"># TODO: Clean the msg_buffer</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+                        <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">(</span>
+                            <span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                            <span class="n">sample_client_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_client_num</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">num_failure</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">time_counter</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;finish&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server.check_and_move_on"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.check_and_move_on">[docs]</a>    <span class="k">def</span> <span class="nf">check_and_move_on</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">check_eval_result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">min_received_num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To check the message_buffer. When enough messages are receiving, \</span>
+<span class="sd">        some events (such as perform aggregation, evaluation, and move to \</span>
+<span class="sd">        the next training round) would be triggered.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            check_eval_result (bool): If True, check the message buffer for \</span>
+<span class="sd">                evaluation; and check the message buffer for training \</span>
+<span class="sd">                otherwise.</span>
+<span class="sd">            min_received_num: number of minimal received message, used for \</span>
+<span class="sd">                async mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">min_received_num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+                <span class="n">min_received_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">min_received_num</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">min_received_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sample_client_num</span>
+        <span class="k">assert</span> <span class="n">min_received_num</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_client_num</span>
+
+        <span class="k">if</span> <span class="n">check_eval_result</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>
+        <span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;standalone&quot;</span><span class="p">:</span>
+            <span class="c1"># in evaluation stage and standalone simulation mode, we assume</span>
+            <span class="c1"># strong synchronization that receives responses from all clients</span>
+            <span class="n">min_received_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="n">move_on_flag</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># To record whether moving to a new training</span>
+        <span class="c1"># round or finishing the evaluation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">min_received_num</span><span class="p">,</span> <span class="n">check_eval_result</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">check_eval_result</span><span class="p">:</span>
+                <span class="c1"># Receiving enough feedback in the training process</span>
+                <span class="n">aggregated_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perform_federated_aggregation</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+                    <span class="c1">#  Evaluate</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Server: Starting evaluation at the end &#39;</span>
+                                <span class="sa">f</span><span class="s1">&#39;of round </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+                    <span class="c1"># Move to next round of training</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;----------- Starting a new training round (Round &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s1">) -------------&#39;</span><span class="p">)</span>
+                    <span class="c1"># Clean the msg_buffer</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">staled_msg_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="c1"># Start a new training round</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_training_round</span><span class="p">(</span><span class="n">aggregated_num</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Final Evaluate</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Server: Training is finished! Starting &#39;</span>
+                                <span class="s1">&#39;evaluation.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Receiving enough feedback in the evaluation process</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_merge_and_format_eval_results</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">move_on_flag</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">move_on_flag</span></div>
+
+<div class="viewcode-block" id="Server.check_and_save"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.check_and_save">[docs]</a>    <span class="k">def</span> <span class="nf">check_and_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To save the results and save model after each evaluation, and check \</span>
+<span class="sd">        whether to early stop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># early stopping</span>
+        <span class="k">if</span> <span class="s2">&quot;Results_weighted_avg&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">best_res_update_round_wise_key</span> <span class="ow">in</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span><span class="p">[</span><span class="s1">&#39;Results_weighted_avg&#39;</span><span class="p">]:</span>
+            <span class="n">should_stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_stopper</span><span class="o">.</span><span class="n">track_and_check</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span><span class="p">[</span><span class="s1">&#39;Results_weighted_avg&#39;</span><span class="p">][</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">best_res_update_round_wise_key</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;Results_avg&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">best_res_update_round_wise_key</span> <span class="ow">in</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span><span class="p">[</span><span class="s1">&#39;Results_avg&#39;</span><span class="p">]:</span>
+            <span class="n">should_stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_stopper</span><span class="o">.</span><span class="n">track_and_check</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span><span class="p">[</span><span class="s1">&#39;Results_avg&#39;</span><span class="p">][</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">best_res_update_round_wise_key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">should_stop</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">should_stop</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">global_converged</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="n">Message</span><span class="p">(</span>
+                    <span class="n">msg_type</span><span class="o">=</span><span class="s2">&quot;converged&quot;</span><span class="p">,</span>
+                    <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                    <span class="n">receiver</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                    <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">should_stop</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Server: Final evaluation is finished! Starting &#39;</span>
+                        <span class="s1">&#39;merging results.&#39;</span><span class="p">)</span>
+            <span class="c1"># last round or early stopped</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_best_results</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">make_global_eval</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_client_eval_results</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;finish&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Clean the clients evaluation msg buffer</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">make_global_eval</span><span class="p">:</span>
+            <span class="nb">round</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+            <span class="c1"># break out the loop for distributed mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Server._perform_federated_aggregation"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server._perform_federated_aggregation">[docs]</a>    <span class="k">def</span> <span class="nf">_perform_federated_aggregation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform federated aggregation and update the global model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">train_msg_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span><span class="p">):</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span>
+            <span class="n">aggregator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregators</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span>
+            <span class="n">msg_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">staleness</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="n">train_msg_buffer</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">msg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_msg_buffer</span><span class="p">[</span><span class="n">client_id</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">train_data_size</span><span class="p">,</span> <span class="n">model_para_multiple</span> <span class="o">=</span> \
+                        <span class="n">train_msg_buffer</span><span class="p">[</span><span class="n">client_id</span><span class="p">]</span>
+                    <span class="n">msg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">train_data_size</span><span class="p">,</span> <span class="n">model_para_multiple</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]))</span>
+
+                <span class="c1"># The staleness of the messages in train_msg_buffer</span>
+                <span class="c1"># should be 0</span>
+                <span class="n">staleness</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">client_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">staled_message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">staled_msg_buffer</span><span class="p">:</span>
+                <span class="n">state</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">staled_message</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">msg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">train_data_size</span><span class="p">,</span> <span class="n">model_para_multiple</span> <span class="o">=</span> <span class="n">content</span>
+                    <span class="n">msg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">train_data_size</span><span class="p">,</span> <span class="n">model_para_multiple</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]))</span>
+
+                <span class="n">staleness</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">client_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">-</span> <span class="n">state</span><span class="p">))</span>
+
+            <span class="c1"># Trigger the monitor here (for training)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">calc_model_metric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                                            <span class="n">msg_list</span><span class="p">,</span>
+                                            <span class="n">rnd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+
+            <span class="c1"># Aggregate</span>
+            <span class="n">aggregated_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg_list</span><span class="p">)</span>
+            <span class="n">agg_info</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;client_feedback&#39;</span><span class="p">:</span> <span class="n">msg_list</span><span class="p">,</span>
+                <span class="s1">&#39;recover_fun&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">recover_fun</span><span class="p">,</span>
+                <span class="s1">&#39;staleness&#39;</span><span class="p">:</span> <span class="n">staleness</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="c1"># logger.info(f&#39;The staleness is {staleness}&#39;)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">aggregator</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">agg_info</span><span class="p">)</span>
+            <span class="c1"># Due to lazy load, we merge two state dict</span>
+            <span class="n">merged_param</span> <span class="o">=</span> <span class="n">merge_param_dict</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">merged_param</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">aggregated_num</span></div>
+
+<div class="viewcode-block" id="Server._start_new_training_round"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server._start_new_training_round">[docs]</a>    <span class="k">def</span> <span class="nf">_start_new_training_round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aggregated_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The behaviors for starting a new training round</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>  <span class="c1"># for asynchronous training</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">==</span> <span class="s2">&quot;time_up&quot;</span><span class="p">:</span>
+                <span class="c1"># Update the deadline according to the time budget</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">time_budget</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">broadcast_manner</span> <span class="o">==</span> \
+                    <span class="s1">&#39;after_aggregating&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">overselection</span><span class="p">:</span>
+                    <span class="n">sample_client_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_client_num</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sample_client_num</span> <span class="o">=</span> <span class="n">aggregated_num</span> <span class="o">+</span> \
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                                          <span class="n">sample_client_num</span><span class="o">=</span><span class="n">sample_client_num</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># for synchronous training</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                                      <span class="n">sample_client_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_client_num</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server._merge_and_format_eval_results"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server._merge_and_format_eval_results">[docs]</a>    <span class="k">def</span> <span class="nf">_merge_and_format_eval_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The behaviors of server when receiving enough evaluating results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all the message &amp; aggregate</span>
+        <span class="n">formatted_eval_res</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">merge_eval_results_from_all_clients</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span> <span class="o">=</span> <span class="n">merge_dict_of_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_results</span><span class="p">,</span>
+                                                     <span class="n">formatted_eval_res</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">wandb_online_track</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">use_wandb</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">merge_system_metrics_simulation_mode</span><span class="p">(</span>
+                <span class="n">file_io</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">from_global_monitors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_and_save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Server.save_best_results"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.save_best_results">[docs]</a>    <span class="k">def</span> <span class="nf">save_best_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To Save the best evaluation results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">save_to</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">save_to</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">formatted_best_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">format_eval_res</span><span class="p">(</span>
+            <span class="n">results</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">,</span>
+            <span class="n">rnd</span><span class="o">=</span><span class="s2">&quot;Final&quot;</span><span class="p">,</span>
+            <span class="n">role</span><span class="o">=</span><span class="s1">&#39;Server #&#39;</span><span class="p">,</span>
+            <span class="n">forms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;raw&quot;</span><span class="p">],</span>
+            <span class="n">return_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">formatted_best_res</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">save_formatted_results</span><span class="p">(</span><span class="n">formatted_best_res</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server.save_client_eval_results"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.save_client_eval_results">[docs]</a>    <span class="k">def</span> <span class="nf">save_client_eval_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        save the evaluation results of each client when the fl course \</span>
+<span class="sd">        early stopped or terminated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rnd</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">eval_msg_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="n">rnd</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;eval_results.log&quot;</span><span class="p">),</span>
+                  <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">client_eval_results</span> <span class="ow">in</span> <span class="n">eval_msg_buffer</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">formatted_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">format_eval_res</span><span class="p">(</span>
+                    <span class="n">client_eval_results</span><span class="p">,</span>
+                    <span class="n">rnd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                    <span class="n">role</span><span class="o">=</span><span class="s1">&#39;Client #</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_id</span><span class="p">),</span>
+                    <span class="n">return_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">formatted_res</span><span class="p">)</span>
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">formatted_res</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server.merge_eval_results_from_all_clients"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.merge_eval_results_from_all_clients">[docs]</a>    <span class="k">def</span> <span class="nf">merge_eval_results_from_all_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merge evaluation results from all clients, update best, \</span>
+<span class="sd">        log the merged results and save them into eval_results.log</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the formatted merged results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">round</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">eval_msg_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span>
+        <span class="n">eval_res_participated_clients</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">eval_res_unseen_clients</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="n">eval_msg_buffer</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">eval_msg_buffer</span><span class="p">[</span><span class="n">client_id</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unseen_clients_id</span><span class="p">:</span>
+                <span class="n">eval_res_unseen_clients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eval_msg_buffer</span><span class="p">[</span><span class="n">client_id</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">eval_res_participated_clients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">eval_msg_buffer</span><span class="p">[</span><span class="n">client_id</span><span class="p">])</span>
+
+        <span class="n">formatted_logs_all_set</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">merge_type</span><span class="p">,</span> <span class="n">eval_res_set</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;participated&quot;</span><span class="p">,</span>
+                                          <span class="n">eval_res_participated_clients</span><span class="p">),</span>
+                                         <span class="p">(</span><span class="s2">&quot;unseen&quot;</span><span class="p">,</span> <span class="n">eval_res_unseen_clients</span><span class="p">)]:</span>
+            <span class="k">if</span> <span class="n">eval_res_set</span> <span class="o">!=</span> <span class="p">[]:</span>
+                <span class="n">metrics_all_clients</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">client_eval_results</span> <span class="ow">in</span> <span class="n">eval_res_set</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">client_eval_results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metrics_all_clients</span><span class="p">:</span>
+                            <span class="n">metrics_all_clients</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                        <span class="n">metrics_all_clients</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">client_eval_results</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+                <span class="n">formatted_logs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">format_eval_res</span><span class="p">(</span>
+                    <span class="n">metrics_all_clients</span><span class="p">,</span>
+                    <span class="n">rnd</span><span class="o">=</span><span class="nb">round</span><span class="p">,</span>
+                    <span class="n">role</span><span class="o">=</span><span class="s1">&#39;Server #&#39;</span><span class="p">,</span>
+                    <span class="n">forms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">report</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">merge_type</span> <span class="o">==</span> <span class="s2">&quot;unseen&quot;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">formatted_logs</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="c1"># to avoid the overrides of results using the</span>
+                            <span class="c1"># same name, we use new keys with postfix `unseen`:</span>
+                            <span class="c1"># &#39;Results_weighted_avg&#39; -&gt;</span>
+                            <span class="c1"># &#39;Results_weighted_avg_unseen&#39;</span>
+                            <span class="n">formatted_logs</span><span class="p">[</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot;_unseen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                            <span class="k">del</span> <span class="n">formatted_logs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">formatted_logs</span><span class="p">)</span>
+                <span class="n">formatted_logs_all_set</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">formatted_logs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">update_best_result</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">,</span>
+                    <span class="n">metrics_all_clients</span><span class="p">,</span>
+                    <span class="n">results_type</span><span class="o">=</span><span class="s2">&quot;unseen_client_best_individual&quot;</span>
+                    <span class="k">if</span> <span class="n">merge_type</span> <span class="o">==</span> <span class="s2">&quot;unseen&quot;</span> <span class="k">else</span> <span class="s2">&quot;client_best_individual&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">save_formatted_results</span><span class="p">(</span><span class="n">formatted_logs</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">report</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">form</span> <span class="o">!=</span> <span class="s2">&quot;raw&quot;</span><span class="p">:</span>
+                        <span class="n">metric_name</span> <span class="o">=</span> <span class="n">form</span> <span class="o">+</span> <span class="s2">&quot;_unseen&quot;</span> <span class="k">if</span> <span class="n">merge_type</span> <span class="o">==</span> \
+                                                          <span class="s2">&quot;unseen&quot;</span> <span class="k">else</span> <span class="n">form</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">update_best_result</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">,</span>
+                            <span class="n">formatted_logs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Results_</span><span class="si">{</span><span class="n">metric_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                            <span class="n">results_type</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;unseen_client_summarized_</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="k">if</span> <span class="n">merge_type</span> <span class="o">==</span> <span class="s2">&quot;unseen&quot;</span> <span class="k">else</span>
+                            <span class="sa">f</span><span class="s2">&quot;client_summarized_</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">formatted_logs_all_set</span></div>
+
+<div class="viewcode-block" id="Server.broadcast_model_para"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.broadcast_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">broadcast_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                             <span class="n">sample_client_num</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="n">filter_unseen_clients</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To broadcast the message to all clients or sampled clients</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            msg_type: &#39;model_para&#39; or other user defined msg_type</span>
+<span class="sd">            sample_client_num: the number of sampled clients in the broadcast \</span>
+<span class="sd">                behavior. And ``sample_client_num = -1`` denotes to \</span>
+<span class="sd">                broadcast to all the clients.</span>
+<span class="sd">            filter_unseen_clients: whether filter out the unseen clients that \</span>
+<span class="sd">                do not contribute to FL process by training on their local \</span>
+<span class="sd">                data and uploading their local model update. The splitting is \</span>
+<span class="sd">                useful to check participation generalization gap in [ICLR&#39;22, \</span>
+<span class="sd">                What Do We Mean by Generalization in Federated Learning?] \</span>
+<span class="sd">                You may want to set it to be False when in evaluation stage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filter_unseen_clients</span><span class="p">:</span>
+            <span class="c1"># to filter out the unseen clients when sampling</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unseen_clients_id</span><span class="p">,</span> <span class="s1">&#39;unseen&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sample_client_num</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># broadcast to all clients</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;model_para&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s1">&#39;working&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noise_injector</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;model_para&#39;</span><span class="p">:</span>
+            <span class="c1"># Inject noise only when broadcast parameters</span>
+            <span class="k">for</span> <span class="n">model_idx_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">)):</span>
+                <span class="n">num_sample_clients</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">v</span><span class="p">[</span><span class="s2">&quot;num_sample&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_in_info</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_noise_injector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">,</span> <span class="n">num_sample_clients</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx_i</span><span class="p">])</span>
+
+        <span class="n">skip_broadcast</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;global&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">model_para</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">if</span> <span class="n">skip_broadcast</span> <span class="k">else</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+                          <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model_para</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">skip_broadcast</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+
+        <span class="c1"># quantization</span>
+        <span class="k">if</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;model_para&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_broadcast</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;uniform&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.core.compression</span> <span class="kn">import</span> \
+                <span class="n">symmetric_uniform_quantization</span>
+            <span class="n">nbits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">nbits</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">model_para</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">symmetric_uniform_quantization</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nbits</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">model_para</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">model_para</span> <span class="o">=</span> <span class="n">symmetric_uniform_quantization</span><span class="p">(</span><span class="n">model_para</span><span class="p">,</span> <span class="n">nbits</span><span class="p">)</span>
+
+        <span class="c1"># We define the evaluation happens at the end of an epoch</span>
+        <span class="n">rnd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;evaluate&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="n">msg_type</span><span class="p">,</span>
+                    <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                    <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">rnd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">),</span>
+                    <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span><span class="p">,</span>
+                    <span class="n">content</span><span class="o">=</span><span class="n">model_para</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">online_aggr</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aggregators</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">filter_unseen_clients</span><span class="p">:</span>
+            <span class="c1"># restore the state of the unseen clients within sampler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unseen_clients_id</span><span class="p">,</span> <span class="s1">&#39;seen&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server.broadcast_client_address"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.broadcast_client_address">[docs]</a>    <span class="k">def</span> <span class="nf">broadcast_client_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To broadcast the communication addresses of clients (used for \</span>
+<span class="sd">        additive secret sharing)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;address&#39;</span><span class="p">,</span>
+                    <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                    <span class="n">receiver</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                    <span class="n">state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                    <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span><span class="p">,</span>
+                    <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Server.check_buffer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.check_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">check_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">cur_round</span><span class="p">,</span>
+                     <span class="n">min_received_num</span><span class="p">,</span>
+                     <span class="n">check_eval_result</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To check the message buffer</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            cur_round (int): The current round number</span>
+<span class="sd">            min_received_num (int): The minimal number of the receiving \</span>
+<span class="sd">                messages</span>
+<span class="sd">            check_eval_result (bool): To check training results for \</span>
+<span class="sd">                evaluation results</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">            bool: Whether enough messages have been received or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">check_eval_result</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;eval&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="n">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span>
+            <span class="n">cur_round</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">buffer</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">cur_buffer</span> <span class="o">=</span> <span class="n">buffer</span><span class="p">[</span><span class="n">cur_round</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">min_received_num</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cur_round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]:</span>
+                <span class="n">cur_buffer</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cur_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="n">cur_round</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">==</span> <span class="s1">&#39;time_up&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
+                        <span class="n">cur_buffer</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">staled_msg_buffer</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># When the time budget is run out but the server has not</span>
+                    <span class="c1"># received any feedback</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;The server has not received any feedback when the &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;time budget has run out, therefore the server would &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;wait for more </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">time_budget</span><span class="si">}</span><span class="s1"> seconds. &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;Maybe you should carefully reset &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;`cfg.asyn.time_budget` to a reasonable value.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">time_budget</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">broadcast_manner</span> <span class="o">==</span> \
+                            <span class="s1">&#39;after_aggregating&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">(</span>
+                            <span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                            <span class="n">sample_client_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur_buffer</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">staled_msg_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> \
+                       <span class="n">min_received_num</span></div>
+
+<div class="viewcode-block" id="Server.check_client_join_in"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.check_client_join_in">[docs]</a>    <span class="k">def</span> <span class="nf">check_client_join_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To check whether all the clients have joined in the FL course.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_in_client_num</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span></div>
+
+<div class="viewcode-block" id="Server.trigger_for_start"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.trigger_for_start">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_for_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To start the FL course when the expected number of clients have joined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_client_join_in</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">use_ss</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">vertical</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_client_address</span><span class="p">()</span>
+
+            <span class="c1"># get sampler</span>
+            <span class="k">if</span> <span class="s1">&#39;client_resource&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">:</span>
+                <span class="n">client_resource</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">[</span><span class="n">client_index</span><span class="p">][</span><span class="s1">&#39;client_resource&#39;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">client_index</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+                    <span class="n">model_size</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">*</span> <span class="mf">8.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO: calculate model size for TF Model</span>
+                    <span class="n">model_size</span> <span class="o">=</span> <span class="mf">1.0</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The calculation of model size in backend:&#39;</span>
+                                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">backend</span><span class="si">}</span><span class="s1"> is not provided.&#39;</span><span class="p">)</span>
+
+                <span class="n">client_resource</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">model_size</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;communication&#39;</span><span class="p">])</span> <span class="o">+</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;computation&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">1000.</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_resource_info</span>
+                <span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_resource_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">get_sampler</span><span class="p">(</span>
+                    <span class="n">sample_strategy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">sampler</span><span class="p">,</span>
+                    <span class="n">client_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_num</span><span class="p">,</span>
+                    <span class="n">client_info</span><span class="o">=</span><span class="n">client_resource</span><span class="p">)</span>
+
+            <span class="c1"># change the deadline if the asyn.aggregator is `time up`</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">==</span> <span class="s1">&#39;time_up&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">+</span> \
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">time_budget</span>
+
+            <span class="c1"># start feature engineering</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_for_feat_engr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="s1">&#39;msg_type&#39;</span><span class="p">:</span> <span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;sample_client_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_client_num</span>
+                <span class="p">})</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;----------- Starting training (Round #</span><span class="si">{:d}</span><span class="s1">) -------------&#39;</span><span class="o">.</span>
+                <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Server.trigger_for_feat_engr"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.trigger_for_feat_engr">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_for_feat_engr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">trigger_train_func</span><span class="p">,</span>
+                              <span class="n">kwargs_for_trigger_train_func</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface for feature engineering, the default operation is none</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">trigger_train_func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_for_trigger_train_func</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server.trigger_for_time_up"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.trigger_for_time_up">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_for_time_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_timestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The handler for time up: modify the currency timestamp \</span>
+<span class="sd">        and check the trigger condition</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">check_timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="n">check_timestamp</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deadline_for_cur_round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Server.terminate"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;finish&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To terminate the FL course</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">model_para</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model_para</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">finish_fl</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="n">msg_type</span><span class="p">,</span>
+                    <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                    <span class="n">receiver</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                    <span class="n">state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                    <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span><span class="p">,</span>
+                    <span class="n">content</span><span class="o">=</span><span class="n">model_para</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Server.eval"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To conduct evaluation. When ``cfg.federate.make_global_eval=True``, \</span>
+<span class="sd">        a global evaluation is conducted by the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">make_global_eval</span><span class="p">:</span>
+            <span class="c1"># By default, the evaluation is conducted one-by-one for all</span>
+            <span class="c1"># internal models;</span>
+            <span class="c1"># for other cases such as ensemble, override the eval function</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span><span class="p">):</span>
+                <span class="n">trainer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="c1"># Preform evaluation in server</span>
+                <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">split</span><span class="p">:</span>
+                    <span class="n">eval_metrics</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+                        <span class="n">target_data_split_name</span><span class="o">=</span><span class="n">split</span><span class="p">)</span>
+                    <span class="n">metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">eval_metrics</span><span class="p">)</span>
+                <span class="n">formatted_eval_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">format_eval_res</span><span class="p">(</span>
+                    <span class="n">metrics</span><span class="p">,</span>
+                    <span class="n">rnd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                    <span class="n">role</span><span class="o">=</span><span class="s1">&#39;Server #&#39;</span><span class="p">,</span>
+                    <span class="n">forms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">report</span><span class="p">,</span>
+                    <span class="n">return_raw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">make_global_eval</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">update_best_result</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">,</span>
+                    <span class="n">formatted_eval_res</span><span class="p">[</span><span class="s1">&#39;Results_raw&#39;</span><span class="p">],</span>
+                    <span class="n">results_type</span><span class="o">=</span><span class="s2">&quot;server_global_eval&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span> <span class="o">=</span> <span class="n">merge_dict_of_results</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">history_results</span><span class="p">,</span> <span class="n">formatted_eval_res</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">save_formatted_results</span><span class="p">(</span><span class="n">formatted_eval_res</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">formatted_eval_res</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_and_save</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Preform evaluation in clients</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;evaluate&#39;</span><span class="p">,</span>
+                                      <span class="n">filter_unseen_clients</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server.callback_funcs_model_para"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.callback_funcs_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">callback_funcs_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The handling function for receiving model parameters, which triggers \</span>
+<span class="sd">        ``check_and_move_on`` (perform aggregation when enough feedback has \</span>
+<span class="sd">        been received). This handling function is widely used in various FL \</span>
+<span class="sd">        courses.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            message: The received message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;finish&#39;</span>
+
+        <span class="nb">round</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">sender</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;idle&#39;</span><span class="p">)</span>
+
+        <span class="c1"># dequantization</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;uniform&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.core.compression</span> <span class="kn">import</span> \
+                <span class="n">symmetric_uniform_dequantization</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># multiple model</span>
+                <span class="n">sample_size</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">quant_model</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">symmetric_uniform_dequantization</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sample_size</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">quant_model</span> <span class="o">=</span> <span class="n">symmetric_uniform_dequantization</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="p">(</span><span class="n">sample_size</span><span class="p">,</span> <span class="n">quant_model</span><span class="p">)</span>
+
+        <span class="c1"># update the currency timestamp according to the received message</span>
+        <span class="k">assert</span> <span class="n">timestamp</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span>  <span class="c1"># for test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span> <span class="o">=</span> <span class="n">timestamp</span>
+
+        <span class="k">if</span> <span class="nb">round</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="c1"># Save the messages in this round</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span>
+        <span class="k">elif</span> <span class="nb">round</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">staleness_toleration</span><span class="p">:</span>
+            <span class="c1"># Save the staled messages</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">staled_msg_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">round</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">content</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Drop the out-of-date messages</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Drop a out-of-date message from round #</span><span class="si">{</span><span class="nb">round</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dropout_num</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">online_aggr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="o">.</span><span class="n">inc</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+        <span class="n">move_on_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">use</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">asyn</span><span class="o">.</span><span class="n">broadcast_manner</span> <span class="o">==</span> \
+                <span class="s1">&#39;after_receiving&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_model_para</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                                      <span class="n">sample_client_num</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">move_on_flag</span></div>
+
+<div class="viewcode-block" id="Server.callback_funcs_for_join_in"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.callback_funcs_for_join_in">[docs]</a>    <span class="k">def</span> <span class="nf">callback_funcs_for_join_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The handling function for receiving the join in information. The \</span>
+<span class="sd">        server might request for some information (such as \</span>
+<span class="sd">        ``num_of_samples``) if necessary, assign IDs for the servers. \</span>
+<span class="sd">        If all the clients have joined in, the training process will be \</span>
+<span class="sd">        triggered.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            message: The received message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;info&#39;</span> <span class="ow">in</span> <span class="n">message</span><span class="o">.</span><span class="n">msg_type</span><span class="p">:</span>
+            <span class="n">sender</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">info</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Server: Client #</span><span class="si">{:d}</span><span class="s1"> has joined in !&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sender</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">join_in_client_num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">sender</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">sender</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>  <span class="c1"># assign number to client</span>
+                <span class="n">sender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_in_client_num</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">add_neighbors</span><span class="p">(</span><span class="n">neighbor_id</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span>
+                                                <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                    <span class="n">Message</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;assign_client_id&#39;</span><span class="p">,</span>
+                            <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                            <span class="n">receiver</span><span class="o">=</span><span class="p">[</span><span class="n">sender</span><span class="p">],</span>
+                            <span class="n">state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                            <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span><span class="p">,</span>
+                            <span class="n">content</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">sender</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">add_neighbors</span><span class="p">(</span><span class="n">neighbor_id</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span>
+                                                <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">join_in_info</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                    <span class="n">Message</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;ask_for_join_in_info&#39;</span><span class="p">,</span>
+                            <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                            <span class="n">receiver</span><span class="o">=</span><span class="p">[</span><span class="n">sender</span><span class="p">],</span>
+                            <span class="n">state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                            <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_timestamp</span><span class="p">,</span>
+                            <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">join_in_info</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_for_start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Server.callback_funcs_for_metrics"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.workers.Server.callback_funcs_for_metrics">[docs]</a>    <span class="k">def</span> <span class="nf">callback_funcs_for_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The handling function for receiving the evaluation results, \</span>
+<span class="sd">        which triggers ``check_and_move_on`` (perform aggregation when \</span>
+<span class="sd">        enough feedback has been received).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            message: The received message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rnd</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">sender</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+
+        <span class="k">if</span> <span class="n">rnd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="n">rnd</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="n">rnd</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">(</span><span class="n">check_eval_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_msg_handler_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">msg_handlers_str</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

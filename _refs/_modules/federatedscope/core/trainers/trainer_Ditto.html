@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.trainer_Ditto &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.trainers.trainer_Ditto</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.trainer_Ditto</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.optimizer_builder</span> <span class="kn">import</span> <span class="n">get_optimizer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.torch_trainer</span> <span class="kn">import</span> <span class="n">GeneralTorchTrainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.optimizer</span> <span class="kn">import</span> <span class="n">wrap_regularized_optimizer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.utils</span> <span class="kn">import</span> <span class="n">calculate_batch_epoch_num</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">DEBUG_DITTO</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="wrap_DittoTrainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.wrap_DittoTrainer">[docs]</a><span class="k">def</span> <span class="nf">wrap_DittoTrainer</span><span class="p">(</span>
+        <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTorchTrainer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTorchTrainer</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a `DittoTrainer` with a plug-in manner, by registering new</span>
+<span class="sd">    functions into specific `BaseTrainer`</span>
+
+<span class="sd">    The Ditto implementation, &quot;Ditto: Fair and Robust Federated Learning</span>
+<span class="sd">    Through Personalization. (ICML2021)&quot;</span>
+<span class="sd">    based on the Algorithm 2 in their paper and official codes:</span>
+<span class="sd">    https://github.com/litian96/ditto</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ---------------- attribute-level plug-in -----------------------</span>
+    <span class="n">init_Ditto_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+
+    <span class="c1"># ---------------- action-level plug-in -----------------------</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_start_clean</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s1">&#39;on_fit_start&#39;</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_start_set_regularized_para</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_start&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_batch_start_switch_model</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_batch_forward_cnt_num</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_forward&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_batch_end_flop_count</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_batch_end&quot;</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_end_calibrate</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s1">&#39;on_fit_end&#39;</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># evaluation is based on the local personalized model</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_start_switch_local_model</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_start&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_end_switch_global_model</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_end_free_cuda</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">_hook_on_fit_end_free_cuda</span><span class="p">,</span>
+                                       <span class="n">trigger</span><span class="o">=</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">,</span>
+                                       <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base_trainer</span></div>
+
+
+<span class="k">def</span> <span class="nf">init_Ditto_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    init necessary attributes used in Ditto,</span>
+<span class="sd">    `global_model` acts as the shared global model in FedAvg;</span>
+<span class="sd">    `local_model` acts as personalized model will be optimized with</span>
+<span class="sd">    regularization based on weights of `global_model`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="o">.</span><span class="n">ctx</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="o">.</span><span class="n">cfg</span>
+
+    <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># the personalized model</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span><span class="p">]</span>
+
+    <span class="n">ctx</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples_local_model_train</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># track the batch_num, epoch_num, for local &amp; global model respectively</span>
+    <span class="n">cfg_p_local_update_steps</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">local_update_steps</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_for_local_model</span><span class="p">,</span> \
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_last_epoch_for_local_model</span><span class="p">,</span> \
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch_for_local_model</span><span class="p">,</span> \
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_total_train_batch</span> <span class="o">=</span> \
+        <span class="n">calculate_batch_epoch_num</span><span class="p">(</span><span class="n">cfg_p_local_update_steps</span><span class="p">,</span>
+                                  <span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">batch_or_epoch</span><span class="p">,</span>
+                                  <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_data</span><span class="p">,</span>
+                                  <span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                  <span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">drop_last</span><span class="p">)</span>
+
+    <span class="c1"># In the first</span>
+    <span class="c1"># 1. `num_train_batch` and `num_train_batch_last_epoch`</span>
+    <span class="c1"># (batch_or_epoch == &#39;batch&#39; case) or</span>
+    <span class="c1"># 2. `num_train_epoch`,</span>
+    <span class="c1"># (batch_or_epoch == &#39;epoch&#39; case)</span>
+    <span class="c1"># we will manipulate local models, and manipulate global model in the</span>
+    <span class="c1"># remaining steps</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">batch_or_epoch</span> <span class="o">==</span> <span class="s1">&#39;batch&#39;</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch</span> <span class="o">+=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_for_local_model</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_last_epoch</span> <span class="o">+=</span> \
+            <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_last_epoch_for_local_model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch</span> <span class="o">+=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch_for_local_model</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_fit_start_set_regularized_para</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.global_model``                Move to ``ctx.device`` and set \</span>
+<span class="sd">        to ``train`` mode</span>
+<span class="sd">        ``ctx.local_model``                 Move to ``ctx.device`` and set \</span>
+<span class="sd">        to ``train`` mode</span>
+<span class="sd">        ``ctx.optimizer_for_global_model``  Initialize by ``ctx.cfg`` and \</span>
+<span class="sd">        wrapped by ``wrap_regularized_optimizer``</span>
+<span class="sd">        ``ctx.optimizer_for_local_model``   Initialize by ``ctx.cfg`` and \</span>
+<span class="sd">        set compared parameter group</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># set the compared model data for local personalized model</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">compared_global_model_para</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+    <span class="p">}]</span>
+
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_global_model</span> <span class="o">=</span> <span class="n">get_optimizer</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span><span class="p">,</span>
+                                                   <span class="o">**</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_local_model</span> <span class="o">=</span> <span class="n">get_optimizer</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span><span class="p">,</span>
+                                                  <span class="o">**</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_local_model</span> <span class="o">=</span> <span class="n">wrap_regularized_optimizer</span><span class="p">(</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_local_model</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">regular_weight</span><span class="p">)</span>
+
+    <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_local_model</span><span class="o">.</span><span class="n">set_compared_para_group</span><span class="p">(</span>
+        <span class="n">compared_global_model_para</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_fit_start_clean</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.optimizer``                   Delete</span>
+<span class="sd">        ``ctx.num_..._local_model_train``   Initialize to 0</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># remove the unnecessary optimizer</span>
+    <span class="k">del</span> <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples_local_model_train</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_fit_end_calibrate</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.num_samples``                 Minus \</span>
+<span class="sd">        ``ctx.num_samples_local_model_train``</span>
+<span class="sd">        ``ctx.eval_metrics``                Record ``train_total`` and \</span>
+<span class="sd">        ``train_total_local_model``</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># make the num_samples_train only related to the global model.</span>
+    <span class="c1"># (num_samples_train will be used in aggregation process)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">-=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples_local_model_train</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span><span class="p">[</span><span class="s1">&#39;train_total&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span><span class="p">[</span><span class="s1">&#39;train_total_local_model&#39;</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples_local_model_train</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_batch_end_flop_count</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.monitor``                     Monitor total flops</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># besides the normal forward flops, the regularization adds the cost of</span>
+    <span class="c1"># number of model parameters</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">total_flops</span> <span class="o">+=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">total_model_size</span> <span class="o">/</span> <span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_batch_forward_cnt_num</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.num_..._local_model_train``   Add `ctx.batch_size`</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples_local_model_train</span> <span class="o">+=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_batch_start_switch_model</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.use_local_model_current``     Set to ``True`` or ``False``</span>
+<span class="sd">        ``ctx.model``                       Set to ``ctx.local_model`` or \</span>
+<span class="sd">        ``ctx.global_model``</span>
+<span class="sd">        ``ctx.optimizer``                   Set to \</span>
+<span class="sd">        ``ctx.optimizer_for_local_model`` or ``ctx.optimizer_for_global_model``</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">batch_or_epoch</span> <span class="o">==</span> <span class="s1">&#39;batch&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">cur_epoch_i</span> <span class="o">==</span> <span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span> <span class="o">=</span> \
+                <span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_i</span> <span class="o">&lt;</span> \
+                <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_last_epoch_for_local_model</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span> <span class="o">=</span> \
+                <span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_i</span> <span class="o">&lt;</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_for_local_model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span> <span class="o">=</span> \
+            <span class="n">ctx</span><span class="o">.</span><span class="n">cur_epoch_i</span> <span class="o">&lt;</span> <span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch_for_local_model</span>
+
+    <span class="k">if</span> <span class="n">DEBUG_DITTO</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;====================================================&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cur_epoch_i: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_epoch_i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num_train_epoch: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cur_batch_i: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num_train_batch: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num_train_batch_for_local_model: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_for_local_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num_train_epoch_for_local_model: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch_for_local_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;use_local_model: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">use_local_model_current</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_local_model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer_for_global_model</span>
+
+
+<span class="c1"># Note that Ditto only updates the para of global_model received from other</span>
+<span class="c1"># FL participants, and in the remaining steps, ctx.model has been =</span>
+<span class="c1"># ctx.global_model, thus we do not need register the following hook</span>
+<span class="c1"># def hook_on_fit_end_link_global_model(ctx):</span>
+<span class="c1">#     ctx.model = ctx.global_model</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_fit_start_switch_local_model</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.model``                       Set to ``ctx.local_model`` and \</span>
+<span class="sd">        set to ``eval`` mode</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_fit_end_switch_global_model</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.model ``                      Set to ``ctx.global_model``</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span>
+
+
+<span class="k">def</span> <span class="nf">_hook_on_fit_end_free_cuda</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">      The modified attributes and according operations are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Attribute                           Operation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``ctx.global_model``                Move to ``cpu``</span>
+<span class="sd">        ``ctx.locol_model``                 Move to ``cpu``</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">global_model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">local_model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

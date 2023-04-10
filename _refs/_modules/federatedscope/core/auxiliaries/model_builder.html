@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.auxiliaries.model_builder &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.auxiliaries.model_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.auxiliaries.model_builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">federatedscope.register</span> <span class="k">as</span> <span class="nn">register</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.contrib.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1"> in `federatedscope.contrib.model`, some modules are not &#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;available.&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_shape_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">model_config</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;torch&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the input shape from the given data, which can be used to build \</span>
+<span class="sd">    the data. Users can also use `data.input_shape` to specify the shape.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data (`ClientData`): the data used for local training or evaluation \</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        shape (tuple): the input shape</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Handle some special cases</span>
+    <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;vmfnet&#39;</span><span class="p">,</span> <span class="s1">&#39;hmfnet&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">n_col</span> <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>
+        <span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;vmfnet&#39;</span> <span class="k">else</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">n_row</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;gcn&#39;</span><span class="p">,</span> <span class="s1">&#39;sage&#39;</span><span class="p">,</span> <span class="s1">&#39;gpr&#39;</span><span class="p">,</span> <span class="s1">&#39;gat&#39;</span><span class="p">,</span> <span class="s1">&#39;gin&#39;</span><span class="p">,</span> <span class="s1">&#39;mpnn&#39;</span>
+    <span class="p">]</span> <span class="ow">or</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;gnn_&#39;</span><span class="p">):</span>
+        <span class="n">num_label</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;num_label&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;num_label&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">num_edge_features</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span>
+            <span class="s1">&#39;num_edge_features&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;mpnn&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;graph&#39;</span><span class="p">):</span>
+            <span class="c1"># graph-level task</span>
+            <span class="n">data_representative</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="n">data_representative</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">num_label</span><span class="p">,</span> <span class="n">num_edge_features</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># node/link-level task</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">num_label</span><span class="p">,</span> <span class="n">num_edge_features</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;atc_model&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="s1">&#39;test&#39;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">key_representative</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;val&#39;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">key_representative</span> <span class="o">=</span> <span class="s1">&#39;val&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;train&#39;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">key_representative</span> <span class="o">=</span> <span class="s1">&#39;train&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">key_representative</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key_representative</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We chose the key </span><span class="si">{</span><span class="n">key_representative</span><span class="si">}</span><span class="s1"> as the &#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39;representative key to extract data shape.&#39;</span><span class="p">)</span>
+        <span class="n">data_representative</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key_representative</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Handle the data with non-dict format</span>
+        <span class="n">data_representative</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_representative</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;x&#39;</span> <span class="ow">in</span> <span class="n">data_representative</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data_representative</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># (batch, ) = (batch, 1)</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">shape</span>
+    <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">torch</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data_representative</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data_representative</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data_representative</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+                <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Unsupported data type.&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+        <span class="c1"># TODO: Handle more tensorflow type here</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">data_representative</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># (batch, ) = (batch, 1)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">shape</span>
+
+
+<div class="viewcode-block" id="get_model"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.auxiliaries.model_builder.get_model">[docs]</a><span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">local_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;torch&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function builds an instance of model to be trained.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        model_config: ``cfg.model``, a submodule of ``cfg``</span>
+<span class="sd">        local_data: the model to be instantiated is responsible for the \</span>
+<span class="sd">        given data</span>
+<span class="sd">        backend: chosen from ``torch`` and ``tensorflow``</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        model (``torch.Module``): the instantiated model.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      The key-value pairs of built-in model and source are shown below:</span>
+<span class="sd">        ===================================  ==============================</span>
+<span class="sd">        Model type                           Source</span>
+<span class="sd">        ===================================  ==============================</span>
+<span class="sd">        ``lr``                               ``core.lr.LogisticRegression`` \</span>
+<span class="sd">        or ``cross_backends.LogisticRegression``</span>
+<span class="sd">        ``mlp``                              ``core.mlp.MLP``</span>
+<span class="sd">        ``quadratic``                        ``tabular.model.QuadraticModel``</span>
+<span class="sd">        ``convnet2, convnet5, vgg11``        ``cv.model.get_cnn()``</span>
+<span class="sd">        ``lstm``                             ``nlp.model.get_rnn()``</span>
+<span class="sd">        ``{}@transformers``                  ``nlp.model.get_transformer()``</span>
+<span class="sd">        ``gcn, sage, gpr, gat, gin, mpnn``   ``gfl.model.get_gnn()``</span>
+<span class="sd">        ``vmfnet, hmfnet``                   \</span>
+<span class="sd">        ``mf.model.model_builder.get_mfnet()``</span>
+<span class="sd">        ===================================  ==============================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xgb_tree&#39;</span><span class="p">,</span> <span class="s1">&#39;gbdt_tree&#39;</span><span class="p">,</span> <span class="s1">&#39;random_forest&#39;</span><span class="p">]:</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">local_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="n">get_shape_from_data</span><span class="p">(</span><span class="n">local_data</span><span class="p">,</span> <span class="n">model_config</span><span class="p">,</span> <span class="n">backend</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="n">model_config</span><span class="o">.</span><span class="n">input_shape</span>
+
+    <span class="k">if</span> <span class="n">input_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;The input shape is None. Please specify the &#39;</span>
+                       <span class="s1">&#39;`data.input_shape`(a tuple) or give the &#39;</span>
+                       <span class="s1">&#39;representative data to `get_model` if necessary&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">model_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">model</span>
+
+    <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.core.lr</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                       <span class="n">class_num</span><span class="o">=</span><span class="n">model_config</span><span class="o">.</span><span class="n">out_channels</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.cross_backends</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                       <span class="n">class_num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                       <span class="n">use_bias</span><span class="o">=</span><span class="n">model_config</span><span class="o">.</span><span class="n">use_bias</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mlp&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.mlp</span> <span class="kn">import</span> <span class="n">MLP</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">channel_list</span><span class="o">=</span><span class="p">[</span><span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">model_config</span><span class="o">.</span><span class="n">hidden</span><span class="p">]</span> <span class="o">*</span>
+                    <span class="p">(</span><span class="n">model_config</span><span class="o">.</span><span class="n">layer</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">model_config</span><span class="o">.</span><span class="n">out_channels</span><span class="p">],</span>
+                    <span class="n">dropout</span><span class="o">=</span><span class="n">model_config</span><span class="o">.</span><span class="n">dropout</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.tabular.model</span> <span class="kn">import</span> <span class="n">QuadraticModel</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">QuadraticModel</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;convnet2&#39;</span><span class="p">,</span> <span class="s1">&#39;convnet5&#39;</span><span class="p">,</span> <span class="s1">&#39;vgg11&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.cv.model</span> <span class="kn">import</span> <span class="n">get_cnn</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_cnn</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;simclr&#39;</span><span class="p">,</span> <span class="s1">&#39;simclr_linear&#39;</span><span class="p">,</span> <span class="s2">&quot;supervised_local&quot;</span><span class="p">,</span> <span class="s2">&quot;supervised_fedavg&quot;</span>
+    <span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.cl.model</span> <span class="kn">import</span> <span class="n">get_simclr</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_simclr</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;linear&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;linear&#39;</span><span class="p">):</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;lstm&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.model</span> <span class="kn">import</span> <span class="n">get_rnn</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_rnn</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;transformers&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.model</span> <span class="kn">import</span> <span class="n">get_transformer</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_transformer</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;gcn&#39;</span><span class="p">,</span> <span class="s1">&#39;sage&#39;</span><span class="p">,</span> <span class="s1">&#39;gpr&#39;</span><span class="p">,</span> <span class="s1">&#39;gat&#39;</span><span class="p">,</span> <span class="s1">&#39;gin&#39;</span><span class="p">,</span> <span class="s1">&#39;mpnn&#39;</span>
+    <span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.model</span> <span class="kn">import</span> <span class="n">get_gnn</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_gnn</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;vmfnet&#39;</span><span class="p">,</span> <span class="s1">&#39;hmfnet&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.mf.model.model_builder</span> <span class="kn">import</span> <span class="n">get_mfnet</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_mfnet</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;xgb_tree&#39;</span><span class="p">,</span> <span class="s1">&#39;gbdt_tree&#39;</span><span class="p">,</span> <span class="s1">&#39;random_forest&#39;</span>
+    <span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.tree_based_models.model.model_builder</span> \
+            <span class="kn">import</span> <span class="nn">get_tree_model</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_tree_model</span><span class="p">(</span><span class="n">model_config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;atc_model&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.hetero_tasks.model</span> <span class="kn">import</span> <span class="n">ATCModel</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">ATCModel</span><span class="p">(</span><span class="n">model_config</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Model </span><span class="si">{}</span><span class="s1"> is not provided&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_config</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_trainable_para_names</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">()))</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
