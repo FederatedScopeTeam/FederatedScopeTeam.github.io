@@ -23,7 +23,7 @@ main:
   - title: "Tutorials"
     url: /docs/documentation/
   - title: "Playground"
-    url: https://try.federatedscope.io/
+    url: https://colab.research.google.com/github/alibaba/FederatedScope
     target: _blank
   - title: "API References"
     url: /refs/index
