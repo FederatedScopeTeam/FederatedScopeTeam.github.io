@@ -17,8 +17,8 @@ jobs:
         target_branch: 'gh-pages'
         
     - uses: actions/checkout@master
-    - name: copy
-    	run: |
+    - name: Copy
+      run: |
         files=$(find _refs/_* -type f) # get the file list
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
