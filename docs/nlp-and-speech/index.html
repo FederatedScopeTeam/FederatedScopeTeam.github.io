@@ -1,0 +1,836 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>NLP and Speech - FederatedScope</title>
+<meta name="description" content="About NLP and Speech">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="NLP and Speech">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/nlp-and-speech/">
+
+
+  <meta property="og:description" content="About NLP and Speech">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="NLP and Speech">
+  <meta name="twitter:description" content="About NLP and Speech">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/nlp-and-speech/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-13T20:46:43-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/nlp-and-speech/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/" class="active">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="NLP and Speech">
+    <meta itemprop="description" content="About NLP and Speech">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-13T20:46:43-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">NLP and Speech
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#background">Background</a></li><li><a href="#natural-language-processing-nlp">Natural Language Processing (NLP)</a><ul><li><a href="#datasets">Datasets</a></li><li><a href="#models">Models</a></li><li><a href="#start-an-example">Start an example</a></li><li><a href="#customize-your-nlp-task">Customize your NLP task</a></li></ul></li><li><a href="#speech-coming-soon">Speech (Coming soon)</a></li><li><a href="#reference">Reference</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p><a name="bJdWk"></a></p>
+<h2 id="background">Background</h2>
+
+<p>Recently, privacy-preserving methods gain increasing attentions in machine learning (ML) applications using linguistic data  including text and audio, due to the fact that linguistic data can involve a wealth of information relating to an identified or identifiable natural person, such as the physiological, psychological, economic, cultural or social identity.</p>
+
+<p>Federated Learning (FL) methods show promising results for collaboratively training models from a large number of clients without sharing their private linguistic data. To facilitate FL research in linguistic data, FederatedScope provides several built-in linguistic datasets and supports various tasks such as language modeling and text classification with various FL algorithms.</p>
+
+<p><a name="Yzwrs"></a></p>
+<h2 id="natural-language-processing-nlp">Natural Language Processing (NLP)</h2>
+
+<p><a name="ZhStB"></a></p>
+<h3 id="datasets">Datasets</h3>
+
+<p>We provide three popular text datasets for next-character prediction, next-word prediction, and sentiment analysis.</p>
+
+<ul>
+  <li>Shakespeare: a federation text dataset of Shakespeare Dialogues from <a href="https://leaf.cmu.edu/">LEAF</a> [1] for next-character prediction, which contains 422,615 sentences and about 1,100 clients.</li>
+  <li>subReddit: a federation text dataset and subsampled of reddit from LEAF for next-word prediction, which contains 216,858 sentences and about 800 clients.</li>
+  <li>Sentiment140: a federation text dataset of Twitter from LEAF for Sentiment Analysis, which contains 1,600,498 sentences, about 660,000  clients.</li>
+</ul>
+
+<p><a name="eHVuQ"></a></p>
+<h3 id="models">Models</h3>
+
+<p>We provide a LSTM model implementation in <code class="language-plaintext highlighter-rouge">federatedscope/nlp/model</code></p>
+
+<ul>
+  <li><strong>LSTM:</strong> a type of RNN that solves the vanishing gradient problem through additional cells, input and output gates. (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'lstm'</code>)</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">in_channels</span><span class="p">,</span>
+                 <span class="n">hidden</span><span class="p">,</span>
+                 <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">n_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">embed_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="k">pass</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Currently, we are working on implement more interfaces to support more popular NLP Transformer models and more NLP tasks with <a href="https://github.com/huggingface/transformers">HuggingFace Transformers</a> [2].</li>
+</ul>
+
+<p><a name="nOGSF"></a></p>
+<h3 id="start-an-example">Start an example</h3>
+
+<p>Next-character/word prediction is a classic NLP task as it can be applied in many consumer applications and appropriately be modeled by statistical language models, we show how to achieve next-character prediction in cross-device FL setting.</p>
+
+<ul>
+  <li>Here we implement a simple LSTM model for next-character prediction: taking an English characters sequence as input, the model learns to predict the next possible character. After registering the model, we can use it by specifying <code class="language-plaintext highlighter-rouge">cfg.model.type=lstm</code> and  hyper-parameters such as  <code class="language-plaintext highlighter-rouge">cfg.model.in_channels=80, cfg.model.out_channels=80, cfg.model.emd_size=8</code>.  Complete codes are in <code class="language-plaintext highlighter-rouge">federatedscope/nlp/model/rnn.py</code> and <code class="language-plaintext highlighter-rouge">federatedscope/nlp/model/model_builder.py</code>.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">in_channels</span><span class="p">,</span>
+                 <span class="n">hidden</span><span class="p">,</span>
+                 <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">n_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">embed_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="n">hidden</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">embed_size</span> <span class="o">=</span> <span class="n">embed_size</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">out_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_layers</span> <span class="o">=</span> <span class="n">n_layers</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">embed_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">rnn</span> <span class="o">=</span>\
+            <span class="n">nn</span><span class="p">.</span><span class="n">LSTM</span><span class="p">(</span>
+                <span class="n">input_size</span><span class="o">=</span><span class="n">embed_size</span><span class="p">,</span>
+                <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                <span class="n">num_layers</span><span class="o">=</span><span class="n">n_layers</span><span class="p">,</span>
+                <span class="n">batch_first</span><span class="o">=</span><span class="bp">True</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_</span><span class="p">):</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># change dimension to (B, C, T)
+</span>        <span class="n">final_word</span> <span class="o">=</span> <span class="n">output</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">final_word</span>
+</code></pre></div></div>
+
+<ul>
+  <li>For the dataset, we use the Shakespeare dataset from <a href="https://leaf.cmu.edu/">LEAF</a>, which is built from <em>The Complete Works of William Shakespeare</em>,  and partitioned to ~1100 clients (speaking roles) from 422615.  We can specify the <code class="language-plaintext highlighter-rouge">cfg.dataset.type=shakespeare</code> and adjust the fraction of data subsample (<code class="language-plaintext highlighter-rouge">cfg.data.sub_sample=0.2</code>), and train/val/test ratio (``cfg.data.splits=[0.6,0.2,0.2]). Complete NLP data codes are in<code class="language-plaintext highlighter-rouge">federatedscope/nlp/dataset</code>.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LEAF_NLP</span><span class="p">(</span><span class="n">LEAF</span><span class="p">):</span>
+    <span class="s">"""
+    LEAF NLP dataset from
+    
+    leaf.cmu.edu
+    
+    self:
+        root (str): root path.
+        name (str): name of dataset, ‘shakespeare’ or ‘xxx’.
+        s_frac (float): fraction of the dataset to be used; default=0.3.
+        tr_frac (float): train set proportion for each task; default=0.8.
+        val_frac (float): valid set proportion for each task; default=0.0.
+    """</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">s_frac</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> 
+            <span class="n">tr_frac</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+            <span class="n">val_frac</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+</code></pre></div></div>
+
+<ul>
+  <li>To enable large-scale clients simulation, we provide online aggregator in standalone mode to save the memory, which  maintains only three model objects for the FL server aggregation. We can use this feature by specifying <code class="language-plaintext highlighter-rouge">cfg.federate.online_aggr = True</code> and <code class="language-plaintext highlighter-rouge">federate.share_local_model=True</code> , more details about this feature can be found in <a href="/docs/simulation-and-deployment">the post “Simulation and Deployment”</a>.</li>
+  <li>To handle the non-i.i.d. challenge, FederatedScope supports several SOTA <a href="/docs/pfl">personalization</a> algorithms and easy extension.</li>
+  <li>To enable partial clients participation in each FL round, we provide clients sampling feature with various configuration manners: 1) <code class="language-plaintext highlighter-rouge">cfg.federate.sample_client_rate</code>, which is in the range (0, 1] and indicates selecting partial clients using random sampling with replacement; 2) <code class="language-plaintext highlighter-rouge">cfg.federate.sample_client_num</code> , which is an integer to indicate sample client number at each round.</li>
+</ul>
+
+<p>With these specification, we can run the experiment with</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">main</span><span class="p">.</span><span class="n">py</span> <span class="o">--</span><span class="n">cfg</span> <span class="n">federatedscope</span><span class="o">/</span><span class="n">nlp</span><span class="o">/</span><span class="n">baseline</span><span class="o">/</span><span class="n">fedavg_lstm_on_shakespeare</span><span class="p">.</span><span class="n">yaml</span>
+</code></pre></div></div>
+
+<p>You will get the accuracy of FedAvg algorithm around <code class="language-plaintext highlighter-rouge">43.80%</code>.</p>
+
+<p>Other NLP related scripts to run the next-character prediction experiments can be found in <code class="language-plaintext highlighter-rouge">federatedscope/nlp/baseline</code>.</p>
+
+<p><a name="MK5wA"></a></p>
+<h3 id="customize-your-nlp-task">Customize your NLP task</h3>
+
+<p>FederatedScope enables users to easily implement and register more NLP datasets and models.</p>
+
+<ul>
+  <li>Implement and register your own NLP data
+```python
+    <h1 id="federatedscopecontribdatamy_nlp_datapy">federatedscope/contrib/data/my_nlp_data.py</h1>
+  </li>
+</ul>
+
+<p>import torch
+import copy
+import numpy as np</p>
+
+<p>from federatedscope.register import register_data</p>
+
+<p>def get_my_nlp_data(config):
+    r”””
+        This function returns a dictionary, where key is the client id and 
+    value is the data dict of each client with ‘train’, ‘test’ or ‘val’.
+    		NOTE: client_id 0 is SERVER!</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Returns:
+      dict: {
+                'client_id': {
+                    'train': DataLoader or Data,
+                    'test': DataLoader or Data,
+                    'val': DataLoader or Data,
+                }
+            }
+"""
+import numpy as np
+from torch.utils.data import DataLoader
+
+# Build data
+dataset = LEAF_NLP(root=path,
+                   name="twitter",
+                   s_frac=config.data.subsample,
+                   tr_frac=splits[0],
+                   val_frac=splits[1],
+                   seed=1234,
+                   transform=transform)
+
+client_num = min(len(dataset), config.federate.client_num
+                 ) if config.federate.client_num &gt; 0 else len(dataset)
+config.merge_from_list(['federate.client_num', client_num])
+
+# get local dataset
+data_local_dict = dict()
+for client_idx in range(client_num):
+    dataloader = {
+        'train': DataLoader(dataset[client_idx]['train'],
+                            batch_size,
+                            shuffle=config.data.shuffle,
+                            num_workers=config.data.num_workers),
+        'test': DataLoader(dataset[client_idx]['test'],
+                           batch_size,
+                           shuffle=False,
+                           num_workers=config.data.num_workers)
+    }
+    if 'val' in dataset[client_idx]:
+        dataloader['val'] = DataLoader(dataset[client_idx]['val'],
+                                       batch_size,
+                                       shuffle=False,
+                                       num_workers=config.data.num_workers)
+
+    data_local_dict[client_idx + 1] = dataloader
+
+return data_local_dict, confi
+</code></pre></div></div>
+
+<p>def call_my_data(config):
+    if config.data.type == “my_nlp_data”:
+        data, modified_config = get_my_nlp_data(config)
+        return data, modified_config</p>
+
+<p>register_data(“my_nlp_data”, call_my_data)</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 
+
+-  Implement and register your own NLP model 
+```python
+import torch
+from federatedscope.register import register_model
+
+
+class  KIM_CNN(nn.Module):
+  """
+  		ref to Kim's CNN text classification paper [3]
+  		https://github.com/Shawn1993/cnn-text-classification-pytorch
+  """
+    def __init__(self, args):
+        super(CNN_Text, self).__init__()
+        self.args = args
+        
+        V = args.embed_num
+        D = args.embed_dim
+        C = args.class_num
+        Ci = 1
+        Co = args.kernel_num
+        Ks = args.kernel_sizes
+
+        self.embed = nn.Embedding(V, D)
+        self.convs = nn.ModuleList([nn.Conv2d(Ci, Co, (K, D)) for K in Ks])
+        self.dropout = nn.Dropout(args.dropout)
+        self.fc1 = nn.Linear(len(Ks) * Co, C)
+
+        if self.args.static:
+            self.embed.weight.requires_grad = False
+
+    def forward(self, x):
+        x = self.embed(x)  # (N, W, D)
+    
+        x = x.unsqueeze(1)  # (N, Ci, W, D)
+
+        x = [F.relu(conv(x)).squeeze(3) for conv in self.convs]  # [(N, Co, W), ...]*len(Ks)
+
+        x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x]  # [(N, Co), ...]*len(Ks)
+
+        x = torch.cat(x, 1)
+
+        x = self.dropout(x)  # (N, len(Ks)*Co)
+        logit = self.fc1(x)  # (N, C)
+        return logit
+
+     
+def call_my_net(model_config, local_data):
+    if model_config.type == "my_nlp_model":
+        model = KIM_CNN(args=model_config)
+        return model
+
+register_model("my_nlp_model", call_my_net)
+</code></pre></div></div>
+
+<ul>
+  <li>Then with fruitful  built-in FL experiments scripts , users can run own FL experiments by <em>replacing</em> the model type and dataset type in the provided  scripts.</li>
+</ul>
+
+<p><a name="Txa84"></a></p>
+<h2 id="speech-coming-soon">Speech (Coming soon)</h2>
+
+<p>We are working on implement more interfaces to support more Conformer [4] models and more speech-related tasks with <a href="https://github.com/wenet-e2e/wenet">WeNet</a> [5], which is designed for various end-2-end speech recognition tasks and provides full stack solutions for production and real-world applications.</p>
+
+<p><a name="Reference"></a></p>
+<h2 id="reference">Reference</h2>
+
+<p>[1] Caldas, Sebastian, Sai Meher Karthik Duddu, Peter Wu, Tian Li, Jakub Konečný, H. Brendan McMahan, Virginia Smith, and Ameet Talwalkar. “Leaf: A benchmark for federated settings.” <em>arXiv preprint arXiv:1812.01097</em> (2018).</p>
+
+<p>[2] Wolf, Thomas, et al. “Huggingface’s transformers: State-of-the-art natural language processing.” <em>arXiv preprint arXiv:1910.03771</em> (2019).</p>
+
+<p>[3] Yoon Kim. 2014. <a href="https://aclanthology.org/D14-1181">Convolutional Neural Networks for Sentence Classification</a>. In <em>Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)</em>, pages 1746–1751, Doha, Qatar.</p>
+
+<p>[4] Gulati, Anmol, et al. “Conformer: Convolution-augmented transformer for speech recognition.” <em>arXiv preprint arXiv:2005.08100</em> (2020).</p>
+
+<p>[5] Zhang, Binbin, et al. “Wenet: Production first and production ready end-to-end speech recognition toolkit.” <em>arXiv e-prints</em> (2021): arXiv-2102.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-13">April 13, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/graph/" class="pagination--pager" title="Graph
+">Previous</a>
+    
+    
+      <a href="/docs/community/" class="pagination--pager" title="Join Our Community
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

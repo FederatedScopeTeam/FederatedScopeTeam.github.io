@@ -1,0 +1,847 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Personalized FL - FederatedScope</title>
+<meta name="description" content="About personalized FL.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Personalized FL">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/pfl/">
+
+
+  <meta property="og:description" content="About personalized FL.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Personalized FL">
+  <meta name="twitter:description" content="About personalized FL.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/pfl/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-08T15:59:57-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/pfl/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/" class="active">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Personalized FL">
+    <meta itemprop="description" content="About personalized FL.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-08T15:59:57-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Personalized FL
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#background">Background</a></li><li><a href="#demonstration">Demonstration</a><ul><li><a href="#personalized-model-sub-modules---fedbn">Personalized model sub-modules - FedBN</a></li><li><a href="#personalized-regularization---ditto">Personalized regularization - Ditto</a></li><li><a href="#personalized-multi-model-interaction---fedem">Personalized multi-model interaction - FedEM</a></li></ul></li><li><a href="#evaluation-results">Evaluation Results</a><ul><li><a href="#fedbn">FedBN</a></li><li><a href="#pfedme">pFedMe</a></li><li><a href="#ditto">Ditto</a></li><li><a href="#fedem">FedEM</a></li></ul></li><li><a href="#reference">Reference</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>FederatedScope  is a flexible FL framework, which enables users to implement complex FL algorithms simply and intuitively. In this tutorial, we will show how to implement diverse personalized FL algorithms.</p>
+
+<h2 id="background">Background</h2>
+
+<p>In an FL course, multiple clients aim to cooperatively learn models without directly sharing their private data. As a result, these clients can be arbitrarily different in terms of their underlying <strong>data distribution</strong> and <strong>system resources</strong> such as computational power and communication width.</p>
+
+<ul>
+  <li>On one hand, the data quantity skew, feature distribution skew,  label distribution skew, and temporal skew are pervasive in real-world applications as different users generate the data with different usage manners.
+Simply applying the shared global model for all participants might lead to sub-optimal performance.</li>
+  <li>On the other hand, the participation degrees of different FL participants can be diverse due to their different hardware capabilities and network conditions.</li>
+</ul>
+
+<p>It is challenging to make full use of local data considering such systematical heterogeneity. As a natural and effective approach to address these challenges, personalization gains increasing attention in recent years. Personalized FL (pFL) raises strong demand for various customized FL implementation, e.g., the personalization may exist in</p>
+
+<ul>
+  <li>Model objects, optimizers and hyper-parameters</li>
+  <li>Model sub-modules</li>
+  <li>Client-end behaviors such as regularization and multi-model interaction</li>
+  <li>Server-end behaviors such as model interpolation</li>
+</ul>
+
+<p>We will demonstrate several implementations for state-of-the-art (SOTA) pFL methods  to meet the above requirements and show how  powerful and flexible the FederatedScope framework to implement pFL extensions.</p>
+
+<h2 id="demonstration">Demonstration</h2>
+
+<h3 id="personalized-model-sub-modules---fedbn">Personalized model sub-modules - FedBN</h3>
+
+<p><a href="https://arxiv.org/abs/2102.07623">FedBN</a> [1] is a simple yet effective approach to address feature shift non-iid, in which the client BN parameters are trained locally, without communication and aggregation via server. FederatedScope provides simple configuration to implement FedBN and other variants that need to keep parameters of some model sub-modules local.</p>
+
+<ul>
+  <li>By specifying the local parameter names as follows, the clients and server will filter out the sub-modules contains the given names in the model parameter <code class="language-plaintext highlighter-rouge">update</code> function.
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cfg</span><span class="p">.</span><span class="n">personalization</span><span class="p">.</span><span class="n">local_param</span> <span class="o">=</span> <span class="p">[]</span> 
+<span class="c1"># e.g., ['pre', 'post', 'bn']
+</span></code></pre></div>    </div>
+  </li>
+  <li>We provide auxiliary logging function <code class="language-plaintext highlighter-rouge">print_trainer_meta_info()</code> to show the model type, local and filtered model parameter names in trainer instantiation</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># trainer.print_trainer_meta_info()
+</span>
+<span class="n">Model</span> <span class="n">meta</span><span class="o">-</span><span class="n">info</span><span class="p">:</span> <span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">federatedscope</span><span class="p">.</span><span class="n">cv</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">cnn</span><span class="p">.</span><span class="n">ConvNet2</span><span class="s">'&gt;.
+Num of original para names: 18.
+Num of original trainable para names: 12.
+Num of preserved para names in local update: 8.
+Preserved para names in local update: {'</span><span class="n">fc2</span><span class="p">.</span><span class="n">bias</span><span class="s">', '</span><span class="n">conv1</span><span class="p">.</span><span class="n">weight</span><span class="s">', '</span><span class="n">conv2</span><span class="p">.</span><span class="n">weight</span><span class="s">', '</span><span class="n">fc1</span><span class="p">.</span><span class="n">weight</span><span class="s">', '</span><span class="n">fc2</span><span class="p">.</span><span class="n">weight</span><span class="s">', '</span><span class="n">conv1</span><span class="p">.</span><span class="n">bias</span><span class="s">', '</span><span class="n">fc1</span><span class="p">.</span><span class="n">bias</span><span class="s">', '</span><span class="n">conv2</span><span class="p">.</span><span class="n">bias</span><span class="s">'}.
+Num of filtered para names in local update: 10.
+Filtered para names in local update: {'</span><span class="n">bn2</span><span class="p">.</span><span class="n">weight</span><span class="s">', '</span><span class="n">bn2</span><span class="p">.</span><span class="n">num_batches_tracked</span><span class="s">', '</span><span class="n">bn1</span><span class="p">.</span><span class="n">num_batches_tracked</span><span class="s">', '</span><span class="n">bn1</span><span class="p">.</span><span class="n">running_var</span><span class="s">', '</span><span class="n">bn2</span><span class="p">.</span><span class="n">running_mean</span><span class="s">', '</span><span class="n">bn1</span><span class="p">.</span><span class="n">weight</span><span class="s">', '</span><span class="n">bn2</span><span class="p">.</span><span class="n">running_var</span><span class="s">', '</span><span class="n">bn1</span><span class="p">.</span><span class="n">running_mean</span><span class="s">', '</span><span class="n">bn1</span><span class="p">.</span><span class="n">bias</span><span class="s">', '</span><span class="n">bn2</span><span class="p">.</span><span class="n">bias</span><span class="s">'}.
+</span></code></pre></div></div>
+
+<h3 id="personalized-regularization---ditto">Personalized regularization - Ditto</h3>
+
+<p><a href="https://arxiv.org/abs/2012.04221">Ditto</a> [2] is a SOTA pFL approach that improves fairness and robustness of FL via training local personalized model and global model simultaneously, in which the local model update is based on regularization to global model parameters. FederatedScope provides built-in Ditto implementation and users can easily extends to other pFL methods by re-using the model-para regularization. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_Ditto.py</code>.</p>
+
+<ul>
+  <li>
+    <p>To preserve distinct local models in trainer, we can simply use another model object in trainer’s context</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ctx.local_model = copy.deepcopy(ctx.model)  # the personalized model
+ctx.global_model = ctx.model
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>To train local models with global-model regularization, we implement a new hook on  run_routine fit start and register the global model parameters into the new optimizer.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def hook_on_fit_start_set_regularized_para(ctx):
+    # set the compared model data for local personalized model
+    ctx.global_model.to(ctx.device)
+    ctx.local_model.to(ctx.device)
+    ctx.global_model.train()
+    ctx.local_model.train()
+    compared_global_model_para = [{
+        "params": list(ctx.global_model.parameters())
+    }]
+    ctx.optimizer_for_local_model.set_compared_para_group(
+        compared_global_model_para)
+  
+def regularize_by_para_diff(self):
+    """
+       before optim.step(), regularize the gradients based on para diff
+    """
+    for group, compared_group in zip(self.param_groups, self.compared_para_groups):
+        for p, compared_weight in zip(group['params'], compared_group['params']):
+            if p.grad is not None:
+               if compared_weight.device != p.device:
+                    compared_weight = compared_weight.to(p.device)
+                    p.grad.data = p.grad.data + self.regular_weight * (p.data - compared_weight.data)
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>We implement Ditto with a pluggable manner, some Ditto specific attributes (<em>contexts</em>) and behaviors (<em>hooks</em>) can be added into an existing <code class="language-plaintext highlighter-rouge">base_trainer</code> as follows.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wrap_DittoTrainer</span><span class="p">(</span>
+        <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTrainer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTrainer</span><span class="p">]):</span>
+    
+    <span class="c1"># ---------------- attribute-level plug-in -----------------------
+</span>    <span class="n">init_Ditto_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+  
+    <span class="c1"># ---------------- action-level plug-in -----------------------
+</span>    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_fit_start_set_regularized_para</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">"on_fit_start"</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="personalized-multi-model-interaction---fedem">Personalized multi-model interaction - FedEM</h3>
+
+<p><a href="https://arxiv.org/abs/2108.10252">FedEM</a> [3] is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. FederatedScope provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_FedEM.py</code>.</p>
+
+<ul>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">FedEMTrainer</code> is derived from <code class="language-plaintext highlighter-rouge">GeneralMultiModelTrainer</code>. We can easily add FedEM-specific attributes and behaviors via context and hooks register functions</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ---------------- attribute-level modifications -----------------------
+# used to mixture the internal models
+</span><span class="bp">self</span><span class="p">.</span><span class="n">weights_internal_models</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model_nums</span><span class="p">)</span> <span class="o">/</span>
+                                <span class="bp">self</span><span class="p">.</span><span class="n">model_nums</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="bp">self</span><span class="p">.</span><span class="n">weights_data_sample</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">torch</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model_nums</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">num_train_batch</span><span class="p">)</span> <span class="o">/</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">model_nums</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+  
+<span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">all_losses_model_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">model_nums</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">num_train_batch</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_batch_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+  
+<span class="c1"># ---------------- action-level modifications -----------------------
+# see customized register_multiple_model_hooks(), which is called in the __init__ of `GeneralMultiModelTrainer`
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>We can simply extend  <code class="language-plaintext highlighter-rouge">GeneralMultiModelTrainer</code> with the default sequential interaction mode, and add some training behaviors such as <code class="language-plaintext highlighter-rouge">mixture_weights_update</code>, <code class="language-plaintext highlighter-rouge">weighted_loss_adjustment</code> and <code class="language-plaintext highlighter-rouge">track_batch_idx</code></p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># hooks example, for only train
+</span><span class="k">def</span> <span class="nf">hook_on_batch_forward_weighted_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">loss_batch</span> <span class="o">*=</span> <span class="bp">self</span><span class="p">.</span><span class="n">weights_internal_models</span><span class="p">[</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_model_idx</span><span class="p">]</span>
+  
+<span class="k">def</span> <span class="nf">register_multiple_model_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># First register hooks for model 0
+</span>    <span class="c1"># ---------------- train hooks -----------------------
+</span>    <span class="bp">self</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">hook_on_fit_start_mixture_weights_update</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">"on_fit_start"</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># insert at the front
+</span>    <span class="bp">self</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">hook_on_batch_forward_weighted_loss</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">"on_batch_forward"</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">hook_on_batch_start_track_batch_idx</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">"on_batch_start"</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># insert at the front
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>We also need to add some evaluation behavior modifications such as <code class="language-plaintext highlighter-rouge">model_ensemble</code> and <code class="language-plaintext highlighter-rouge">loss_gather</code></p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1"># ---------------- eval hooks -----------------------
+</span>    <span class="bp">self</span><span class="p">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">hook_on_batch_end_gather_loss</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">"on_batch_end"</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span>  <span class="c1"># insert at the front, (we need gather the loss before clean it)
+</span>    <span class="bp">self</span><span class="p">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">hook_on_batch_start_track_batch_idx</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">"on_batch_start"</span><span class="p">,</span>
+        <span class="n">insert_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># insert at the front
+</span>    <span class="c1"># replace the original evaluation into the ensemble one
+</span>    <span class="bp">self</span><span class="p">.</span><span class="n">replace_hook_in_eval</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_hook_on_fit_end_ensemble_eval</span><span class="p">,</span>
+        <span class="n">target_trigger</span><span class="o">=</span><span class="s">"on_fit_end"</span><span class="p">,</span>
+        <span class="n">target_hook_name</span><span class="o">=</span><span class="s">"_hook_on_fit_end"</span><span class="p">)</span>
+      
+<span class="c1"># hooks example, for only eval
+</span><span class="k">def</span> <span class="nf">hook_on_batch_end_gather_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># before clean the loss_batch; we record it for further weights_data_sample update
+</span>    <span class="n">ctx</span><span class="p">.</span><span class="n">all_losses_model_batch</span><span class="p">[</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_model_idx</span><span class="p">][</span>
+            <span class="n">ctx</span><span class="p">.</span><span class="n">cur_batch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">loss_batch</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Note that the <code class="language-plaintext highlighter-rouge">GeneralMultiModelTrainer</code> will switch the model states automatically, we can differentiate different internal models in the new hooks with <code class="language-plaintext highlighter-rouge">ctx.cur_model_idx</code> and ` self.model_nums` attributes.</p>
+  </li>
+</ul>
+
+<p>FedEM can be generalized to many <strong>clustering ** based methods &amp;  **multi-task modeling</strong> based methods (see details inSection 2.3 in [3]) and we can extend <code class="language-plaintext highlighter-rouge">FedEMTrainer</code> to more multi-model based pFL methods.</p>
+
+<h2 id="evaluation-results">Evaluation Results</h2>
+<p>To facilitate rapid and reproducible pFL research, we provide the experimental results and corresponding scripts to benchmark  pFL performance for several SOTA pFL methods via FederatedScope.  We will continue to add more algorithm implementations and experimental results in different scenarios.</p>
+
+<h3 id="fedbn">FedBN</h3>
+
+<p>We provide some evaluation results for FedBN on different tasks as follows, in which the models contain batch normalization. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/fedbn</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>85.48</td>
+    </tr>
+    <tr>
+      <td>Graph classification</td>
+      <td>multi-task-molecule</td>
+      <td>72.90</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="pfedme">pFedMe</h3>
+
+<p><a href="https://arxiv.org/abs/2006.08848">pFedMe</a> [4] is an effective pFL approach to address data heterogeneity, in which
+the personalized model and global model are decoupled with Moreau envelops. FederatedScope implements pFedMe in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_pFedMe.py</code> and <code class="language-plaintext highlighter-rouge">ServerClientsInterpolateAggregator</code> in <code class="language-plaintext highlighter-rouge">federatedscope/core/aggregator.py</code>.</p>
+
+<p>We provide some evaluation results for pFedMe on different tasks as follows. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/pfedme</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>68.73</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>87.65</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>37.40</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="ditto">Ditto</h3>
+
+<p>We provide some evaluation results for Ditto on different tasks as follows. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/ditto</code>.</p>
+
+<p>| Task                      | Data        | Accuracy (%) |
+| ————————- | ———– | ———— |
+| Logistic regression       | Synthetic   | 69.67        |
+| Image classification      | FEMNIST     | 86.61        |
+| Next-character Prediction | Shakespeare |   45.14   |</p>
+<h3 id="fedem">FedEM</h3>
+
+<p><a href="https://arxiv.org/abs/2108.10252">FedEM</a> is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. FederatedScope provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_FedEM.py</code>.</p>
+
+<p>We provide some evaluation results for FedBN on different tasks as follows. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/fedem</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>68.80</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>84.79</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>48.06</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="reference">Reference</h2>
+<p>[1] Li, Xiaoxiao, et al. “Fedbn: Federated learning on non-iid features via local batch normalization.” arXiv preprint arXiv:2102.07623 (2021).</p>
+
+<p>[2] Li, Tian, et al. “Ditto: Fair and robust federated learning through personalization.” International Conference on Machine Learning. PMLR, 2021.</p>
+
+<p>[3] Marfoq, Othmane, et al. “Federated multi-task learning under a mixture of distributions.” Advances in Neural Information Processing Systems 34 (2021).</p>
+
+<p>[4] T Dinh, Canh, Nguyen Tran, and Josh Nguyen. “Personalized federated learning with moreau envelopes.” Advances in Neural Information Processing Systems 33 (2020): 21394-21405.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-08">April 8, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/trainer/" class="pagination--pager" title="Local Learning Abstraction: Trainer
+">Previous</a>
+    
+    
+      <a href="/docs/cross-device/" class="pagination--pager" title="Cross-Device FL
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

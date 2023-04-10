@@ -1,0 +1,1740 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Graph - FederatedScope</title>
+<meta name="description" content="About graph.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Graph">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/graph/">
+
+
+  <meta property="og:description" content="About graph.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Graph">
+  <meta name="twitter:description" content="About graph.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/graph/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-13T10:22:56-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/graph/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/" class="active">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Graph">
+    <meta itemprop="description" content="About graph.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-13T10:22:56-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Graph
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#background">Background</a></li><li><a href="#quick-start">Quick start</a><ul><li><a href="#start-with-built-in-functions">Start with built-in functions</a></li><li><a href="#start-with-customized-functions">Start with customized functions</a></li></ul></li><li><a href="#reproduce-the-main-experimental-results-">Reproduce the main experimental results </a></li><li><a href="#datazoo">DataZoo</a><ul><li><a href="#dataset-format">Dataset format</a></li><li><a href="#dataloader">Dataloader</a></li><li><a href="#splitter">Splitter</a></li></ul></li><li><a href="#modelzoo">ModelZoo</a><ul><li><a href="#gnn">GNN</a></li><li><a href="#trainer">Trainer</a></li></ul></li><li><a href="#develop-federated-gnn-algorithms">Develop federated GNN algorithms</a></li><li><a href="#enable-build-in-federated-algorithms">Enable build-in Federated Algorithms</a></li><li><a href="#benchmarks">Benchmarks</a><ul><li><a href="#node-level-task">Node-level task</a></li><li><a href="#link-level-task">Link-level task</a></li><li><a href="#graph-level-task">Graph-level task</a></li></ul></li><li><a href="#references">References</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <h2 id="background">Background</h2>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/320363/1648440825677-28730162-d69a-4f25-85c1-f936b67c37f0.png#clientId=u74d07bf1-4c20-4&amp;crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;from=paste&amp;id=u4035381f&amp;name=image.png&amp;originHeight=2310&amp;originWidth=3760&amp;originalType=url&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;size=520449&amp;status=done&amp;style=none&amp;taskId=ub49659ec-839f-469c-a4ac-e0eddf274de&amp;title=" alt="image.png" /><br />For privacy reasons, there are many graphs in scenarios that are split into different subgraphs in different clients, which leads to missing of the cross-client edges and data non.i.i.d., etc.</p>
+
+<p>Not only in areas such as CV and NLP, but FederatedScope also provides support for graph learning researchers with a rich collection of datasets, the latest federated graph algorithms and benchmarks.</p>
+
+<p>In this tutorial, you will learn:</p>
+
+<ul>
+  <li>How to start graph learning with FederatedScope <a href="#start">[click]</a></li>
+  <li>How to reproduce the main experimental results in EasyFGL paper <a href="#reproduce">[click]</a></li>
+  <li>How to use build-in or create a new federated graph dataset <a href="#dataset">[click]</a></li>
+  <li>How to run with built-in or new models <a href="#model">[click]</a></li>
+  <li>How to develop new federated graph algorithms <a href="fedgnn">[click]</a></li>
+  <li>How to enable FedOptimizer, PersonalizedFL and FedHPO <a href="#fedalgo">[click]</a></li>
+  <li>Benchmarkcketing Federated GNN <a href="#benchmark">[click]</a></li>
+</ul>
+
+<h2 id="quick-start"><span id="start">Quick start</span></h2>
+
+<p>Let’s start with a two-layer GCN on (fed) Cora to familiarize you with FederatedScope.</p>
+
+<h3 id="start-with-built-in-functions">Start with built-in functions</h3>
+
+<p>You can easily run through a <code class="language-plaintext highlighter-rouge">yaml</code> file:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Whether to use GPU
+</span><span class="n">use_gpu</span><span class="p">:</span> <span class="bp">True</span>
+
+<span class="c1"># Deciding which GPU to use
+</span><span class="n">device</span><span class="p">:</span> <span class="mi">0</span>
+
+<span class="c1"># Federate learning related options
+</span><span class="n">federate</span><span class="p">:</span>
+  <span class="c1"># `standalone` or `distributed`
+</span>  <span class="n">mode</span><span class="p">:</span> <span class="n">standalone</span>
+  <span class="c1"># Evaluate in Server or Client test set
+</span>  <span class="n">make_global_eval</span><span class="p">:</span> <span class="bp">True</span>
+  <span class="c1"># Number of dataset being split
+</span>  <span class="n">client_num</span><span class="p">:</span> <span class="mi">5</span>
+  <span class="c1"># Number of communication round
+</span>  <span class="n">total_round_num</span><span class="p">:</span> <span class="mi">400</span>
+
+<span class="c1"># Dataset related options
+</span><span class="n">data</span><span class="p">:</span>
+  <span class="c1"># Root directory where the data stored
+</span>  <span class="n">root</span><span class="p">:</span> <span class="n">data</span><span class="o">/</span>
+  <span class="c1"># Dataset name
+</span>  <span class="nb">type</span><span class="p">:</span> <span class="n">cora</span>
+  <span class="c1"># Use Louvain algorithm to split `Cora`
+</span>  <span class="n">splitter</span><span class="p">:</span> <span class="s">'louvain'</span>
+<span class="n">dataloader</span><span class="p">:</span>
+  <span class="c1"># Type of sampler
+</span>  <span class="nb">type</span><span class="p">:</span> <span class="n">pyg</span>
+  <span class="c1"># Use fullbatch training, batch_size should be `1`
+</span>  <span class="n">batch_size</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="c1"># Model related options
+</span><span class="n">model</span><span class="p">:</span>
+  <span class="c1"># Model type
+</span>  <span class="nb">type</span><span class="p">:</span> <span class="n">gcn</span>
+  <span class="c1"># Hidden dim
+</span>  <span class="n">hidden</span><span class="p">:</span> <span class="mi">64</span>
+  <span class="c1"># Dropout rate
+</span>  <span class="n">dropout</span><span class="p">:</span> <span class="mf">0.5</span>
+  <span class="c1"># Number of Class of `Cora`
+</span>  <span class="n">out_channels</span><span class="p">:</span> <span class="mi">7</span>
+
+<span class="c1"># Criterion related options
+</span><span class="n">criterion</span><span class="p">:</span>
+  <span class="c1"># Criterion type
+</span>  <span class="nb">type</span><span class="p">:</span> <span class="n">CrossEntropyLoss</span>
+
+<span class="c1"># Trainer related options
+</span><span class="n">trainer</span><span class="p">:</span>
+  <span class="c1"># Trainer type
+</span>  <span class="nb">type</span><span class="p">:</span> <span class="n">nodefullbatch_trainer</span>
+
+<span class="c1"># Train related options
+</span><span class="n">train</span><span class="p">:</span>
+  <span class="c1"># Number of local update steps
+</span>  <span class="n">local_update_steps</span><span class="p">:</span> <span class="mi">4</span>
+  <span class="c1"># Optimizer related options
+</span>  <span class="n">optimizer</span><span class="p">:</span>
+    <span class="c1"># Learning rate
+</span>    <span class="n">lr</span><span class="p">:</span> <span class="mf">0.25</span>
+    <span class="c1"># Weight decay
+</span>    <span class="n">weight_decay</span><span class="p">:</span> <span class="mf">0.0005</span>
+    <span class="c1"># Optimizer type
+</span>    <span class="nb">type</span><span class="p">:</span> <span class="n">SGD</span>
+
+<span class="c1"># Evaluation related options
+</span><span class="nb">eval</span><span class="p">:</span>
+  <span class="c1"># Frequency of evaluation
+</span>  <span class="n">freq</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="c1"># Evaluation metrics, accuracy and number of correct items
+</span>  <span class="n">metrics</span><span class="p">:</span> <span class="p">[</span><span class="s">'acc'</span><span class="p">,</span> <span class="s">'correct'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>If the <code class="language-plaintext highlighter-rouge">yaml</code> file is named as <code class="language-plaintext highlighter-rouge">example.yaml</code>, just run:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python</span> <span class="n">federatedscope</span><span class="o">/</span><span class="n">main</span><span class="p">.</span><span class="n">py</span> <span class="o">--</span><span class="n">cfg</span> <span class="n">example</span><span class="p">.</span><span class="n">yaml</span>
+</code></pre></div></div>
+
+<p>Then, the FedAVG performance is around <code class="language-plaintext highlighter-rouge">0.87</code>.</p>
+
+<h3 id="start-with-customized-functions">Start with customized functions</h3>
+
+<p>FederatedScope also provides <code class="language-plaintext highlighter-rouge">register</code> function to set up the FL procedure. Here we only provide an example about two-layer GCN on (fed) Cora, please refer to Start with your own case for details.</p>
+
+<ul>
+  <li>Load Cora dataset and split into 5 subgraph</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># federatedscope/contrib/data/my_cora.py
+</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="kn">from</span> <span class="nn">torch_geometric.datasets</span> <span class="kn">import</span> <span class="n">Planetoid</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.splitters.graph</span> <span class="kn">import</span> <span class="n">LouvainSplitter</span>
+<span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_data</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.data</span> <span class="kn">import</span> <span class="n">DummyDataTranslator</span>
+
+
+<span class="k">def</span> <span class="nf">my_cora</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">config</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">root</span>
+
+    <span class="n">num_split</span> <span class="o">=</span> <span class="p">[</span><span class="mi">232</span><span class="p">,</span> <span class="mi">542</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">).</span><span class="nb">max</span><span class="p">]</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">Planetoid</span><span class="p">(</span><span class="n">path</span><span class="p">,</span>
+                        <span class="s">'cora'</span><span class="p">,</span>
+                        <span class="n">split</span><span class="o">=</span><span class="s">'random'</span><span class="p">,</span>
+                        <span class="n">num_train_per_class</span><span class="o">=</span><span class="n">num_split</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">num_val</span><span class="o">=</span><span class="n">num_split</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">num_test</span><span class="o">=</span><span class="n">num_split</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">global_data</span> <span class="o">=</span> <span class="n">copy</span><span class="p">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">dataset</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">LouvainSplitter</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">federate</span><span class="p">.</span><span class="n">client_num</span><span class="p">)(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">data_local_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">client_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+        <span class="n">local_data</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">client_idx</span><span class="p">]</span>
+        <span class="n">data_local_dict</span><span class="p">[</span><span class="n">client_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'data'</span><span class="p">:</span> <span class="n">local_data</span><span class="p">,</span>
+            <span class="s">'train'</span><span class="p">:</span> <span class="p">[</span><span class="n">local_data</span><span class="p">],</span>
+            <span class="s">'val'</span><span class="p">:</span> <span class="p">[</span><span class="n">local_data</span><span class="p">],</span>
+            <span class="s">'test'</span><span class="p">:</span> <span class="p">[</span><span class="n">local_data</span><span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="n">data_local_dict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'data'</span><span class="p">:</span> <span class="n">global_data</span><span class="p">,</span>
+        <span class="s">'train'</span><span class="p">:</span> <span class="p">[</span><span class="n">global_data</span><span class="p">],</span>
+        <span class="s">'val'</span><span class="p">:</span> <span class="p">[</span><span class="n">global_data</span><span class="p">],</span>
+        <span class="s">'test'</span><span class="p">:</span> <span class="p">[</span><span class="n">global_data</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="n">translator</span> <span class="o">=</span> <span class="n">DummyDataTranslator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">translator</span><span class="p">(</span><span class="n">data_local_dict</span><span class="p">),</span> <span class="n">config</span>
+
+
+<span class="k">def</span> <span class="nf">call_my_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="nb">type</span> <span class="o">==</span> <span class="s">"mycora"</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">my_cora</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span>
+
+
+<span class="n">register_data</span><span class="p">(</span><span class="s">"mycora"</span><span class="p">,</span> <span class="n">call_my_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Build a two-layer GCN</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># federatedscope/contrib/model/my_gcn.py
+</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="n">F</span>
+
+<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">ModuleList</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.nn</span> <span class="kn">import</span> <span class="n">GCNConv</span>
+<span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_model</span>
+
+
+<span class="k">class</span> <span class="nc">MyGCN</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">in_channels</span><span class="p">,</span>
+                 <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+                 <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">dropout</span><span class="o">=</span><span class="p">.</span><span class="mi">0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyGCN</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">convs</span> <span class="o">=</span> <span class="n">ModuleList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_depth</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">GCNConv</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_depth</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">GCNConv</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">GCNConv</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">hidden</span><span class="p">))</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Data</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">edge_index</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">TypeError</span><span class="p">(</span><span class="s">'Unsupported data type!'</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">conv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="n">F</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">training</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">def</span> <span class="nf">gcnbuilder</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+    <span class="n">x_shape</span><span class="p">,</span> <span class="n">num_label</span><span class="p">,</span> <span class="n">num_edge_features</span> <span class="o">=</span> <span class="n">input_shape</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MyGCN</span><span class="p">(</span><span class="n">x_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                  <span class="n">model_config</span><span class="p">.</span><span class="n">out_channels</span><span class="p">,</span>
+                  <span class="n">hidden</span><span class="o">=</span><span class="n">model_config</span><span class="p">.</span><span class="n">hidden</span><span class="p">,</span>
+                  <span class="n">max_depth</span><span class="o">=</span><span class="n">model_config</span><span class="p">.</span><span class="n">layer</span><span class="p">,</span>
+                  <span class="n">dropout</span><span class="o">=</span><span class="n">model_config</span><span class="p">.</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="k">def</span> <span class="nf">call_my_net</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">local_data</span><span class="p">):</span>
+    <span class="c1"># Please name your gnn model with prefix 'gnn_'
+</span>    <span class="k">if</span> <span class="n">model_config</span><span class="p">.</span><span class="nb">type</span> <span class="o">==</span> <span class="s">"gnn_mygcn"</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">gcnbuilder</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">local_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="n">register_model</span><span class="p">(</span><span class="s">"gnn_mygcn"</span><span class="p">,</span> <span class="n">call_my_net</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Run with following command to start:</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> example.yaml data.type mycora model.type mygcn
+</code></pre></div></div>
+
+<h2 id="reproduce-the-main-experimental-results-"><span id="reproduce">Reproduce the main experimental results </span></h2>
+
+<p>We also provide configuration files to help you easily reproduce the results in our <code class="language-plaintext highlighter-rouge">EasyFGL</code> paper. All the <code class="language-plaintext highlighter-rouge">yaml</code> files are in <code class="language-plaintext highlighter-rouge">federatedscope/gfl/baseline</code>.</p>
+
+<ul>
+  <li>Train two-layer GCN with Node-level task dataset Cora</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/gfl/baseline/fedavg_gnn_node_fullbatch_citation.yaml
+</code></pre></div></div>
+<p><br />Then, the FedAVG performance is around <code class="language-plaintext highlighter-rouge">0.87</code>.</p>
+
+<ul>
+  <li>Train two-layer GCN with Link-level task dataset WN18</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/gfl/baseline/fedavg_gcn_minibatch_on_kg.yaml
+</code></pre></div></div>
+<p><br />Then, the FedAVG performance is around <code class="language-plaintext highlighter-rouge">hits@1: 0.30</code>, <code class="language-plaintext highlighter-rouge">hits@5: 0.79</code>, <code class="language-plaintext highlighter-rouge">hits@10: 0.96</code>.</p>
+
+<ul>
+  <li>Train two-layer GCN with Graph-level task dataset HIV</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/gfl/baseline/fedavg_gcn_minibatch_on_hiv.yaml
+</code></pre></div></div>
+<p><br />Then, the FedAVG performance is around <code class="language-plaintext highlighter-rouge">accuracy: 0.96</code> and <code class="language-plaintext highlighter-rouge">roc_aucs: 0.62</code>.</p>
+
+<p><a name="4fb9498c"></a></p>
+<h2 id="datazoo"><span id="dataset">DataZoo</span></h2>
+
+<p>FederatedScope provides a rich collection of datasets for graph learning researchers, including real federation datasets as well as simulated federation datasets split by some sampling or clustering algorithms. The dataset statistics are shown in the table and <strong>more datasets are coming soon</strong>:</p>
+
+<table>
+<thead>
+  <tr>
+    <th>Task</th>
+    <th>Domain</th>
+    <th>Dataset</th>
+    <th>Splitter</th>
+    <th># Graph</th>
+    <th>Avg. # Nodes</th>
+    <th>Avg. # Edges</th>
+    <th># Class</th>
+    <th>Evaluation</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="4">Node-level</td>
+    <td>Citation network</td>
+    <td>Cora [1]</td>
+    <td>random&amp;community</td>
+    <td>1</td>
+    <td>2,708</td>
+    <td>5,429</td>
+    <td>7</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Citation network</td>
+    <td>CiteSeer [2]</td>
+    <td>random&amp;community</td>
+    <td>1</td>
+    <td>4,230</td>
+    <td>5,358</td>
+    <td>6</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Citation network</td>
+    <td>PubMed [3]</td>
+    <td>random&amp;community</td>
+    <td>1</td>
+    <td>19,717</td>
+    <td>44,338</td>
+    <td>3</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Citation network</td>
+    <td>FedDBLP [4]</td>
+    <td>meta</td>
+    <td>1</td>
+    <td>52,202</td>
+    <td>271,054</td>
+    <td>4</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td rowspan="4">Link-level</td>
+    <td>Recommendation System</td>
+    <td>Ciao [5]</td>
+    <td>meta</td>
+    <td>28</td>
+    <td>5,875.68</td>
+    <td>20,189.29</td>
+    <td>6</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Recommendation System</td>
+    <td>Taobao</td>
+    <td>meta</td>
+    <td>3</td>
+    <td>443,365</td>
+    <td>2,015,558</td>
+    <td>2</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Knowledge Graph</td>
+    <td>WN18 [6]</td>
+    <td>label_space</td>
+    <td>1</td>
+    <td>40,943</td>
+    <td>151,442</td>
+    <td>18</td>
+    <td>Hits@n</td>
+  </tr>
+  <tr>
+    <td>Knowledge Graph</td>
+    <td>FB15k-237 [6]</td>
+    <td>label_space</td>
+    <td>1</td>
+    <td>14,541</td>
+    <td>310,116</td>
+    <td>237</td>
+    <td>Hits@n</td>
+  </tr>
+  <tr>
+    <td rowspan="4">Graph-level</td>
+    <td>Molecule</td>
+    <td>HIV [7]</td>
+    <td>instance_space</td>
+    <td>41,127</td>
+    <td>25.51</td>
+    <td>54.93</td>
+    <td>2</td>
+    <td>ROC-AUC</td>
+  </tr>
+  <tr>
+    <td>Proteins</td>
+    <td>Proteins [8]</td>
+    <td>instance_space</td>
+    <td>1,113</td>
+    <td>39.05</td>
+    <td>145.63</td>
+    <td>2</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Social network</td>
+    <td>IMDB [8]</td>
+    <td>label_space</td>
+    <td>1,000</td>
+    <td>19.77</td>
+    <td>193.06</td>
+    <td>2</td>
+    <td>ACC</td>
+  </tr>
+  <tr>
+    <td>Multi-task</td>
+    <td>Mol [8]</td>
+    <td>multi_task</td>
+    <td>18,661</td>
+    <td>55.62</td>
+    <td>1,466.83</td>
+    <td>-</td>
+    <td>ACC</td>
+  </tr>
+</tbody>
+</table>
+
+<p><a name="b16fb017"></a></p>
+
+<h3 id="dataset-format">Dataset format</h3>
+
+<p>Let’s start <code class="language-plaintext highlighter-rouge">Dataset</code> with <code class="language-plaintext highlighter-rouge">torch_geometric.data</code>. Our <code class="language-plaintext highlighter-rouge">DataZoo</code> contains three levels of tasks which are node-level, link-level and graph-level. Different levels of data have different attributes:</p>
+
+<ul>
+  <li>Node-level dataset<br />Node-level dataset contains one <code class="language-plaintext highlighter-rouge">torch_geometric.data</code> with attributes: <code class="language-plaintext highlighter-rouge">x</code> represents the node attribute, <code class="language-plaintext highlighter-rouge">y</code> represents the node label, <code class="language-plaintext highlighter-rouge">edge_index</code> represents the edges of the graph, <code class="language-plaintext highlighter-rouge">edge_attr</code>  represents the edge attribute which is optional, and <code class="language-plaintext highlighter-rouge">train_mask</code>, <code class="language-plaintext highlighter-rouge">val_mask</code>,<code class="language-plaintext highlighter-rouge">test_mask</code> are the node mask of each splits.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Cora
+</span><span class="n">Data</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">2708</span><span class="p">,</span> <span class="mi">1433</span><span class="p">],</span> <span class="n">edge_index</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10556</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">2708</span><span class="p">],</span> <span class="n">train_mask</span><span class="o">=</span><span class="p">[</span><span class="mi">2708</span><span class="p">],</span> <span class="n">val_mask</span><span class="o">=</span><span class="p">[</span><span class="mi">2708</span><span class="p">],</span> <span class="n">test_mask</span><span class="o">=</span><span class="p">[</span><span class="mi">2708</span><span class="p">])</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Link-level dataset<br />Link-level dataset contains one <code class="language-plaintext highlighter-rouge">torch_geometric.data</code> with attributes: <code class="language-plaintext highlighter-rouge">x</code> represents the node attribute, <code class="language-plaintext highlighter-rouge">edge_index</code> represents the edges of the graph, <code class="language-plaintext highlighter-rouge">edge_type</code> represents the link label, <code class="language-plaintext highlighter-rouge">edge_attr</code>  represents the edge attribute which is optional, <code class="language-plaintext highlighter-rouge">train_edge_mask</code>, <code class="language-plaintext highlighter-rouge">valid_edge_mask</code>,<code class="language-plaintext highlighter-rouge">test_edge_mask</code> are the link mask of each splits, and <code class="language-plaintext highlighter-rouge">input_edge_index</code> is optional if the input is <code class="language-plaintext highlighter-rouge">edge_index.T[train_edge_mask].T</code>.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># WN18
+</span><span class="n">Data</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">40943</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">edge_index</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">151442</span><span class="p">],</span> <span class="n">edge_type</span><span class="o">=</span><span class="p">[</span><span class="mi">151442</span><span class="p">],</span> <span class="n">num_nodes</span><span class="o">=</span><span class="mi">40943</span><span class="p">,</span> <span class="n">train_edge_mask</span><span class="o">=</span><span class="p">[</span><span class="mi">151442</span><span class="p">],</span> <span class="n">valid_edge_mask</span><span class="o">=</span><span class="p">[</span><span class="mi">151442</span><span class="p">],</span> <span class="n">test_edge_mask</span><span class="o">=</span><span class="p">[</span><span class="mi">151442</span><span class="p">],</span> <span class="n">input_edge_index</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">282884</span><span class="p">])</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Graph-level dataset<br />Graph-level dataset contains several <code class="language-plaintext highlighter-rouge">torch_geometric.data</code>, and the task is to predict the label of each graph.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># HIV[0]
+</span><span class="n">Data</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="n">edge_index</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="n">edge_attr</span><span class="o">=</span><span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">smiles</span><span class="o">=</span><span class="s">'CCC1=[O+][Cu-3]2([O+]=C(CC)C1)[O+]=C(CC)CC(CC)=[O+]2'</span><span class="p">)</span>
+<span class="p">...</span>
+<span class="c1"># HIV[41126]
+</span><span class="n">Data</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">37</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="n">edge_index</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span> <span class="n">edge_attr</span><span class="o">=</span><span class="p">[</span><span class="mi">80</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">smiles</span><span class="o">=</span><span class="s">'CCCCCC=C(c1cc(Cl)c(OC)c(-c2nc(C)no2)c1)c1cc(Cl)c(OC)c(-c2nc(C)no2)c1'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="dataloader">Dataloader</h3>
+
+<p>For node-level and link-level tasks, we use full-batch training by default. However, some large graphs can not be adopted to full-batch training due to the video memory limitation. Fortunately, we also provide some graph sampling algorithms, like <code class="language-plaintext highlighter-rouge">GraphSAGE</code> and <code class="language-plaintext highlighter-rouge">GraphSAINT</code> which are subclasses of <code class="language-plaintext highlighter-rouge">torch_geometric.loader</code>.</p>
+
+<ul>
+  <li>In node-level task, you should set:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">loader</span> <span class="o">=</span> <span class="s">'graphsaint-rw'</span> <span class="c1"># or `neighbor`
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'sage'</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'nodeminibatch_trainer'</span>
+</code></pre></div></div>
+
+<ul>
+  <li>In link-level task, you should set:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">loader</span> <span class="o">=</span> <span class="s">'graphsaint-rw'</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'sage'</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'linkminibatch_trainer'</span>
+</code></pre></div></div>
+
+<h3 id="splitter">Splitter</h3>
+
+<p>Existing graph datasets are a valuable source to meet the need for more FL datasets. Under the federated learning setting, the dataset is decentralized. To simulate federated graph datasets by existing standalone ones, our <code class="language-plaintext highlighter-rouge">DataZoo</code> integrates a rich collection of <code class="language-plaintext highlighter-rouge">federatedscope.gfl.dataset.splitter</code>.  Except for <code class="language-plaintext highlighter-rouge">meta_splitter</code> which comes from the meta information of datasets, we have the following splitters:</p>
+
+<ul>
+  <li>Node-level task
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">community_splitter</code>: <strong>Split by cluster</strong> <code class="language-plaintext highlighter-rouge">cfg.data.splitter = 'louvain'</code><br />Community detection algorithms such as Louvain are at first applied to partition a graph into several clusters. Then these clusters are assigned to the clients, optionally with the objective of balancing the number of nodes in each client.</li>
+      <li><code class="language-plaintext highlighter-rouge">random_splitter</code>: <strong>Split by random</strong> <code class="language-plaintext highlighter-rouge">cfg.data.splitter = 'random'</code><br />The node set of the original graph is randomly split into 𝑁 subsets with or without intersections. Then, the subgraph of each client is deduced from the nodes assigned to that client. Optionally, a specified fraction of edges is randomly selected to be removed.</li>
+    </ul>
+  </li>
+  <li>Link-level task
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">label_space_splitter</code>: <strong>Split by latent dirichlet allocation</strong> <code class="language-plaintext highlighter-rouge">cfg.data.splitter = 'rel_type'</code><br />It is designed to provide label distribution skew via latent dirichlet allocation (LDA).</li>
+    </ul>
+  </li>
+  <li>Graph-level task
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">instance_space_splitter</code>: <strong>Split by index</strong> <code class="language-plaintext highlighter-rouge">cfg.data.splitter = 'scaffold' or 'rand_chunk'</code><br />It is responsible for creating feature distribution skew (i.e., covariate shift). To realize this, we sort the graphs based on their values of a certain aspect.</li>
+      <li><code class="language-plaintext highlighter-rouge">multi_task_splitter</code>: <strong>Split by dataset</strong> <code class="language-plaintext highlighter-rouge">cfg.data.splitter = 'louvain'</code><br />Different clients have different tasks.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="modelzoo"><span id="model">ModelZoo</span></h2>
+
+<h3 id="gnn">GNN</h3>
+
+<p>We implemented GCN [9], GraphSAGE [10], GAT [11], GIN [12], and GPR-GNN [13] on different levels of tasks in <code class="language-plaintext highlighter-rouge">federatedscope.gfl.model</code>, respectively. In order to run your FL procedure with these models, set <code class="language-plaintext highlighter-rouge">cfg.model.task</code> to <code class="language-plaintext highlighter-rouge">node</code>, <code class="language-plaintext highlighter-rouge">link</code> or <code class="language-plaintext highlighter-rouge">graph</code>, and all models can be instantiated automatically based on the data provided. More GNN models are coming soon!</p>
+
+<h3 id="trainer">Trainer</h3>
+
+<p>We provide several <code class="language-plaintext highlighter-rouge">Trainers</code> for different models and for different tasks.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">NodeFullBatchTrainer</code>
+    <ul>
+      <li>For node-level tasks.</li>
+      <li>For full batch training.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">NodeMiniBatchTrainer</code>
+    <ul>
+      <li>For node-level tasks.</li>
+      <li>For GraphSAGE, GraphSAINT and other graph sampling methods.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">LinkFullBatchTrainer</code>
+    <ul>
+      <li>For link-level tasks.</li>
+      <li>For full batch training.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">LinkMiniBatchTrainer</code>
+    <ul>
+      <li>For link-level tasks.</li>
+      <li>For GraphSAGE, GraphSAINT and other graph sampling methods.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">GraphMiniBatchTrainer</code>
+    <ul>
+      <li>For graph-level tasks.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="develop-federated-gnn-algorithms"><span id="fedgnn">Develop federated GNN algorithms</span></h2>
+
+<p>FederatedScope provides comprehensive support to help you develop federated GNN algorithms. Here we will go through <code class="language-plaintext highlighter-rouge">FedSage+</code> [14] and <code class="language-plaintext highlighter-rouge">GCFL+</code> [15] as examples.</p>
+
+<ul>
+  <li>FedSage+, <a href="https://arxiv.org/pdf/2106.13430v6.pdf"><em>Subgraph Federated Learning with Missing Neighbor Generation</em></a><em>, in NeurIPS</em> 2021<br />FedSage+ try to “restore” the missing graph structure by jointly training a <code class="language-plaintext highlighter-rouge">Missing Neighbor Generator</code>, each client sends <code class="language-plaintext highlighter-rouge">Missing Neighbor Generator</code> to other clients, and the other clients optimize it with their own local data and send the model gradient back in order to achieve joint training without privacy leakage.<br />We implemented FedSage+ in <code class="language-plaintext highlighter-rouge">federatedscope/gfl/fedsageplus</code> with <code class="language-plaintext highlighter-rouge">FedSagePlusServer</code> and <code class="language-plaintext highlighter-rouge">FedSagePlusClient</code>. In FederatedScope, we need to define new message types and the corresponding handler functions.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># FedSagePlusServer
+</span><span class="bp">self</span><span class="p">.</span><span class="n">register_handlers</span><span class="p">(</span><span class="s">'clf_para'</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">callback_funcs_model_para</span><span class="p">)</span>
+<span class="bp">self</span><span class="p">.</span><span class="n">register_handlers</span><span class="p">(</span><span class="s">'gen_para'</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">callback_funcs_model_para</span><span class="p">)</span>
+<span class="bp">self</span><span class="p">.</span><span class="n">register_handlers</span><span class="p">(</span><span class="s">'gradient'</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">callback_funcs_gradient</span><span class="p">)</span>
+</code></pre></div></div>
+<p><br />Because FedSage+ has multiple stages, please carefully deal with the <code class="language-plaintext highlighter-rouge">msg_buffer</code> in <code class="language-plaintext highlighter-rouge">check_and_move_on()</code> in different states.</p>
+
+<ul>
+  <li>GCFL+, <a href="https://arxiv.org/pdf/2106.13423v5.pdf"><em>Federated Graph Classification over Non-IID Graphs</em></a><em>, NeurIPS</em> 2021<br />GCFL+ clusters clients according to the sequence of the gradients of each local model, and those with a similar sequence of the gradients share the same model parameters.<br />We implemented GCFL+ in <code class="language-plaintext highlighter-rouge">federatedscope/gfl/gcflplus</code> with <code class="language-plaintext highlighter-rouge">FedSagePlusServer</code> and <code class="language-plaintext highlighter-rouge">FedSagePlusClient</code>. Since no more messages are involved, we can implement GCFL+ by simply defining how to clustering clients and adding gradients to message <code class="language-plaintext highlighter-rouge">model_para</code>.</li>
+</ul>
+
+<h2 id="enable-build-in-federated-algorithms"><span id="fedalgo">Enable build-in Federated Algorithms</span></h2>
+
+<p>FederatedScope provides many built-in FedOptimize, PersonalizedFL and FedHPO algorithms. You can adapt them to graph learning by simply turning on the switch.</p>
+
+<p>For more details, see:</p>
+
+<ul>
+  <li>FedOptimize</li>
+  <li>PersonalizedFL</li>
+  <li>FedHPO</li>
+</ul>
+
+<h2 id="benchmarks"><span id="benchmark">Benchmarks</span></h2>
+
+<p>We’ve conducted extensive experiments to build the benchmarks of FedGraph, which simultaneously gains<br />many valuable insights for the community.</p>
+
+<h3 id="node-level-task">Node-level task</h3>
+
+<ul>
+  <li>
+    <p>Results on representative node classification datasets with <code class="language-plaintext highlighter-rouge">random_splitter</code> Mean accuracy (%) ± standard deviation.</p>
+
+    <table>
+<thead>
+  <tr>
+    <th></th>
+    <th colspan="5">Cora</th>
+    <th colspan="5">CiteSeer</th>
+    <th colspan="5">PubMed</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td></td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedPeox</td>
+    <td>Global</td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedPeox</td>
+    <td>Global</td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedPeox</td>
+    <td>Global</td>
+  </tr>
+  <tr>
+    <td>GCN</td>
+    <td>80.95±1.49</td>
+    <td>86.63±1.35</td>
+    <td>86.11±1.29</td>
+    <td>86.60±1.59</td>
+    <td>86.89±1.82</td>
+    <td>74.29±1.35</td>
+    <td>76.48±1.52</td>
+    <td>77.43±0.90</td>
+    <td>77.29±1.20</td>
+    <td>77.42±1.15</td>
+    <td>85.25±0.73</td>
+    <td>85.29±0.95</td>
+    <td>84.39±1.53</td>
+    <td>85.21±1.17</td>
+    <td>85.38±0.33</td>
+  </tr>
+  <tr>
+    <td>GraphSAGE</td>
+    <td>75.12±1.54</td>
+    <td>85.42±1.80</td>
+    <td>84.73±1.58</td>
+    <td>84.83±1.66</td>
+    <td>86.86±2.15</td>
+    <td>73.30±1.30</td>
+    <td>76.86±1.38</td>
+    <td>75.99±1.96</td>
+    <td>78.05±0.81</td>
+    <td>77.48±1.27</td>
+    <td>84.58±0.41</td>
+    <td>86.45±0.43</td>
+    <td>85.67±0.45</td>
+    <td>86.51±0.37</td>
+    <td>86.23±0.58</td>
+  </tr>
+  <tr>
+    <td>GAT</td>
+    <td>78.86±2.25</td>
+    <td>85.35±2.29</td>
+    <td>84.40±2.70</td>
+    <td>84.50±2.74</td>
+    <td>85.78±2.43</td>
+    <td>73.85±1.00</td>
+    <td>76.37±1.11</td>
+    <td>76.96±1.75</td>
+    <td>77.15±1.54</td>
+    <td>76.91±1.02</td>
+    <td>83.81±0.69</td>
+    <td>84.66±0.74</td>
+    <td>83.78±1.11</td>
+    <td>83.79±0.87</td>
+    <td>84.89±0.34</td>
+  </tr>
+  <tr>
+    <td>GPR-GNN</td>
+    <td>84.90±1.13</td>
+    <td>89.00±0.66</td>
+    <td>87.62±1.20</td>
+    <td>88.44±0.75</td>
+    <td>88.54±1.58</td>
+    <td>74.81±1.43</td>
+    <td>79.67±1.41</td>
+    <td>77.99±1.25</td>
+    <td>79.35±1.11</td>
+    <td>79.67±1.42</td>
+    <td>86.85±0.39</td>
+    <td>85.88±1.24</td>
+    <td>84.57±0.68</td>
+    <td>86.92±1.25</td>
+    <td>85.15±0.76</td>
+  </tr>
+  <tr>
+    <td>FedSage+</td>
+    <td>-</td>
+    <td>85.07±1.23</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>78.04±0.91</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>88.19±0.32</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+</tbody>
+</table>
+  </li>
+  <li>
+    <p>Results on representative node classification datasets with <code class="language-plaintext highlighter-rouge">community_splitter</code>: Mean accuracy (%) ± standard deviation.</p>
+
+    <table>
+<thead>
+  <tr>
+    <th></th>
+    <th colspan="5">Cora</th>
+    <th colspan="5">CiteSeer</th>
+    <th colspan="5">PubMed</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td></td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedProx</td>
+    <td>Global</td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedProx</td>
+    <td>Global</td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedProx</td>
+    <td>Global</td>
+  </tr>
+  <tr>
+    <td>GCN</td>
+    <td>65.08±2.39</td>
+    <td>87.32±1.49</td>
+    <td>87.29±1.65</td>
+    <td>87±16±1.51</td>
+    <td>86.89±1.82</td>
+    <td>67.53±1.87</td>
+    <td>77.56±1.45</td>
+    <td>77.80±0.99</td>
+    <td>77.62±1.42</td>
+    <td>77.42±1.15</td>
+    <td>77.01±3.37</td>
+    <td>85.24±0.69</td>
+    <td>84.11±0.87</td>
+    <td>85.14, 0.88</td>
+    <td>85.38±0.33</td>
+  </tr>
+  <tr>
+    <td>GraphSAGE</td>
+    <td>61.29±3.05</td>
+    <td>87.19±1.28</td>
+    <td>87.13±1.47</td>
+    <td>87.09±1.46</td>
+    <td>86.86±2.15</td>
+    <td>66.17±1.50</td>
+    <td>77.80±1.03</td>
+    <td>78.54±1.05</td>
+    <td>77.70±1.09</td>
+    <td>77.48±1.27</td>
+    <td>78.35±2.15</td>
+    <td>86.87±0.53</td>
+    <td>85.72±0.58</td>
+    <td>86.65±0.60</td>
+    <td>86.23±0.58</td>
+  </tr>
+  <tr>
+    <td>GAT</td>
+    <td>61.53±2.81</td>
+    <td>86.08±2.52</td>
+    <td>85.65±2.36</td>
+    <td>85.68±2.68</td>
+    <td>85.78±2.43</td>
+    <td>66.17±1.31</td>
+    <td>77.21±0.97</td>
+    <td>77.34±1.33</td>
+    <td>77.26±1.02</td>
+    <td>76.91±1.02</td>
+    <td>75.97±3.32</td>
+    <td>84.38±0.82</td>
+    <td>83.34±0.87</td>
+    <td>84.34±0.63</td>
+    <td>84.89±0.34</td>
+  </tr>
+  <tr>
+    <td>GPR-GNN</td>
+    <td>69.32±2.07</td>
+    <td>88.93±1.64</td>
+    <td>88.37±2.12</td>
+    <td>88.80±1.29</td>
+    <td>88.54±1.58</td>
+    <td>71.30±1.65</td>
+    <td>80.27±1.28</td>
+    <td>78.32±1.45</td>
+    <td>79.73±1.52</td>
+    <td>79.67±1.42</td>
+    <td>78.52±3.61</td>
+    <td>85.06±0.82</td>
+    <td>84.30±1.57</td>
+    <td>86.77±1.16</td>
+    <td>85.15±0.76</td>
+  </tr>
+  <tr>
+    <td>FedSage+</td>
+    <td>-</td>
+    <td>87.68±1.55</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>77.98±1.23</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>87.94, 0.27</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+</tbody>
+</table>
+  </li>
+</ul>
+
+<h3 id="link-level-task">Link-level task</h3>
+
+<ul>
+  <li>
+    <p>Results on representative link prediction datasets with <code class="language-plaintext highlighter-rouge">label_space_splitter</code>: Hits@$n$.</p>
+
+    <table>
+<thead>
+  <tr>
+    <th></th>
+    <th colspan="15">WN18</th>
+    <th colspan="15">FB15k-237</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td></td>
+    <td colspan="3">Local</td>
+    <td colspan="3">FedAVG</td>
+    <td colspan="3">FedOpt</td>
+    <td colspan="3">FedProx</td>
+    <td colspan="3">Global</td>
+    <td colspan="3">Local</td>
+    <td colspan="3">FedAVG</td>
+    <td colspan="3">FedOpt</td>
+    <td colspan="3">FedProx</td>
+    <td colspan="3">Global</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+    <td>1</td>
+    <td>5</td>
+    <td>10</td>
+  </tr>
+  <tr>
+    <td>GCN</td>
+    <td>20.70</td>
+    <td>55.34</td>
+    <td>73.85</td>
+    <td>30.00</td>
+    <td>79.72</td>
+    <td>96.67</td>
+    <td>22.13</td>
+    <td>78.96</td>
+    <td>94.07</td>
+    <td>27.32</td>
+    <td>83.01</td>
+    <td>96.38</td>
+    <td>29.67</td>
+    <td>86.73</td>
+    <td>97.05</td>
+    <td>6.07</td>
+    <td>20.29</td>
+    <td>30.35</td>
+    <td>9.86</td>
+    <td>34.27</td>
+    <td>48.02</td>
+    <td>4.12</td>
+    <td>18.07</td>
+    <td>31.79</td>
+    <td>4.66</td>
+    <td>28.74</td>
+    <td>41.67</td>
+    <td>7.80</td>
+    <td>32.46</td>
+    <td>44.64</td>
+  </tr>
+  <tr>
+    <td>GraphSAGE</td>
+    <td>21.06</td>
+    <td>54.12</td>
+    <td>79.88</td>
+    <td>23.14</td>
+    <td>78.85</td>
+    <td>93.70</td>
+    <td>22.82</td>
+    <td>79.86</td>
+    <td>93.12</td>
+    <td>23.14</td>
+    <td>78.52</td>
+    <td>93.67</td>
+    <td>24.24</td>
+    <td>79.86</td>
+    <td>93.84</td>
+    <td>3.95</td>
+    <td>14.64</td>
+    <td>24.47</td>
+    <td>7.13</td>
+    <td>23.38</td>
+    <td>36.60</td>
+    <td>2.20</td>
+    <td>19.21</td>
+    <td>27.64</td>
+    <td>5.85</td>
+    <td>24.05</td>
+    <td>36.33</td>
+    <td>6.19</td>
+    <td>23.57</td>
+    <td>35.98</td>
+  </tr>
+  <tr>
+    <td>GAT</td>
+    <td>20.89</td>
+    <td>49.42</td>
+    <td>72.48</td>
+    <td>23.14</td>
+    <td>77.62</td>
+    <td>93.49</td>
+    <td>23.14</td>
+    <td>74.64</td>
+    <td>93.52</td>
+    <td>23.53</td>
+    <td>78.40</td>
+    <td>93.00</td>
+    <td>24.24</td>
+    <td>80.18</td>
+    <td>93.76</td>
+    <td>3.44</td>
+    <td>15.02</td>
+    <td>25.14</td>
+    <td>6.06</td>
+    <td>25.76</td>
+    <td>39.04</td>
+    <td>2.71</td>
+    <td>18.89</td>
+    <td>32.76</td>
+    <td>6.19</td>
+    <td>25.09</td>
+    <td>38.00</td>
+    <td>6.94</td>
+    <td>24.43</td>
+    <td>37.87</td>
+  </tr>
+  <tr>
+    <td>GPR-GNN</td>
+    <td>22.86</td>
+    <td>60.45</td>
+    <td>80.73</td>
+    <td>26.67</td>
+    <td>82.35</td>
+    <td>96.18</td>
+    <td>24.46</td>
+    <td>73.33</td>
+    <td>87.18</td>
+    <td>27.62</td>
+    <td>81.87</td>
+    <td>95.68</td>
+    <td>29.19</td>
+    <td>82.34</td>
+    <td>96.24</td>
+    <td>4.45</td>
+    <td>13.26</td>
+    <td>21.24</td>
+    <td>9.62</td>
+    <td>32.76</td>
+    <td>45.97</td>
+    <td>2.01</td>
+    <td>9.81</td>
+    <td>16.65</td>
+    <td>3.72</td>
+    <td>15.62</td>
+    <td>27.79</td>
+    <td>10.62</td>
+    <td>33.87</td>
+    <td>47.45</td>
+  </tr>
+</tbody>
+</table>
+  </li>
+</ul>
+
+<h3 id="graph-level-task">Graph-level task</h3>
+
+<ul>
+  <li>
+    <p>Results on representative graph classification datasets: Mean accuracy (%) ± standard deviation.</p>
+
+    <table>
+<thead>
+  <tr>
+    <th></th>
+    <th colspan="5">PROTEINS</th>
+    <th colspan="5">IMDB</th>
+    <th colspan="5">Multi-task</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td></td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedProx</td>
+    <td>Global</td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedProx</td>
+    <td>Global</td>
+    <td>Local</td>
+    <td>FedAVG</td>
+    <td>FedOpt</td>
+    <td>FedProx</td>
+    <td>Global</td>
+  </tr>
+  <tr>
+    <td>GCN</td>
+    <td>71.10±4.65</td>
+    <td>73.54±4.48</td>
+    <td>71.24±4.17</td>
+    <td>73.36±4.49</td>
+    <td>71.77±3.62</td>
+    <td>50.76±1.14</td>
+    <td>53.24±6.04</td>
+    <td>50.49±8.32</td>
+    <td>48.72±6.73</td>
+    <td>53.24±6.04</td>
+    <td>66.37±1.78</td>
+    <td>65.99±1.18</td>
+    <td>69.10±1.58</td>
+    <td>68.59±1.99</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>GIN</td>
+    <td>69.06±3.47</td>
+    <td>73.74±5.71</td>
+    <td>60.14±1.22</td>
+    <td>73.18±5.66</td>
+    <td>72.47±5.53</td>
+    <td>55.82±7.56</td>
+    <td>64.79±10.55</td>
+    <td>51.87±6.82</td>
+    <td>70.65±8.35</td>
+    <td>72.61±2.44</td>
+    <td>75.05±1.81</td>
+    <td>63.40±2.22</td>
+    <td>63.33±1.18</td>
+    <td>63.01±0.44</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>GAT</td>
+    <td>70.75±3.33</td>
+    <td>71.95±4.45</td>
+    <td>71.07±3.45</td>
+    <td>72.13±4.68</td>
+    <td>72.48±4.32</td>
+    <td>53.12±5.81</td>
+    <td>53.24±6.04</td>
+    <td>47.94±6.53</td>
+    <td>53.82±5.69</td>
+    <td>53.24±6.04</td>
+    <td>67.72±3.48</td>
+    <td>66.75±2.97</td>
+    <td>69.58±1.21</td>
+    <td>69.65±1.14</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>GCFL+</td>
+    <td>-</td>
+    <td>73.00±5.72</td>
+    <td>-</td>
+    <td>74.24±3.96</td>
+    <td>-</td>
+    <td>-</td>
+    <td>69.47±8.71</td>
+    <td>-</td>
+    <td>68.90±6.30</td>
+    <td>-</td>
+    <td>-</td>
+    <td>65.14±1.23</td>
+    <td>-</td>
+    <td>65.69±1.55</td>
+    <td>-</td>
+  </tr>
+</tbody>
+</table>
+  </li>
+  <li>
+    <p>Results with <strong>PersonalizedFL</strong> on representative graph classification datasets: Mean accuracy (%) ± standard deviation. (GIN)</p>
+
+    <table>
+<thead>
+  <tr>
+    <th></th>
+    <th>Multi-task</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FedBN [16]</td>
+    <td>72.90±1.33</td>
+  </tr>
+  <tr>
+    <td>ditto [17]</td>
+    <td>63.35±0.69</td>
+  </tr>
+</tbody>
+</table>
+  </li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<p>[1] McCallum, Andrew Kachites, et al. “Automating the construction of internet portals with machine learning.” <em>Information Retrieval</em> 2000</p>
+
+<p>[2] Giles, C. Lee, Kurt D. Bollacker, and Steve Lawrence. “CiteSeer: An automatic citation indexing system.” <em>Proceedings of the third ACM conference on Digital libraries</em>. 1998.</p>
+
+<p>[3] Sen, Prithviraj, et al. “Collective classification in network data.” <em>AI magazine</em> 2008.</p>
+
+<p>[4] Tang, Jie, et al. “Arnetminer: extraction and mining of academic social networks.” <em>SIGKDD</em> 2008.</p>
+
+<p>[5] Tang, Jiliang, Huiji Gao, and Huan Liu. “mTrust: Discerning multi-faceted trust in a connected world.” <em>WSDM</em> 2012.</p>
+
+<p>[6] Bordes, Antoine, et al. “Translating embeddings for modeling multi-relational data.” <em>NeurIPS</em> 2013.</p>
+
+<p>[7] Wu, Zhenqin, et al. “MoleculeNet: a benchmark for molecular machine learning.” <em>Chemical science</em> 2018.</p>
+
+<p>[8] Ivanov, Sergei, Sergei Sviridov, and Evgeny Burnaev. “Understanding isomorphism bias in graph data sets.” <em>arXiv</em> 2019.</p>
+
+<p>[9] Kipf, Thomas N., and Max Welling. “Semi-supervised classification with graph convolutional networks.” <em>arXiv</em> 2016.</p>
+
+<p>[10] Veličković, Petar, et al. “Graph attention networks.” <em>ICLR</em> 2018.</p>
+
+<p>[11] Hamilton, Will, Zhitao Ying, and Jure Leskovec. “Inductive representation learning on large graphs.” <em>NeurIPS</em> 2017.</p>
+
+<p>[12] Xu, Keyulu, et al. “How powerful are graph neural networks?.”  <em>ICLR</em> 2019.</p>
+
+<p>[13] Chien, Eli, et al. “Adaptive universal generalized pagerank graph neural network.” <em>ICLR</em> 2021.</p>
+
+<p>[14] Zhang, Ke, et al. “Subgraph federated learning with missing neighbor generation.” <em>NeurIPS</em> 2021.</p>
+
+<p>[15] Xie, Han, et al. “Federated graph classification over non-iid graphs.” <em>NeurIPS</em> 2021.</p>
+
+<p>[16] Li, Xiaoxiao, et al. “Fedbn: Federated learning on non-iid features via local batch normalization.” <em>ICLR</em> 2021.</p>
+
+<p>[17]Li, Tian, et al. “Ditto: Fair and robust federated learning through personalization.” <em>PMLR</em> 2021.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-13">April 13, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/privacy-attacks/" class="pagination--pager" title="Privacy Attacks
+">Previous</a>
+    
+    
+      <a href="/docs/nlp-and-speech/" class="pagination--pager" title="NLP and Speech
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

@@ -1,0 +1,636 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Event-driven Architecture - FederatedScope</title>
+<meta name="description" content="The event-driven architecture used in FederatedScope.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Event-driven Architecture">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/event-driven-architecture/">
+
+
+  <meta property="og:description" content="The event-driven architecture used in FederatedScope.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Event-driven Architecture">
+  <meta name="twitter:description" content="The event-driven architecture used in FederatedScope.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/event-driven-architecture/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-04T10:40:42-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/event-driven-architecture/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/" class="active">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Event-driven Architecture">
+    <meta itemprop="description" content="The event-driven architecture used in FederatedScope.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-04T10:40:42-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Event-driven Architecture
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#infrastructure">Infrastructure</a><ul><li><a href="#event-handler">Event-Handler</a></li><li><a href="#modules">Modules</a></li></ul></li><li><a href="#implementation">Implementation</a><ul><li><a href="#construct-an-fl-course">Construct an FL Course</a></li><li><a href="#customization">Customization</a></li></ul></li><li><a href="#references">References</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>Before introducing more details about how to develop customized FL procedures for various real-world applications with FederatedScope, it is necessary to present the event-driven architecture for you. On the one hand, our design philosophy can provide users with another perspective for federated learning, which is different from the widely-adopted sequential process and might bring benefits for customizing. On the other hand, the introduction of the event-driven architecture can help users to know how to implement using provided rich functional components or extending fancy features with FederatedScope conveniently and effortlessly.</p>
+
+<h2 id="infrastructure">Infrastructure</h2>
+<p>We first present the infrastructure of FederatedScope, showing how an FL training course can be framed and expressed in the event-handler pairs, and why the desgin of modules in FederatedScope can makes it easy and flexible for users to program an FL course.</p>
+
+<h3 id="event-handler">Event-Handler</h3>
+<p>FederatedScope is implemented with an event-driven architecture, which is widely used in distributed systems [1, 2] and recently applied to federated learning [3, 4].
+Based on the event-driven architecture, an FL course can be framed into event-handler pairs: the participants wait for certain <em>events</em> (e.g., model’s parameters are broadcast to the clients) to trigger corresponding <em>handlers</em> (e.g., training models based on the local data). 
+Hence, users can express the behaviors of servers and clients independently from respective perspectives rather than sequentially from a global perspective, i.e., the case in a procedural programming paradigm.
+As a result, it becomes easier for users to implement FL algorithms, and the implementations are finer modularized.</p>
+
+<p>Specifically, the events in FederatedScope can be categorized into two classes. One is related to message passing (e.g., receiving information or request from others), and the other comes from the certain conditions for training (e.g., timeout and staleness toleration in asynchronous machine learning algorithms). These two types of events with corresponding handlers provide FederatedScope sufficient expressive power to describe and execute asynchronous federated training.</p>
+
+<h3 id="modules">Modules</h3>
+<p>FederatedScope consists of two basic modules for implementing an FL procedure, i.e., Worker Module and Communication Module.</p>
+
+<p><strong>Worker Module</strong></p>
+
+<p>The worker module is used to describe the behaviors of servers and clients in an FL course, which is designed towards expressing rich behaviors conveniently.</p>
+
+<p>We categorize the behaviors of servers and clients into federated behaviors and training behaviors. The federated behaviors include various message exchanges among participants, for example, a client sends a join-in application to the server, and a server broadcasts the model parameter to clients for starting a new training round. The training behaviors mainly denote the operations of updating models, including a client performing local training based on its data, a server aggregating the feedbacks (e.g., the updated models) from clients to generate the global model, and so on.</p>
+
+<p>Considering both flexibility and convenience, we define the following basic member attributes of a worker (a server or a client) to decouple the federated behaviors and training behaviors:</p>
+
+<ul>
+  <li><strong>ID</strong>: The worker’s ID is unique in an FL course for distinguishing. By default, we assign the server with “0” and number the clients according to the order they joined the FL course.</li>
+  <li><strong>Data &amp; Model</strong>: Each worker holds its data and/or model locally. According to the settings of FL, the data are stored in the worker’s private space and won’t be directly shared directly because of privacy concerns. A client usually owns a training dataset and might have a local test dataset,  while a server might hold a dataset for global evaluation.</li>
+</ul>
+
+<p>Besides, each worker maintains a model locally. In a vanilla FL course, all clients share the same model architecture, and the model parameters are synchronized through the server by aggregating. Since the local data are isolated and cannot be shared directly, the knowledge of these data is encoded into the models via local training and shared across participants in a privacy-preserving manner. Recent studies on personalized FL [5, 6] propose to control the extent of learning from the global models during an FL course, which might cause differences among the local models.</p>
+
+<ul>
+  <li><strong>Communicator</strong>: Each worker holds a communicator object for message exchange. The communicator hides the low-level details of the communication backends and only exposes high-level interfaces for workers, such as <em>send</em> and <em>receive</em>.</li>
+  <li><strong>Trainer/Aggregator</strong>: A client/server holds a trainer/aggregator to encapsulate its training behaviors, which has the authority to access/update data and models. The trainer/aggregator manages the training details, such as loss function, optimizer, aggregation algorithm. The client/server only needs to call the high-level interfaces (e.g., <em>train</em>, <em>eval</em>, <em>aggregate</em>) without caring about the training details. In this way, we decouple the training behaviors and the federated behaviors of workers.</li>
+</ul>
+
+<p>Based on the aforementioned attributes, users can conveniently express the rich behaviors of servers and clients for various FL applications. For example, users can customize the aggregation algorithms in the Aggregator without caring about federated behaviors and model architectures.</p>
+
+<p><strong>Communication Module</strong></p>
+
+<p>An FL course might need to exchange various types of information among participants, such as the model parameters, gradients, and also join-in applications, signal of finish, etc. In FederatedScope, we abstract all the exchanged information among servers and clients as “Message”.</p>
+
+<p>The message is one of the key objects to describe and drive an FL course in FederatedScope. To this end, the message is designed to contain <em>type</em>, <em>sender</em>, <em>receiver</em>, and <em>payload</em>. Different FL applications need different types of messages. For a vanilla FL course, servers and clients exchange model parameters during the training process, while for Graph Federated Learning tasks [7, 8], node embeddings, adjacency tensors might be needed to share among participants.</p>
+
+<p>Users can define various types of messages according to the unique requirements of customized FL courses, and, at the same time, describe the handling functions of servers and clients to handle these received messages. Thus, a customized FL course can be implemented by adding new types of messages and the corresponding handling functions.</p>
+
+<p>The detailed implementation of adding new types of exchanged messages and behaviors of servers and clients can be found in <a href="/docs/new-type/">New Types of Messages and Handlers</a>.</p>
+
+<p>Besides, a communicator is used for participants to exchange messages with each other, which can be regarded as a black box viewed by servers and clients, since only high-level interfaces (such as <em>send</em> and <em>receive</em>) are exposed to them. The communicator hides the low-level implementation of backends so that it can provide a unified view for both standalone simulation and distributed deployment.</p>
+
+<p>In FederatedScope, we implement a simulated communicator for standalone mode, and a gRPC communicator for distributed mode. Users can implement more communicators based on various protocols according to the adopted environments.</p>
+
+<h2 id="implementation">Implementation</h2>
+
+<p>In FederatedScope, an FL course is framed to multiple rounds of message passing. In general, users need to abstract the types of exchanged messages in the FL course, and then transform the behaviors of servers and clients into handling functions as subroutines to handle different types of received messages.</p>
+
+<p>Next we will introduce two examples to better demonstrate how to construct an FL course and how to customize.</p>
+
+<h3 id="construct-an-fl-course">Construct an FL Course</h3>
+
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01nhSwlw1Fp4eEBE8Ue_!!6000000000535-0-tps-2272-1044.jpg" alt="" />
+A vanilla FL course viewed from the perspective of message passing is shown in the figure. Using the procedural programming paradigm, developers need to carefully coordinate the participants. For example, firstly the clients send the join-in application to the server, and then the server receives these applications, and broadcasts the models to them, after that … It can become too complicated for developers to implement an FL course.</p>
+
+<p>On the other hand, programming with FederatedScope, to perform the vanilla FedAvg, users first need to abstract the types of exchanged messages and the corresponding handlers: The server needs to handle two types of message, i.e., handle <em>join</em> for admitting a new client to join in the FL course, and handle the updated <em>models</em> to perform aggregation. As for the clients, they train the model on the local data and return the updated model when receiving <em>model</em> from the server.  Finally, the FL course can be triggered by the instantiated clients sending <em>join</em> to the server.</p>
+
+<p>The event-driven architecture allows users to focus on the behaviors as subroutines in an FL course and saves users’ effort in coordinating the participants. And it also brings flexibility to support various FL applications that require heterogeneous message exchanging and rich behaviors, as shown in another example below.</p>
+
+<h3 id="customization">Customization</h3>
+
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01vMnoBs1Mg6CSMJ4EW_!!6000000001463-0-tps-2262-1228.jpg" alt="" />
+We demonstrate another example in the figure to show how to customize a real-world FL application where heterogeneous messages are exchanged and handled. Compared to the vanilla FL course, here clients need to exchange intermediate results during each training round. To achieve this, developers who use the procedural programming paradigm are required to describe the complete FL course sequentially, add the new behaviors into the procedures after carefully positioning.</p>
+
+<p>For comparison, to express heterogeneous information change and rich behaviors,  developers who use FederatedScope only need to define the new types of messages and the corresponding handling function of servers and clients, eliminating the efforts for coordinating participants.</p>
+
+<p>For example, developers only need to add a new type <em>intermediate results</em> for clients, and specify that clients continue training locally when receiving the intermediate results, without bothering by when the new behavior (i.e., exchanging intermediate results) happens or how many times it happens in an FL course.</p>
+
+<p>In a nutshell, based on the event-driven architecture, FederatedScope is well-modularized toward flexibility and extensibility for promoting the various FL applications.
+Also, it provides a unified view for both standalone mode and distributed mode, which helps users change from simulation to deployment effortlessly.</p>
+
+<h2 id="references">References</h2>
+
+<p>[1] Kreps, Jay, Neha Narkhede, and Jun Rao. “Kafka: A distributed messaging system for log processing.” Proceedings of the NetDB. Vol. 11. 2011.<br />
+[2] Michelson, Brenda M. “Event-driven architecture overview.” Patricia Seybold Group 2.12 (2006): 10-1571.<br />
+[3] He, Chaoyang, et al. “Fedml: A research library and benchmark for federated machine learning.” arXiv preprint arXiv:2007.13518 (2020).<br />
+[4] Chadha, Mohak, Anshul Jindal, and Michael Gerndt. “Towards federated learning using faas fabric.” Proceedings of the 2020 Sixth International Workshop on Serverless Computing. 2020.<br />
+[5] Tan A Z, Yu H, Cui L, et al. “Towards personalized federated learning”. arXiv preprint arXiv:2103.00710, 2021.<br />
+[6] Fallah A, Mokhtari A, Ozdaglar A. “Personalized federated learning: A meta-learning approach”. arXiv preprint arXiv:2002.07948, 2020.<br />
+[7] Wu C, Wu F, Cao Y, et al. “Fedgnn: Federated graph neural network for privacy-preserving recommendation”. arXiv preprint arXiv:2102.04925, 2021.<br />
+[8] Zhang K, Yang C, Li X, et al. “Subgraph federated learning with missing neighbor generation”. Advances in Neural Information Processing Systems, 2021, 34.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-04">April 4, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/use-hpo/" class="pagination--pager" title="Tuning Federated Learning
+">Previous</a>
+    
+    
+      <a href="/docs/new-type/" class="pagination--pager" title="New Types of Messages and Handlers
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

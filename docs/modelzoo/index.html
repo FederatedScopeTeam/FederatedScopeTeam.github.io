@@ -1,0 +1,687 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>ModelZoo - FederatedScope</title>
+<meta name="description" content="About ModelZoo.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="ModelZoo">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/modelzoo/">
+
+
+  <meta property="og:description" content="About ModelZoo.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="ModelZoo">
+  <meta name="twitter:description" content="About ModelZoo.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/modelzoo/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-01T08:15:34-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/modelzoo/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/" class="active">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="ModelZoo">
+    <meta itemprop="description" content="About ModelZoo.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-01T08:15:34-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">ModelZoo
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#computer-vision">Computer Vision</a></li><li><a href="#natural-language-processing">Natural Language Processing</a></li><li><a href="#graph">Graph</a></li><li><a href="#recommendation-system">Recommendation System</a></li><li><a href="#speech">Speech</a></li><li><a href="#references">References</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>FederatedScope provides many built-in models in different deep learning fields, including Computer Vision, Natural Language Processing, Graph, Recommendation Systems, and Speech. Furthermore, more models are on the way!</p>
+
+<p>To use our <code class="language-plaintext highlighter-rouge">ModelZoo</code>, set <code class="language-plaintext highlighter-rouge">cfg.model.type = Model_NAME</code>. And you can configure the model-related hyperparameters via a<code class="language-plaintext highlighter-rouge">yaml</code>file.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Some methods may leverage more than one model in each trainer
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">model_num_per_trainer</span> <span class="o">=</span> <span class="mi">1</span> 
+<span class="c1"># Model name
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'lr'</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">use_bias</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="c1"># For graph model
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">task</span> <span class="o">=</span> <span class="s">'node'</span>
+<span class="c1"># Hidden dim
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="c1"># Drop out ratio
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="c1"># in_channels dim. If 0, model will be built by data.shape
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># out_channels dim. If 0, model will be built by label.shape
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">out_channels</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># In GPR-GNN, K = gnn_layer
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">gnn_layer</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">graph_pooling</span> <span class="o">=</span> <span class="s">'mean'</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_size</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">num_item</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">num_user</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></div>
+
+<p>For more model-related settings, please refer to each model.</p>
+
+<p><a name="753a2225"></a></p>
+<h2 id="computer-vision">Computer Vision</h2>
+
+<ul>
+  <li><strong>ConvNet2</strong><br />ConvNet2 (from <code class="language-plaintext highlighter-rouge">federatedscope/cv/model</code>) is a two-layer CNN for image classification. (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'convnet2'</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ConvNet2</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">class_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>ConvNet5</strong><br />ConvNet5 (from <code class="language-plaintext highlighter-rouge">federatedscope/cv/model</code>) is a five-layer CNN for image classification. (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'convnet5'</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ConvNet5</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">class_num</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>VGG11</strong><br />VGG11 [1] (from <code class="language-plaintext highlighter-rouge">federatedscope/cv/model</code>) is an 11 layer CNN with very small (3x3) convolution filters for image classification. It is from <a href="https://arxiv.org/pdf/1409.1556v6.pdf">Very Deep Convolutional Networks for Large-Scale Image Recognition</a>. (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'vgg11'</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VGG11</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">class_num</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><a name="49f53d4e"></a></p>
+<h2 id="natural-language-processing">Natural Language Processing</h2>
+
+<ul>
+  <li><strong>LSTM</strong><br />LSTM [2] (from <code class="language-plaintext highlighter-rouge">federatedscope/nlp/model</code>) is a type of RNN that solves the vanishing gradient problem through additional cells, input and output gates. (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'lstm'</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LSTM</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">n_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">embed_size</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><a name="Graph"></a></p>
+<h2 id="graph">Graph</h2>
+
+<ul>
+  <li><strong>GCN</strong><br />GCN [3] (from <code class="language-plaintext highlighter-rouge">federatedscope/gfl/model</code>) is a kind of Graph Neural Networks from <a href="https://arxiv.org/abs/1609.02907">Semi-supervised Classification with Graph Convolutional Networks</a>, which is adapted for node-level, link-level and graph-level tasks. (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'gcn'</code>, <code class="language-plaintext highlighter-rouge">cfg.model.task = 'node'</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">GCN_Net</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="p">.</span><span class="mi">0</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>GAT</strong><br />GAT [4] (from <code class="language-plaintext highlighter-rouge">federatedscope/gfl/model</code>) is a kind of Graph Neural Networks from <a href="https://arxiv.org/abs/1710.10903">Graph Attention Networks</a>. GAT employ attention mechanisms to node neighbors to learn attention coefficients, which is adapted for node-level, link-level and graph-level tasks.  (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'gat'</code>, <code class="language-plaintext highlighter-rouge">cfg.model.task = 'node' # node, link or graph</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">GAT_Net</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="p">.</span><span class="mi">0</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>GraphSAGE</strong><br />GraphSAGE [5] (from <code class="language-plaintext highlighter-rouge">federatedscope/gfl/model</code>) is a general inductive GNN framework, from <a href="https://arxiv.org/pdf/1706.02216v4.pdf">Inductive Representation Learning on Large Graphs</a>. GraphSAGE learns a function that generates embeddings by sampling and aggregating from the local neighborhood of each node, which is adapted for node-level and link-level tasks.  (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'sage'</code>, <code class="language-plaintext highlighter-rouge">cfg.model.task = 'node' # node, link or graph</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SAGE_Net</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="p">.</span><span class="mi">0</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>GPR-GNN</strong><br />GPR-GNN [6] (from <code class="language-plaintext highlighter-rouge">federatedscope/gfl/model</code>) adaptively learns the Generalized PageRank weights so as to jointly optimize node feature and topological information extraction from <a href="https://arxiv.org/pdf/2006.07988v6.pdf">Adaptive Universal Generalized PageRank Graph Neural Network</a>, which is adapted for node-level and link-level tasks.  (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'gpr'</code>, <code class="language-plaintext highlighter-rouge">cfg.model.task = 'node' # node or link</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">GPR_Net</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">ppnp</span><span class="o">=</span><span class="s">'GPR_prop'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">Init</span><span class="o">=</span><span class="s">'PPR'</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>GIN</strong><br />GIN [7] (from <code class="language-plaintext highlighter-rouge">federatedscope/gfl/model</code>) generalizes the Weisfeiler-Lehman test and achieves maximum discriminative power among GNNs from <a href="https://arxiv.org/pdf/1810.00826v3.pdf">How Powerful are Graph Neural Networks?</a> which is adapted for graph-level tasks.  (<code class="language-plaintext highlighter-rouge">cfg.model.type = 'gin'</code>, <code class="language-plaintext highlighter-rouge">cfg.model.task = 'graph'</code>)
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">GIN_Net</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="p">.</span><span class="mi">0</span><span class="p">):</span>
+     <span class="p">...</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><a name="0b35d755"></a></p>
+<h2 id="recommendation-system">Recommendation System</h2>
+
+<ul>
+  <li><strong>MF models</strong><br />MF model [8] (from <code class="language-plaintext highlighter-rouge">federatedscope/mf/model</code>) has two trainable parameters: user embedding and item embedding. Based on the given federated setting, they share different embedding with the other participators. FederatedScope achieves <code class="language-plaintext highlighter-rouge">VMFNet</code>and <code class="language-plaintext highlighter-rouge">HMFNet</code>to support federated MF, and both of them inherit the basic MF model class <code class="language-plaintext highlighter-rouge">BasicMFNet</code>.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VMFNet</span><span class="p">(</span><span class="n">BasicMFNet</span><span class="p">):</span>
+    <span class="n">name_reserve</span> <span class="o">=</span> <span class="s">"embed_item"</span>
+
+
+<span class="k">class</span> <span class="nc">HMFNet</span><span class="p">(</span><span class="n">BasicMFNet</span><span class="p">):</span>
+    <span class="n">name_reserve</span> <span class="o">=</span> <span class="s">"embed_user"</span>
+</code></pre></div></div>
+
+<p><a name="Speech"></a></p>
+
+<h2 id="speech">Speech</h2>
+
+<p>Coming Soon!</p>
+
+<p><a name="Reference"></a></p>
+<h2 id="references">References</h2>
+
+<p>[1] Simonyan, Karen, and Andrew Zisserman. “Very deep convolutional networks for large-scale image recognition.” <em>arXiv preprint arXiv</em> 2014.</p>
+
+<p>[2] Hochreiter, Sepp, and Jürgen Schmidhuber. “Long short-term memory.” <em>Neural computation</em> 1997.</p>
+
+<p>[3] Kipf, Thomas N., and Max Welling. “Semi-supervised classification with graph convolutional networks.” <em>arXiv</em> 2016.</p>
+
+<p>[4] Veličković, Petar, et al. “Graph attention networks.” <em>ICLR</em> 2018.</p>
+
+<p>[5] Hamilton, Will, Zhitao Ying, and Jure Leskovec. “Inductive representation learning on large graphs.” <em>NeurIPS</em> 2017.</p>
+
+<p>[6] Chien, Eli, et al. “Adaptive universal generalized pagerank graph neural network.” <em>ICLR</em> 2021.</p>
+
+<p>[7] Xu, Keyulu, et al. “How powerful are graph neural networks?.”  <em>ICLR</em> 2019.</p>
+
+<p>[8] Yongjie, Du, et al. “Federated matrix factorization for privacy-preserving recommender systems” <em>VLDB</em> 2022.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-01">April 1, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/datazoo/" class="pagination--pager" title="DataZoo
+">Previous</a>
+    
+    
+      <a href="/docs/algozoo/" class="pagination--pager" title="AlgoZoo
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

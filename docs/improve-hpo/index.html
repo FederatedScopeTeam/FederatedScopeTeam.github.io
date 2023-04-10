@@ -1,0 +1,695 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Accelerating Federated HPO - FederatedScope</title>
+<meta name="description" content="About improving HPO.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Accelerating Federated HPO">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/improve-hpo/">
+
+
+  <meta property="og:description" content="About improving HPO.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Accelerating Federated HPO">
+  <meta name="twitter:description" content="About improving HPO.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/improve-hpo/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-11T10:22:56-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/improve-hpo/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/" class="active">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Accelerating Federated HPO">
+    <meta itemprop="description" content="About improving HPO.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-11T10:22:56-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Accelerating Federated HPO
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#achieving-low-fidelity-hpo-under-the-federated-learning-setting">Achieving low-fidelity HPO under the federated learning setting</a></li><li><a href="#empirical-study">Empirical study</a></li><li><a href="#weight-sharing-and-personalized-hpo">Weight-sharing and personalized HPO</a></li><li><a href="#references">References</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>In essence, hyperparameter optimization (HPO) is a trial-and-error procedure, where each trial often means an entire training course and then evaluation. Under the federated learning (FL) setting, each FL training course consists of hundereds of communication rounds, which makes it unaffordable to conduct such trials again and again.</p>
+
+<p>Hence, FederatedScope has provided functionalities to conduct low-fidelity HPO, which allows users to trade evaluation precision for efficiency.</p>
+
+<h2 id="achieving-low-fidelity-hpo-under-the-federated-learning-setting">Achieving low-fidelity HPO under the federated learning setting</h2>
+
+<p>We encourage users to try low-fidelity HPO with our provided toy example:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/hpo.py <span class="nt">--cfg</span> federatedscope/example_configs/toy_hpo.yaml hpo.scheduler sha hpo.sha.budgets <span class="o">[</span>1,3,9]
+</code></pre></div></div>
+
+<p>where Successive Halving Algorithm (SHA) [2] is employed as our HPO scheduler. At first, the number of initial candidates is determined by:</p>
+
+<blockquote>
+  <p>#initial candidates = elimination rate ** #elimination rounds,</p>
+</blockquote>
+
+<p>where, in this example, <code class="language-plaintext highlighter-rouge">hpo.sha.elim_round_num=3</code> and <code class="language-plaintext highlighter-rouge">hpo.sha.elim_rate=3</code>. Thus, the scheduler begins with <code class="language-plaintext highlighter-rouge">3**3=27</code> initial candidate configurations randomly sampled from the declared search space. As we have introduced in the <a href="/docs/use-hpo/">primary HPO tutorial</a>, SHA iteratively filters the maintained candidates round-by-round untill only one configuration remaining. According to the settings for elimination rate, the number of elimination rounds, and the budgets (i.e., <code class="language-plaintext highlighter-rouge">hpo.sha.budgets</code>), the scheduler proceeds as follow:</p>
+
+<ul>
+  <li>
+    <p>1st iteration: Each of the 27 candidates will be trained for 1 round.</p>
+  </li>
+  <li>
+    <p>2nd iteration: Each of the 9 candidates outstanding from last iteration will be trained for 3 rounds</p>
+  </li>
+  <li>
+    <p>3rd iteration: Each of the 3 candidates outstanding from last iteration will be trained for 9 rounds</p>
+  </li>
+</ul>
+
+<p>As your can see, by controlling the resource allocation (here the assigned number of training rounds), the winning configuratioin enjoys the most resource—$1+3+9=13$ training rounds, while we didn’t waste much resource on those poor configurations. The total resource consumed is $27 \times 1 + 9 \times 3 + 3 \times 9 = 81$ training rounds. In contrast, the SHA example presented in our primary HPO tutorial has not specified the budget and consumes $(27 + 9 + 3) \times 20 = 780$ training rounds. Although insufficient training rounds may lead to configuration rankings that are less correlated with the ground-truth rankings, training round provides us an aspect to control the fidelity to trade-off between accuracy and efficiency.</p>
+
+<p>The eventual results of the above example are as follow:</p>
+
+<p><img src="https://img.alicdn.com/imgextra/i3/O1CN01eeT2dt2ADSCtJCmms_!!6000000008169-2-tps-374-70.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=Kjuna&amp;originHeight=70&amp;originWidth=374&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" /></p>
+
+<p>where the test loss cannot be minimized as small as that of the SHA example presented in our primary HPO tutorial. However, the goal of HPO is to determine the hyperparameters. In this sense, this SHA example with low-fidelity has attained the same decisions as that example, while consuming much less resource.</p>
+
+<p>Another aspect that enables to control the fidelity is the ratio of clients sampled in each training round. FederatedScope allows users to specify either the sample rate (via <code class="language-plaintext highlighter-rouge">federate.sample_client_rate</code>) or the number of sampled client (via <code class="language-plaintext highlighter-rouge">federate.sample_client_num</code>), with the former prioritized. If none of them has been set, all clients would be involved in each training round.</p>
+
+<h2 id="empirical-study">Empirical study</h2>
+
+<p>We evaluate the effectiveness of SHA with low-fidelity on a case where graph convolutional network (GCN) is to be trained on the citation network Cora. In this experiment, we use the same setting as the above example, and thus there are 81 training rounds in total can be consumed. For the purpose of comparison, we adopt random search (RS) algorithm [4] as our baselines, where sample size of 81, 27, and 9 are considered, with training rounds per trial 1, 3, and 9, respectively.</p>
+
+<p>We show the corresponding performances of their searched hyperparameters in the following table:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Scheduler</th>
+      <th>Test accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SHA</td>
+      <td><strong>88.83</strong></td>
+    </tr>
+    <tr>
+      <td>RS (81-1)</td>
+      <td>88.51</td>
+    </tr>
+    <tr>
+      <td>RS (27-3)</td>
+      <td>88.67</td>
+    </tr>
+    <tr>
+      <td>RS (9-9)</td>
+      <td>88.67</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>where SHA with the given allocation outperforms all RS settings. As we sequentially simulate each trial, the HPO procedure can be visualized by plotting the best test accuracy achieved up to the latest trial:</p>
+
+<p><img src="https://img.alicdn.com/imgextra/i2/O1CN01XRpufx1kBurnLVkS0_!!6000000004646-2-tps-687-517.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;height=301&amp;id=F22Iq&amp;originHeight=517&amp;originWidth=687&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=&amp;width=400" alt="" /></p>
+
+<p>Users can easily reproduce this HPO experiment by executing:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/hpo.py <span class="nt">--cfg</span> federatedscope/example_configs/hpo_for_gnn.yaml
+</code></pre></div></div>
+
+<p>Furthermore, we present an empirical comparison for different fidelities considered in optimizing the hyperparameters of GCN and GPR-GNN, respectively. Again, we employ SHA as our scheduler and controll the fidelity by considering:</p>
+
+<ul>
+  <li>Training rounds for each trial in <code class="language-plaintext highlighter-rouge">{1, 2, 4, 8}</code>;</li>
+  <li>Client sampling rate in <code class="language-plaintext highlighter-rouge">{20%, 40%, 80%, 100%}</code>.</li>
+</ul>
+
+<p>With different combinations of the them, we conduct HPO with different fideilities, which might result in different optimal hyperparameters. As we have construct the ground-truth rankings, the accuracy of each combination can be measured by the rank of its resulting optimal hyperparameters. We illustrate the results in the following two figures:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>GCN</th>
+      <th>GPR-GNN</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="https://img.alicdn.com/imgextra/i2/O1CN01dYewvC1Lj166Em6JK_!!6000000001334-0-tps-1819-1348.jpg#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=TYXwT&amp;originHeight=1348&amp;originWidth=1819&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" /></td>
+      <td><img src="https://img.alicdn.com/imgextra/i1/O1CN01Xqfglq1KdgsQKc0j9_!!6000000001187-0-tps-1766-1348.jpg#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=ViKv8&amp;originHeight=1348&amp;originWidth=1766&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>where, as expected, higher fidelity leads to better configuration for both kinds of graph neural network models. At first, we want to remind our readers that the left-upper region in each grid table corresponds to extremely low-fidelity HPO. Although their performances cannot be comparable to those in the other regions, they have successfully eliminated a considerable fraction of poor configurations. Meanwhile, increasing fidelity through the two aspects, i.e., client sampling rate and the number of training rounds, reveal comparable efficiency in improving the quality of searched configurations. This property provides valuable flexibility for practitioners to keep a fixed fidelity while trade-off between these two aspects according to their system status (e.g., network latency and how the dragger behaves) [3].</p>
+
+<h2 id="weight-sharing-and-personalized-hpo">Weight-sharing and personalized HPO</h2>
+
+<p>In general, the hyperparameters of an FL algorithm can be classified into two categories:</p>
+
+<ul>
+  <li>Server-side: The hyperparameters impact the aggregation, e.g., the learning rate of server’s optimizer in FedOPT [5].</li>
+  <li>Client-side: The hyperparameters impact the local updates, e.g., the local update steps, the batch size, the learning rate, etc.</li>
+</ul>
+
+<p>In traditional standalone machine learning, only one specific configuration can be evaluated in each trial. When we consider an FL training course, since there are often more than one clients sampled in each round, it is possible to let different sampled clients explore different client-side configurations. From the perspective of multi-arm bandit, the agent (i.e., the HPO scheduler) can interact with many bandits under the FL setting, as the following figure shows.</p>
+
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN014NbGMH1HuEKXaKLnv_!!6000000000817-0-tps-810-346.jpg#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;id=N47md&amp;originHeight=346&amp;originWidth=810&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;status=done&amp;style=none&amp;title=" alt="" /></p>
+
+<p>To utilize this idea, FexEx [1] makes an analogy to the weight-sharing trick widely adopted in one-shot neural architecture search (NAS). Roughly speaking, one-shot NAS regards all candidate operators as an super-graph, evaluates a sampled subgraph at each step, and updates the controller (i.e., sampler) according to the feedback. In analogy, we could design a controller to sample configuration and, at each round, independently sample the client-side configuration for each client.</p>
+
+<p>FederatedScope has provided flexible interfaces to instantiate such an idea into Federated HPO algorithm (more details can be found at this <a href="/docs/new-type/">post</a>). For instance, implementing FedEx can be sketched as the following steps:</p>
+
+<ol>
+  <li>To inherit the base server class and integrate your implementation of the controller into the server;</li>
+  <li>To augment the parameter broadcast method, including the sampled client-side configuration in the message;</li>
+  <li>To inherit the base client class and extend the handler—initializing the local model with received parameters and reset hyperparameters by the received choices;</li>
+  <li>To extend the handler of server, that is, updating the controller w.r.t. received performances.</li>
+</ol>
+
+<p>We will provide an implementation of FedEx later, and we encourage users to contribute more latest federated HPO algorithms to FederatedScope.</p>
+
+<p>It is worth noting that the bandits sampled in each round are different due to the non-i.i.d.ness of client-wise data distributions. Thus, a promising future direction is to explore the <a href="/docs/pfl/">personalization functionalities</a> to achieve personalized HPO.</p>
+
+<h2 id="references">References</h2>
+
+<p>[1] Khodak, Mikhail, et al. “Federated hyperparameter tuning: Challenges, baselines, and connections to weight-sharing.” Advances in Neural Information Processing Systems 34 (2021).</p>
+
+<p>[2] Li, Lisha, et al. “Hyperband: A novel bandit-based approach to hyperparameter optimization.” The Journal of Machine Learning Research 18.1 (2017): 6765-6816.</p>
+
+<p>[3] Zhang, Huanle, et al. “Automatic Tuning of Federated Learning Hyper-Parameters from System Perspective.” arXiv preprint arXiv:2110.03061 (2021).</p>
+
+<p>[4] Bergstra, James, and Yoshua Bengio. “Random search for hyper-parameter optimization.” Journal of machine learning research 13.2 (2012).</p>
+
+<p>[5] Asad, Muhammad, Ahmed Moustafa, and Takayuki Ito. “FedOpt: Towards communication efficiency and privacy preservation in federated learning.” Applied Sciences 10.8 (2020): 2864.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-11">April 11, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/cross-silo/" class="pagination--pager" title="Cross-Silo FL
+">Previous</a>
+    
+    
+      <a href="/docs/simulation-and-deployment/" class="pagination--pager" title="Simulation and Deployment
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

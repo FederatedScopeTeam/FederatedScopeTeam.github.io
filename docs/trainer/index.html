@@ -1,0 +1,1062 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Local Learning Abstraction: Trainer - FederatedScope</title>
+<meta name="description" content="About trainer.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Local Learning Abstraction: Trainer">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/trainer/">
+
+
+  <meta property="og:description" content="About trainer.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Local Learning Abstraction: Trainer">
+  <meta name="twitter:description" content="About trainer.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/trainer/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-07T21:27:40-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/trainer/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/" class="active">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Local Learning Abstraction: Trainer">
+    <meta itemprop="description" content="About trainer.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-07T21:27:40-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Local Learning Abstraction: Trainer
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#trainer-structure">Trainer Structure</a><ul><li><a href="#customized-data-preparation">Customized Data Preparation</a></li></ul></li><li><a href="#trainer-context">Trainer Context</a><ul><li><a href="#maintain-the-references-of-objects">Maintain the References of Objects</a></li><li><a href="#provide-running-parameters">Provide running parameters</a></li><li><a href="#indicate-the-current-operating-status-and-the-selected-dataset">Indicate the Current Operating Status and the Selected Dataset</a><ul><li><a href="#cur_mode">cur_mode</a></li><li><a href="#cur_split">cur_split</a></li></ul></li><li><a href="#maintain-and-manage-statistical-variables">Maintain and Manage Statistical Variables</a><ul><li><a href="#note">Note</a></li><li><a href="#note-1">NOTE</a></li></ul></li></ul></li><li><a href="#multi-model-trainer">Multi-model Trainer</a></li><li><a href="#reference">Reference</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>FederatedScope decouples the local learning process and details of FL communication and schedule, allowing users to freely customize local learning algorithm via the <code class="language-plaintext highlighter-rouge">trainer</code>. Each worker holds a <code class="language-plaintext highlighter-rouge">trainer</code> object to manage the details of local learning, such as the loss function, optimizer, training step, evaluation, etc.</p>
+
+<p>In this tutorial, you will learn:</p>
+
+<ul>
+  <li>The structure of <code class="language-plaintext highlighter-rouge">Trainer</code> used in FederatedScope;</li>
+  <li>How the <code class="language-plaintext highlighter-rouge">Trainer</code> maintains attributes and how to extend new attributes?</li>
+  <li>How the <code class="language-plaintext highlighter-rouge">Trainer</code> maintains learning behaviors and how to extend new behaviors?</li>
+  <li>How to extend  <code class="language-plaintext highlighter-rouge">Trainer</code> to learn with more than one internal model?</li>
+</ul>
+
+<h2 id="trainer-structure"><code class="language-plaintext highlighter-rouge">Trainer</code> Structure</h2>
+<p>A typical machine learning process consists of the following procedures:</p>
+
+<ol>
+  <li>Preparing datasets and pre-extracting data mini-batches</li>
+  <li>Iterations over training datasets to update the model parameters</li>
+  <li>Evaluation the quality of learned model on validation/evaluation datasets</li>
+  <li>Saving, loading, and monitoring the model and intermediate results</li>
+</ol>
+
+<p><img src="https://img.alicdn.com/imgextra/i4/O1CN01H8OEeS1tdhR38C4dK_!!6000000005925-2-tps-1504-874.png" alt="undefined" /></p>
+
+<p>As the figure shows, in FederatedScope <code class="language-plaintext highlighter-rouge">Trainer</code>,  these above procedures are provided with high-level <code class="language-plaintext highlighter-rouge">routines</code> abstraction, which are made up of <code class="language-plaintext highlighter-rouge">Context</code> class and several pluggable <code class="language-plaintext highlighter-rouge">Hooks</code>.</p>
+
+<ul>
+  <li>The <code class="language-plaintext highlighter-rouge">Context</code> class is used to holds learning-related attributes, including data, model, optimizer and etc. We will introduce more details in <a href="/docs/trainer/#trainer-context">next Section</a>.
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">model</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">,</span>
+                 <span class="n">data</span><span class="p">,</span>
+                 <span class="n">device</span><span class="p">,</span>
+                 <span class="n">init_dict</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">parse_data</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</code></pre></div>    </div>
+  </li>
+  <li>The <code class="language-plaintext highlighter-rouge">Hooks</code> represent fine-grained learning behaviors at different point-in-times, which provides a simple yet powerful way to customize learning behaviors with a few modifications and easy re-use of fruitful default hooks. More details about the behavior customization are in <a href="/docs/trainer/#trainer-behaviors">following Section</a>.
+```python
+HOOK_TRIGGER = [
+      “on_fit_start”, “on_epoch_start”, “on_batch_start”, “on_batch_forward”,
+      “on_batch_backward”, “on_batch_end”, “on_epoch_end”, “on_fit_end”
+  ]
+self.hooks_in_train = collections.defaultdict(list)
+    <h1 id="by-default-use-the-same-trigger-keys">By default, use the same trigger keys</h1>
+    <p>self.hooks_in_eval = copy.deepcopy(self.hooks_in_train)
+self.hooks_in_ft = copy.deepcopy(self.hooks_in_train)</p>
+  </li>
+</ul>
+
+<h1 id="register-necessary-hooks-into-selfhooks_in_train-and">register necessary hooks into self.hooks_in_train and</h1>
+<h1 id="selfhooks_in_eval">self.hooks_in_eval</h1>
+<p>if not only_for_eval:
+    self.register_default_hooks_train()
+if self.cfg.finetune.before_eval:
+    self.register_default_hooks_ft()
+self.register_default_hooks_eval()</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+## Trainer Behaviors
+
+### Routines
+
+- Besides the common I/O procedures `save_model` and `load_model`, FederatedScope trainer uses the `update` function to load the model from FL clients.
+
+- For the train/eval/validate procedures, FederatedScope implements them via calling a general `_run_routine` with different datasets, hooks_set and running mode.
+
+</code></pre></div></div>
+<p>def _run_routine(self, mode, hooks_set, dataset_name=None)</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+  - We decouple the learning process with several fine-grained point-in-time and calling all registered hooks at specific point-in-times as follows
+
+    ```python
+    @lifecycle(LIFECYCLE.ROUTINE)
+    def _run_routine(self, mode, hooks_set, dataset_name=None):
+        """Run the hooks_set and maintain the mode
+        Arguments:
+            mode: running mode of client, chosen from train/val/test
+        Note:
+            Considering evaluation could be in ```hooks_set["on_epoch_end"]```, there could be two data loaders in
+        self.ctx, we must tell the running hooks which data_loader to call and which num_samples to count
+        """
+        for hook in hooks_set["on_fit_start"]:
+            hook(self.ctx)
+
+        self._run_epoch(hooks_set)
+
+        for hook in hooks_set["on_fit_end"]:
+            hook(self.ctx)
+
+        return self.ctx.num_samples
+
+    @lifecycle(LIFECYCLE.EPOCH)
+    def _run_epoch(self, hooks_set):
+        for epoch_i in range(self.ctx.get(f"num_{self.ctx.cur_split}_epoch")):
+            self.ctx.cur_epoch_i = CtxVar(epoch_i, "epoch")
+
+            for hook in hooks_set["on_epoch_start"]:
+                hook(self.ctx)
+
+            self._run_batch(hooks_set)
+
+            for hook in hooks_set["on_epoch_end"]:
+                hook(self.ctx)
+
+    @lifecycle(LIFECYCLE.BATCH)
+    def _run_batch(self, hooks_set):
+        for batch_i in range(self.ctx.get(f"num_{self.ctx.cur_split}_batch")):
+            self.ctx.cur_batch_i = CtxVar(batch_i, LIFECYCLE.BATCH)
+
+            for hook in hooks_set["on_batch_start"]:
+                hook(self.ctx)
+
+            for hook in hooks_set["on_batch_forward"]:
+                hook(self.ctx)
+
+            for hook in hooks_set["on_batch_backward"]:
+                hook(self.ctx)
+
+            for hook in hooks_set["on_batch_end"]:
+                hook(self.ctx)
+
+            # Break in the final epoch
+            if self.ctx.cur_mode in [MODE.TRAIN, MODE.FINETUNE] and self.ctx.cur_epoch_i == self.ctx.num_train_epoch - 1:
+                if batch_i &gt;= self.ctx.num_train_batch_last_epoch - 1:
+                    break
+    ```
+
+### Hooks 
+  - We implement fruitful default hooks to support various training/evaluation processes, such as [personalized FL behaviors](/docs/pfl/#demonstration), [graph-task related behaviors](/docs/graph/#develop-federated-gnn-algorithms), [privacy-preserving behaviors](/docs/privacy-attacks/#2-usage-of-attack-module). 
+
+  - Each hook takes the learning `context` as input and performs the learning actions such as 
+
+      - prepare model and statistics
+      
+    ```python
+    def _hook_on_fit_start_init(ctx):
+        # prepare model and optimizer
+        ctx.model.to(ctx.device)
+
+        if ctx.cur_mode in [MODE.TRAIN, MODE.FINETUNE]:
+            # Initialize optimizer here to avoid the reuse of optimizers
+            # across different routines
+            ctx.optimizer = get_optimizer(ctx.model,
+                                          **ctx.cfg[ctx.cur_mode].optimizer)
+            ctx.scheduler = get_scheduler(ctx.optimizer,
+                                          **ctx.cfg[ctx.cur_mode].scheduler)
+
+        # prepare statistics
+        ctx.loss_batch_total = CtxVar(0., LIFECYCLE.ROUTINE)
+        ctx.loss_regular_total = CtxVar(0., LIFECYCLE.ROUTINE)
+        ctx.num_samples = CtxVar(0, LIFECYCLE.ROUTINE)
+        ctx.ys_true = CtxVar([], LIFECYCLE.ROUTINE)
+        ctx.ys_prob = CtxVar([], LIFECYCLE.ROUTINE)
+    
+    ```
+
+    - calculate loss in forward stage
+    
+    ```python
+    def _hook_on_batch_forward(ctx):
+        x, label = [_.to(ctx.device) for _ in ctx.data_batch]
+        pred = ctx.model(x)
+        if len(label.size()) == 0:
+            label = label.unsqueeze(0)
+
+        ctx.y_true = CtxVar(label, LIFECYCLE.BATCH)
+        ctx.y_prob = CtxVar(pred, LIFECYCLE.BATCH)
+        ctx.loss_batch = CtxVar(ctx.criterion(pred, label), LIFECYCLE.BATCH)
+        ctx.batch_size = CtxVar(len(label), LIFECYCLE.BATCH)
+    ```
+    
+     - update model parameters in backward stage
+    
+    ```python
+    def _hook_on_batch_backward(ctx):
+        ctx.optimizer.zero_grad()
+        ctx.loss_task.backward()
+        if ctx.grad_clip &gt; 0:
+            torch.nn.utils.clip_grad_norm_(ctx.model.parameters(),
+                                           ctx.grad_clip)
+        ctx.optimizer.step()
+        if ctx.scheduler is not None:
+            ctx.scheduler.step()
+    ```
+    
+- To customize more trainer behaviors, users can reset and replace existing hooks, or register new hooks
+
+  - Users can freely check the current hook set via print `trainer.hooks_in_train` and `trainer.hooks_in_eval`.
+
+  - For delete case, users can either 1) reset all the hooks at a target point-in-time trigger; or 2) a specific hook by passing the target function name `hook_name `  in  train/eval hook set.
+
+    ```python 
+    def reset_hook_in_train(self, target_trigger, target_hook_name=None)
+    def reset_hook_in_eval(self, target_trigger, target_hook_name=None)
+
+  - For create case,  we allows registering a new hook at a target point-in-time trigger, and support 1) specifying a specific  positions (i.e., the order a hook called within the trigger set); or 2) inserting before or after a base hook
+
+  ```python
+  def register_hook_in_train(self,
+                             new_hook,
+                             trigger,
+                             insert_pos=None,
+                             base_hook=None,
+                             insert_mode="before")
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>For update case, we provide functions to replace existing hook (by name) with a new_hook (function)</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">replace_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_hook</span><span class="p">,</span> <span class="n">target_trigger</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="customized-data-preparation">Customized Data Preparation</h3>
+<ul>
+  <li>We provide the data pre-processing operations in <code class="language-plaintext highlighter-rouge">parse_data</code> function, which parses the dataset and initializes the variables <code class="language-plaintext highlighter-rouge">{}_data</code>, <code class="language-plaintext highlighter-rouge">{}_loader</code>,  and the counter <code class="language-plaintext highlighter-rouge">num_{MODE}_data</code> according to the types of datasets within <code class="language-plaintext highlighter-rouge">data</code> as follows.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="s">"""Populate "{}_data", "{}_loader" and "num_{}_data" for different modes
+
+        """</span>
+        <span class="c1"># TODO: more robust for different data
+</span>        <span class="n">init_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"train"</span><span class="p">,</span> <span class="s">"val"</span><span class="p">,</span> <span class="s">"test"</span><span class="p">]:</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s">"{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s">"{}_loader"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s">"num_{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="n">Dataset</span><span class="p">):</span>
+                        <span class="n">init_dict</span><span class="p">[</span><span class="s">"{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                        <span class="n">init_dict</span><span class="p">[</span><span class="s">"num_{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                            <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="n">DataLoader</span><span class="p">):</span>
+                        <span class="n">init_dict</span><span class="p">[</span><span class="s">"{}_loader"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                        <span class="n">init_dict</span><span class="p">[</span><span class="s">"num_{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                            <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">).</span><span class="n">dataset</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">init_dict</span><span class="p">[</span><span class="s">"{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                        <span class="n">init_dict</span><span class="p">[</span><span class="s">"num_{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                            <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)[</span><span class="s">'y'</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="nb">TypeError</span><span class="p">(</span><span class="s">"Type {} is not supported."</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span>
+                            <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">))))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">TypeError</span><span class="p">(</span><span class="s">"Type of data should be dict."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">init_dict</span>
+</code></pre></div></div>
+<ul>
+  <li>To support customized dataset, please implement the function <code class="language-plaintext highlighter-rouge">parse_data</code> in the new trainer and initialize the following variables.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">{train/test/val}_data</code>: the data object,</li>
+      <li><code class="language-plaintext highlighter-rouge">{train/test/val}_loader</code>: the data loader object,</li>
+      <li><code class="language-plaintext highlighter-rouge">num_{train/test/val}_data</code>: the number of samples within the dataset.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="trainer-context">Trainer Context</h2>
+
+<p><code class="language-plaintext highlighter-rouge">Context</code> class is an implementation of messager within the trainer. All variables within it can be called by <code class="language-plaintext highlighter-rouge">ctx.{VARIABLE_NAME}</code>.</p>
+
+<p>As stated above, both the training and evaluation processes are consisted of independent hook functions, which only receive an instance of <code class="language-plaintext highlighter-rouge">Context</code> as the sole parameter. Therefore, the parameter <code class="language-plaintext highlighter-rouge">ctx</code> should</p>
+<ul>
+  <li>maintain the references of objects (e.g. model, data, optimizer),</li>
+  <li>provide running parameters (e.g. number of training epochs),</li>
+  <li>indicate the current operating status (e.g. train/test/validate) and the current selected data split (e.g. the train/test/validate split), and</li>
+  <li>maintain and manage statistical variables (e.g. loss, output, accuracy).</li>
+</ul>
+
+<h3 id="maintain-the-references-of-objects">Maintain the References of Objects</h3>
+<p>During federated training and evaluation, <code class="language-plaintext highlighter-rouge">Context</code> needs to maintain some necessary objects, such as</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">model</code>: The FL training/evaluation model,</li>
+  <li><code class="language-plaintext highlighter-rouge">data</code>: The dataset used in FL training/evaluation,</li>
+  <li><code class="language-plaintext highlighter-rouge">device</code>: The specific device, and</li>
+  <li><code class="language-plaintext highlighter-rouge">criterion</code>: The specific loss function.</li>
+</ul>
+
+<p>Note the above references of objects are all <strong>shared across different routines</strong>.</p>
+
+<h3 id="provide-running-parameters">Provide running parameters</h3>
+<p>Some parameters are calculated within the routine, such as</p>
+<ul>
+  <li>the number of training/test/validate epochs,</li>
+  <li>the total number of training/test/valiate batches,</li>
+  <li>the number of the batches within the last training epoch,</li>
+</ul>
+
+<p>For now, the above running parameters are calculated by the <code class="language-plaintext highlighter-rouge">setup_vars</code> function in <code class="language-plaintext highlighter-rouge">Context</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">setup_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s">'torch'</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">trainable_para_names</span> <span class="o">=</span> <span class="n">get_trainable_para_names</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">criterion</span><span class="p">.</span><span class="nb">type</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="n">get_regularizer</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">regularizer</span><span class="p">.</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">grad</span><span class="p">.</span><span class="n">grad_clip</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s">'tensorflow'</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">trainable_para_names</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">trainable_variables</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c1"># Process training data
+</span>    <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'train_data'</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="p">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s">'train_loader'</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c1"># Calculate the number of update steps during training given the
+</span>        <span class="c1"># local_update_steps
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">num_train_batch</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">num_train_batch_last_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">num_train_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">num_total_train_batch</span> <span class="o">=</span> <span class="n">calculate_batch_epoch_num</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">train</span><span class="p">.</span><span class="n">local_update_steps</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">train</span><span class="p">.</span><span class="n">batch_or_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">num_train_data</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">drop_last</span><span class="p">)</span>
+
+    <span class="c1"># Process evaluation data
+</span>    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"val"</span><span class="p">,</span> <span class="s">"test"</span><span class="p">]:</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">"num_{}_epoch"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="p">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s">"{}_loader"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="s">"num_{}_batch"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">"num_{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="o">//</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">batch_size</span> <span class="o">+</span>
+                <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">drop_last</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">"num_{}_data"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="o">%</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">batch_size</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<h3 id="indicate-the-current-operating-status-and-the-selected-dataset">Indicate the Current Operating Status and the Selected Dataset</h3>
+<p>The <code class="language-plaintext highlighter-rouge">Context</code> class uses two attributes to indicate the current operating status (<code class="language-plaintext highlighter-rouge">cur_mode</code>) and selected dataset (<code class="language-plaintext highlighter-rouge">cur_split</code>).</p>
+
+<h4 id="cur_mode">cur_mode</h4>
+<p>The value of <code class="language-plaintext highlighter-rouge">cur_mode</code> is selected among <code class="language-plaintext highlighter-rouge">MODE.TRAIN</code>, <code class="language-plaintext highlighter-rouge">MODE.FINETUNE</code>, <code class="language-plaintext highlighter-rouge">MODE.TEST</code> and <code class="language-plaintext highlighter-rouge">MODE.VAL</code> as follows. 
+You can find the enum class in <code class="language-plaintext highlighter-rouge">federatedscope/core/auxiliaries/enums.py</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MODE</span><span class="p">:</span>
+    <span class="s">"""
+
+    Note:
+        Currently StrEnum cannot be imported with the environment
+        `sys.version_info &lt; (3, 11)`, so we simply create a MODE class here.
+    """</span>
+    <span class="n">TRAIN</span> <span class="o">=</span> <span class="s">'train'</span>
+    <span class="n">TEST</span> <span class="o">=</span> <span class="s">'test'</span>
+    <span class="n">VAL</span> <span class="o">=</span> <span class="s">'val'</span>
+    <span class="n">FINETUNE</span> <span class="o">=</span> <span class="s">'finetune'</span>
+</code></pre></div></div>
+<p>At the beginning of one routine, we will check <code class="language-plaintext highlighter-rouge">cur_mode</code> to</p>
+<ul>
+  <li>change the status of the models
+    <ul>
+      <li>execute <code class="language-plaintext highlighter-rouge">model.train()</code> if <code class="language-plaintext highlighter-rouge">cur_mode</code> equals <code class="language-plaintext highlighter-rouge">MODE.TRAIN</code> or <code class="language-plaintext highlighter-rouge">MODE.FINETUNE</code>, and</li>
+      <li>execute <code class="language-plaintext highlighter-rouge">model.eval()</code> if <code class="language-plaintext highlighter-rouge">cur_mode</code> equals <code class="language-plaintext highlighter-rouge">MODE.TEST</code> or <code class="language-plaintext highlighter-rouge">MODE.VAL</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="cur_split">cur_split</h4>
+<p>The attribute <code class="language-plaintext highlighter-rouge">cur_split</code> indicates which part of dataset that the routine will use, and the printed metrics will be named with a <code class="language-plaintext highlighter-rouge">cur_split</code> prefix.
+In general setting, the dataset is divided into train, test and validate splits.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MetricCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="p">...</span>
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_check_and_parse</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">eval_metric</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="s">"{}_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_split</span><span class="p">,</span>
+                                   <span class="n">metric</span><span class="p">)]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span>
+                                                   <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span>
+                                                   <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+                                                   <span class="n">y_prob</span><span class="o">=</span><span class="n">y_prob</span><span class="p">,</span>
+                                                   <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>By default, the training routine will execute on the train split, and the evaluation routine will execute on the test and validate splits. 
+However, you can also specify the split by the argument <code class="language-plaintext highlighter-rouge">target_data_split_name</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s">"train"</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="p">...</span>
+
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s">"test"</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="p">...</span>
+
+<span class="k">def</span> <span class="nf">finetune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s">"train"</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+<h3 id="maintain-and-manage-statistical-variables">Maintain and Manage Statistical Variables</h3>
+<p>The statistical variables include average/total training/test loss, number of training/test samples and so on. 
+Theoretically, the lifecycle of all the statistical variables should be within the routine. 
+FederatedScope achieves <strong>automatic</strong> lifecycle management by a wrapper class <code class="language-plaintext highlighter-rouge">CtxVar</code> and a decorator <code class="language-plaintext highlighter-rouge">@lifecycle</code>.</p>
+
+<p>The class <code class="language-plaintext highlighter-rouge">CtxVar</code> takes two arguments, where <code class="language-plaintext highlighter-rouge">obj</code> is the value of the statistical variable, and <code class="language-plaintext highlighter-rouge">lifecycle</code> is chosen from the enum class <code class="language-plaintext highlighter-rouge">federatedscope.core.auxiliaries.enums.LIFECYCLE</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CtxVar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s">"""Basic variable class
+    Arguments:
+        lifecycle: specific lifecycle of the attribute
+    """</span>
+
+    <span class="n">LIEFTCYCLES</span> <span class="o">=</span> <span class="p">[</span><span class="s">"batch"</span><span class="p">,</span> <span class="s">"epoch"</span><span class="p">,</span> <span class="s">"routine"</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">lifecycle</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">lifecycle</span> <span class="ow">in</span> <span class="n">CtxVar</span><span class="p">.</span><span class="n">LIEFTCYCLES</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">lifecycle</span> <span class="o">=</span> <span class="n">lifecycle</span>
+</code></pre></div></div>
+<p>Taking the average loss as an example, you can initialize a statistical variable <code class="language-plaintext highlighter-rouge">loss_total</code> as follows,</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_hook_on_fit_start</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">loss_total</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="p">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">LIFECYCLE.ROUTINE</code> indicates the variable <code class="language-plaintext highlighter-rouge">loss_total</code> will be deleted automatically at the end of the routine.</p>
+
+<h4 id="note">Note</h4>
+<ul>
+  <li>The wrapper class <code class="language-plaintext highlighter-rouge">CtxVar</code> is only used to record the lifecycle and <strong>won’t influence the usage of the variable</strong>. 
+e.g. in the above example <code class="language-plaintext highlighter-rouge">type(ctx.loss_total)</code> still equals <code class="language-plaintext highlighter-rouge">float</code>.</li>
+</ul>
+
+<p>While the decorator <code class="language-plaintext highlighter-rouge">@lifecycle(lifecycle)</code> decides which variables will be deleted after running the decorated function. 
+In the following example the variables created with <code class="language-plaintext highlighter-rouge">CtxVar(xxx, LIFECYCLE.EPOCH)</code> will be deleted after executing <code class="language-plaintext highlighter-rouge">_run_epoch</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">lifecycle</span><span class="p">(</span><span class="n">LIFECYCLE</span><span class="p">.</span><span class="n">EPOCH</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_run_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">epoch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s">"num_</span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_split</span><span class="si">}</span><span class="s">_epoch"</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_epoch_i</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">epoch_i</span><span class="p">,</span> <span class="s">"epoch"</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s">"on_epoch_start"</span><span class="p">]:</span>
+            <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">_run_batch</span><span class="p">(</span><span class="n">hooks_set</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s">"on_epoch_end"</span><span class="p">]:</span>
+            <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="note-1">NOTE</h4>
+<ul>
+  <li>The users can also manage the variables all by themselves. However, you must check the lifecycle of the record varibales carefully, and release them once they are not used. An unreleased variable may cause memory leakage during federated learning. 
+Feel free to implement your own algorithm in FederatedScope!</li>
+</ul>
+
+<h2 id="multi-model-trainer">Multi-model Trainer</h2>
+
+<p>Several learning methods may leverage multiple models in each client such as clustering based method [1] and multi-task learning based method [2], FederatedScope implements the <code class="language-plaintext highlighter-rouge">MultiModelTrainer</code> class to meet this requirement.</p>
+
+<ul>
+  <li>
+    <p>We instantiate multiple models, optimizer objects &amp; hook_sets as lists for <code class="language-plaintext highlighter-rouge">MultiModelTrainer</code>. Different internal models can have different hook_sets and optimizers to support diverse multi-model based methods</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="bp">self</span><span class="p">.</span><span class="n">init_multiple_models</span><span class="p">()</span>   
+<span class="c1"># -&gt; self.ctx.models = [...]  
+# -&gt; self.ctx.optimizers = [...]
+</span><span class="bp">self</span><span class="p">.</span><span class="n">init_multiple_model_hooks</span><span class="p">()</span>  
+<span class="c1"># -&gt; self.hooks_in_train_multiple_models = [...]
+# -&gt; self.hooks_in_eval_multiple_models = [...]
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>To enable easy extension, we support copy initialization from a single-model trainer.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># By default, the internal models &amp; optimizers are the same type
+</span><span class="n">additional_models</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">copy</span><span class="p">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model_nums</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">]</span> <span class="o">+</span> <span class="n">additional_models</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>We can customized hooks and optimizers for multi-model interaction. Specifically,  two types of internal model interaction mode are built in <code class="language-plaintext highlighter-rouge">MultiModelTrainer</code> .</p>
+
+    <ul>
+      <li>
+        <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># assert models_interact_mode in ["sequential", "parallel"]
+</span><span class="bp">self</span><span class="p">.</span><span class="n">models_interact_mode</span> <span class="o">=</span> <span class="n">models_interact_mode</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>The <code class="language-plaintext highlighter-rouge">sequential</code> interaction mode indicates the interaction are conducted at run_routine level</p>
+
+        <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">one</span> <span class="n">model</span> <span class="n">runs</span> <span class="n">its</span> <span class="n">whole</span> <span class="n">routine</span><span class="p">,</span> <span class="n">then</span> <span class="n">do</span> <span class="n">sth</span><span class="p">.</span> <span class="k">for</span> <span class="n">interaction</span><span class="p">,</span> <span class="n">then</span> <span class="nb">next</span> <span class="n">model</span> <span class="n">runs</span> <span class="n">its</span> <span class="n">whole</span> <span class="n">routine</span><span class="p">]</span>
+<span class="p">...</span> <span class="o">-&gt;</span> <span class="n">run_routine_model_i</span>
+		<span class="o">-&gt;</span> <span class="n">_switch_model_ctx</span>
+    <span class="o">-&gt;</span> <span class="p">(</span><span class="n">on_fit_end</span><span class="p">,</span> <span class="n">_interact_to_other_models</span><span class="p">)</span>   
+    <span class="o">-&gt;</span> <span class="n">run_routine_model_i</span><span class="o">+</span><span class="mi">1</span>
+    <span class="o">-&gt;</span> <span class="p">...</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>The <code class="language-plaintext highlighter-rouge">parallel</code>  interaction mode indicates the interaction are conducted at point-in-time level</p>
+
+        <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">At</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">point</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">time</span><span class="p">,</span> <span class="n">one</span> <span class="n">model</span> <span class="n">call</span> <span class="n">hooks</span> <span class="p">(</span><span class="n">including</span> <span class="n">interaction</span><span class="p">),</span> <span class="n">then</span> <span class="nb">next</span> <span class="n">model</span> <span class="n">call</span> <span class="n">hooks</span><span class="p">]</span>
+<span class="p">...</span> <span class="o">-&gt;</span>  <span class="p">(</span><span class="n">on_xxx_point</span><span class="p">,</span> <span class="n">hook_xxx_model_i</span><span class="p">)</span>
+    <span class="o">-&gt;</span>  <span class="p">(</span><span class="n">on_xxx_point</span><span class="p">,</span> <span class="n">_interact_to_other_models</span><span class="p">)</span>
+    <span class="o">-&gt;</span>  <span class="p">(</span><span class="n">on_xxx_point</span><span class="p">,</span> <span class="n">_switch_model_ctx</span><span class="p">)</span>
+    <span class="o">-&gt;</span>  <span class="p">(</span><span class="n">on_xxx_point</span><span class="p">,</span> <span class="n">hook_xxx_model_i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">-&gt;</span> <span class="p">...</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Note that these two modes call <code class="language-plaintext highlighter-rouge">_switch_model_ctx</code> at different positions. By default, we will switch cur_model, and optimizer, and users can override this function to support customized switch logic</p>
+
+        <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_switch_model_ctx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_model_idx</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">next_model_idx</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">next_model_idx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_model_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">models</span><span class="p">)</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_model_idx</span> <span class="o">=</span> <span class="n">next_model_idx</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">next_model_idx</span><span class="p">]</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">optimizers</span><span class="p">[</span><span class="n">next_model_idx</span><span class="p">]</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<p>[1] Felix Sattler, Klaus-Robert Müller, and Wojciech Samek. “Clustered Federated Learning: Model-Agnostic Distributed Multitask Optimization Under Privacy Constraints”. In: IEEE Transactions on Neural Networks and Learning Systems (2020).</p>
+
+<p>[2] Marfoq, Othmane, et al. “Federated multi-task learning under a mixture of distributions.” Advances in Neural Information Processing Systems 34 (2021).</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-07">April 7, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/protected-msg/" class="pagination--pager" title="Privacy Protection for Message
+">Previous</a>
+    
+    
+      <a href="/docs/pfl/" class="pagination--pager" title="Personalized FL
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

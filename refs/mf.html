@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Federated Matrix Factorization Module References &mdash; federatedscope 0.2.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Attack Module References" href="attack.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.2.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack.html">Attack Module References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Federated Matrix Factorization Module References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-mf-dataset">federatedscope.mf.dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-federatedscope.mf.model">federatedscope.mf.model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-mf-dataloader">federatedscope.mf.dataloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#federatedscope-mf-trainer">federatedscope.mf.trainer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Federated Matrix Factorization Module References</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="federated-matrix-factorization-module-references">
+<h1>Federated Matrix Factorization Module References<a class="headerlink" href="#federated-matrix-factorization-module-references" title="Permalink to this heading">¶</a></h1>
+<section id="federatedscope-mf-dataset">
+<h2>federatedscope.mf.dataset<a class="headerlink" href="#federatedscope-mf-dataset" title="Permalink to this heading">¶</a></h2>
+<span class="target" id="module-federatedscope.mf.dataset"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.HFLMovieLens10M">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">HFLMovieLens10M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#HFLMovieLens10M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.HFLMovieLens10M" title="Permalink to this definition">¶</a></dt>
+<dd><p>MovieLens10M dataset in HFL setting</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.HFLMovieLens1M">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">HFLMovieLens1M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#HFLMovieLens1M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.HFLMovieLens1M" title="Permalink to this definition">¶</a></dt>
+<dd><p>MovieLens1M dataset in HFL setting</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.HMFDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">HMFDataset</span></span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#HMFDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.HMFDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset of matrix factorization task in horizontal federated learning.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.MovieLens10M">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">MovieLens10M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#MovieLens10M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.MovieLens10M" title="Permalink to this definition">¶</a></dt>
+<dd><p>MoviesLens 10M Dataset
+(<a class="reference external" href="https://grouplens.org/datasets/movielens">https://grouplens.org/datasets/movielens</a>)</p>
+<dl class="simple">
+<dt>Format:</dt><dd><p>UserID::MovieID::Rating::Timestamp</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>str</em>) – Root directory of dataset where directory
+<code class="docutils literal notranslate"><span class="pre">MoviesLen1M</span></code> exists or will be saved to if download is
+set to True.</p></li>
+<li><p><strong>config</strong> (<em>callable</em>) – Parameters related to matrix factorization.</p></li>
+<li><p><strong>train_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of training data.</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of test data.</p></li>
+<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, downloads the dataset from the</p></li>
+<li><p><strong>and</strong> (<em>internet</em>) – puts it in root directory. If dataset is already downloaded,
+it is not
+downloaded again.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.MovieLens1M">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">MovieLens1M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#MovieLens1M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.MovieLens1M" title="Permalink to this definition">¶</a></dt>
+<dd><p>MoviesLens 1M Dataset
+(<a class="reference external" href="https://grouplens.org/datasets/movielens">https://grouplens.org/datasets/movielens</a>)</p>
+<dl class="simple">
+<dt>Format:</dt><dd><p>UserID::MovieID::Rating::Timestamp</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>str</em>) – Root directory of dataset where directory
+<code class="docutils literal notranslate"><span class="pre">MoviesLen1M</span></code> exists or will be saved to if download is
+set to True.</p></li>
+<li><p><strong>config</strong> (<em>callable</em>) – Parameters related to matrix factorization.</p></li>
+<li><p><strong>train_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of training data.</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – The proportion of test data.</p></li>
+<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, downloads the dataset from the</p></li>
+<li><p><strong>already</strong> (<em>internet and puts it in root directory. If dataset is</em>) – </p></li>
+<li><p><strong>downloaded</strong> – </p></li>
+<li><p><strong>again.</strong> (<em>it is not downloaded</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.MovieLensData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">MovieLensData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#MovieLensData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.MovieLensData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download and split MF datasets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>string</em>) – the path of data</p></li>
+<li><p><strong>num_client</strong> (<em>int</em>) – the number of clients</p></li>
+<li><p><strong>train_portion</strong> (<em>float</em>) – the portion of training data</p></li>
+<li><p><strong>download</strong> (<em>bool</em>) – indicator to download dataset</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.VFLMovieLens10M">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">VFLMovieLens10M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#VFLMovieLens10M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.VFLMovieLens10M" title="Permalink to this definition">¶</a></dt>
+<dd><p>MovieLens10M dataset in VFL setting</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.VFLMovieLens1M">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">VFLMovieLens1M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#VFLMovieLens1M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.VFLMovieLens1M" title="Permalink to this definition">¶</a></dt>
+<dd><p>MovieLens1M dataset in VFL setting</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataset.VMFDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataset.</span></span><span class="sig-name descname"><span class="pre">VMFDataset</span></span><a class="reference internal" href="_modules/federatedscope/mf/dataset/movielens.html#VMFDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataset.VMFDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset of matrix factorization task in vertical federated learning.</p>
+</dd></dl>
+
+</section>
+<section id="module-federatedscope.mf.model">
+<span id="federatedscope-mf-model"></span><h2>federatedscope.mf.model<a class="headerlink" href="#module-federatedscope.mf.model" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.model.BasicMFNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.model.</span></span><span class="sig-name descname"><span class="pre">BasicMFNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hidden</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#BasicMFNet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.BasicMFNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic model for MF task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_user</strong> (<em>int</em>) – the number of users</p></li>
+<li><p><strong>num_item</strong> (<em>int</em>) – the number of items</p></li>
+<li><p><strong>num_hidden</strong> (<em>int</em>) – the dimension of embedding vector</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.model.BasicMFNet.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#BasicMFNet.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.BasicMFNet.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.model.BasicMFNet.load_state_dict">
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#BasicMFNet.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.BasicMFNet.load_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies parameters and buffers from <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="federatedscope.mf.model.BasicMFNet.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> into
+this module and its descendants. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">strict</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then
+the keys of <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="federatedscope.mf.model.BasicMFNet.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> must exactly match the keys returned
+by this module’s <code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_dict</strong> (<em>dict</em>) – a dict containing parameters and
+persistent buffers.</p></li>
+<li><p><strong>strict</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to strictly enforce that the keys
+in <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="federatedscope.mf.model.BasicMFNet.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> match the keys returned by this module’s
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code> function. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>missing_keys</strong> is a list of str containing the missing keys</p></li>
+<li><p><strong>unexpected_keys</strong> is a list of str containing the unexpected keys</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">NamedTuple</span></code> with <code class="docutils literal notranslate"><span class="pre">missing_keys</span></code> and <code class="docutils literal notranslate"><span class="pre">unexpected_keys</span></code> fields</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a parameter or buffer is registered as <code class="docutils literal notranslate"><span class="pre">None</span></code> and its corresponding key
+exists in <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="federatedscope.mf.model.BasicMFNet.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a>, <a class="reference internal" href="#federatedscope.mf.model.BasicMFNet.load_state_dict" title="federatedscope.mf.model.BasicMFNet.load_state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code></a> will raise a
+<code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.model.BasicMFNet.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#BasicMFNet.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.BasicMFNet.state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary containing a whole state of the module.</p>
+<p>Both parameters and persistent buffers (e.g. running averages) are
+included. Keys are corresponding parameter and buffer names.
+Parameters and buffers set to <code class="docutils literal notranslate"><span class="pre">None</span></code> are not included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a dictionary containing a whole state of the module</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">module</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;bias&#39;, &#39;weight&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.model.HMFNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.model.</span></span><span class="sig-name descname"><span class="pre">HMFNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hidden</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#HMFNet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.HMFNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>MF model for horizontal federated learning</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.model.VMFNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.model.</span></span><span class="sig-name descname"><span class="pre">VMFNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hidden</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model.html#VMFNet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.VMFNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>MF model for vertical federated learning</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.mf.model.get_mfnet">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.model.</span></span><span class="sig-name descname"><span class="pre">get_mfnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/model/model_builder.html#get_mfnet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.model.get_mfnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the MF model according to model configs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_config</strong> – the model related parameters</p></li>
+<li><p><strong>data_shape</strong> (<em>int</em>) – the input shape of the model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="federatedscope-mf-dataloader">
+<h2>federatedscope.mf.dataloader<a class="headerlink" href="#federatedscope-mf-dataloader" title="Permalink to this heading">¶</a></h2>
+<span class="target" id="module-federatedscope.mf.dataloader"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.dataloader.MFDataLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataloader.</span></span><span class="sig-name descname"><span class="pre">MFDataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">csc_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataloader/dataloader.html#MFDataLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataloader.MFDataLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>DataLoader for MF dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>csc_matrix</em>) – sparse MF dataset</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – the size of batch data</p></li>
+<li><p><strong>shuffle</strong> (<em>bool</em>) – shuffle the dataset</p></li>
+<li><p><strong>drop_last</strong> (<em>bool</em>) – drop the last batch if True</p></li>
+<li><p><strong>theta</strong> (<em>int</em>) – the maximal number of ratings for each user</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.dataloader.MFDataLoader._trim_data">
+<span class="sig-name descname"><span class="pre">_trim_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataloader/dataloader.html#MFDataLoader._trim_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataloader.MFDataLoader._trim_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trim rating data by parameter theta (per-user privacy)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>csc_matrix</em>) – the dataset</p></li>
+<li><p><strong>theta</strong> (<em>int</em>) – The maximal number of ratings for each user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.mf.dataloader.load_mf_dataset">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.dataloader.</span></span><span class="sig-name descname"><span class="pre">load_mf_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_cfgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/dataloader/dataloader.html#load_mf_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.dataloader.load_mf_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dataset of matrix factorization</p>
+<dl>
+<dt>Format:</dt><dd><dl>
+<dt>{</dt><dd><dl class="simple">
+<dt>‘client_id’: {</dt><dd><p>‘train’: DataLoader(),
+‘test’: DataLoader(),
+‘val’: DataLoader()</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="federatedscope-mf-trainer">
+<h2>federatedscope.mf.trainer<a class="headerlink" href="#federatedscope-mf-trainer" title="Permalink to this heading">¶</a></h2>
+<span class="target" id="module-federatedscope.mf.trainer"></span><dl class="py class">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">MFTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_for_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trainer for MF task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.module</em>) – MF model.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – input data</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – device.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer._hook_on_batch_end">
+<span class="sig-name descname"><span class="pre">_hook_on_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer._hook_on_batch_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer._hook_on_batch_end" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl>
+<dt>The modified attributes and according operations are shown below:</dt><dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 56%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Operation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.num_samples</span></code></p></td>
+<td><p>Add <code class="docutils literal notranslate"><span class="pre">ctx.batch_size</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.loss_batch_total</span></code></p></td>
+<td><p>Add batch loss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.loss_regular_total</span></code></p></td>
+<td><p>Add batch regular loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.ys_true</span></code></p></td>
+<td><p>Append <code class="docutils literal notranslate"><span class="pre">ctx.y_true</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.ys_prob</span></code></p></td>
+<td><p>Append <code class="docutils literal notranslate"><span class="pre">ctx.ys_prob</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer._hook_on_batch_forward">
+<span class="sig-name descname"><span class="pre">_hook_on_batch_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer._hook_on_batch_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer._hook_on_batch_forward" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl>
+<dt>The modified attributes and according operations are shown below:</dt><dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 53%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Operation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.y_true</span></code></p></td>
+<td><p>Move to <cite>ctx.device</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.y_prob</span></code></p></td>
+<td><p>Forward propagation get y_prob</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.loss_batch</span></code></p></td>
+<td><p>Calculate the loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.batch_size</span></code></p></td>
+<td><p>Get the batch_size</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer._hook_on_batch_forward_flop_count">
+<span class="sig-name descname"><span class="pre">_hook_on_batch_forward_flop_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer._hook_on_batch_forward_flop_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer._hook_on_batch_forward_flop_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The monitoring hook to calculate the flops during the fl course</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For customized cases that the forward process is not only           based on ctx.model, please override this function (inheritance           case) or replace this hook (plug-in case)</p>
+<dl>
+<dt>The modified attributes and according operations are shown below:</dt><dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 56%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Operation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.monitor</span></code></p></td>
+<td><p>Track average flops</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer._hook_on_fit_end">
+<span class="sig-name descname"><span class="pre">_hook_on_fit_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer._hook_on_fit_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer._hook_on_fit_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate metrics.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl>
+<dt>The modified attributes and according operations are shown below:</dt><dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Operation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.ys_true</span></code></p></td>
+<td><p>Convert to <code class="docutils literal notranslate"><span class="pre">numpy.array</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.ys_prob</span></code></p></td>
+<td><p>Convert to <code class="docutils literal notranslate"><span class="pre">numpy.array</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.monitor</span></code></p></td>
+<td><p>Evaluate the results</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctx.eval_metrics</span></code></p></td>
+<td><p>Get evaluated results from             <code class="docutils literal notranslate"><span class="pre">ctx.monitor</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.MFTrainer.parse_data">
+<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer.html#MFTrainer.parse_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.MFTrainer.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate “{}_data”, “{}_loader” and “num_{}_data” for different
+modes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.embedding_clip">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">embedding_clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#embedding_clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.embedding_clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip embedding vector according to $R$</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> (<em>tensor</em>) – The embedding vector</p></li>
+<li><p><strong>R</strong> (<em>int</em>) – The upper bound of ratings</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.hook_on_batch_backward">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">hook_on_batch_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#hook_on_batch_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.hook_on_batch_backward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private local updates in SGDMF</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.init_sgdmf_ctx">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">init_sgdmf_ctx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#init_sgdmf_ctx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.init_sgdmf_ctx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init necessary attributes used in SGDMF,
+some new attributes will be with prefix <cite>SGDMF</cite> optimizer to avoid
+namespace pollution</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="federatedscope.mf.trainer.wrap_MFTrainer">
+<span class="sig-prename descclassname"><span class="pre">federatedscope.mf.trainer.</span></span><span class="sig-name descname"><span class="pre">wrap_MFTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.mf.trainer.MFTrainer" title="federatedscope.mf.trainer.trainer.MFTrainer"><span class="pre">MFTrainer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#federatedscope.mf.trainer.MFTrainer" title="federatedscope.mf.trainer.trainer.MFTrainer"><span class="pre">MFTrainer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/federatedscope/mf/trainer/trainer_sgdmf.html#wrap_MFTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#federatedscope.mf.trainer.wrap_MFTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build <cite>SGDMFTrainer</cite> with a plug-in manner, by registering new
+functions into specific <cite>MFTrainer</cite></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="attack.html" class="btn btn-neutral float-left" title="Attack Module References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

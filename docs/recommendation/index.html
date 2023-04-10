@@ -1,0 +1,1054 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Recommendation - FederatedScope</title>
+<meta name="description" content="Federated Recommendation.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Recommendation">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/recommendation/">
+
+
+  <meta property="og:description" content="Federated Recommendation.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Recommendation">
+  <meta name="twitter:description" content="Federated Recommendation.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/recommendation/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-13T15:59:57-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/recommendation/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/" class="active">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Recommendation">
+    <meta itemprop="description" content="Federated Recommendation.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-13T15:59:57-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Recommendation
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#matrix-factorization">Matrix Factorization</a><ul><li><a href="#background">Background</a></li><li><a href="#mf-in-federated-learning">MF in Federated Learning</a><ul><li><a href="#vertical-fl">Vertical FL</a></li><li><a href="#horizontal-fl">Horizontal FL</a></li><li><a href="#local-fl">Local FL</a></li></ul></li><li><a href="#support-of-mf">Support of MF</a><ul><li><a href="#mf-models">MF models</a></li><li><a href="#mf-datasets">MF Datasets</a><ul><li><a href="#data-information">Data information</a></li><li><a href="#fl-setting">FL Setting</a></li></ul></li><li><a href="#mf-trainer">MF Trainer</a></li></ul></li><li><a href="#start-an-example">Start an Example</a></li><li><a href="#privacy-protection">Privacy Protection</a><ul><li><a href="#vfl-sgdmf">VFL-SGDMF</a><ul><li><a href="#start-an-example-1">Start an Example</a></li><li><a href="#evaluation">Evaluation</a></li></ul></li><li><a href="#hfl-sgdmf">HFL-SGDMF</a><ul><li><a href="#start-and-example">Start and Example</a></li><li><a href="#evaluation-1">Evaluation</a></li></ul></li></ul></li><li><a href="#references">References</a></li></ul></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <h2 id="matrix-factorization">Matrix Factorization</h2>
+<p>FederatedScope has built in the matrix factorization (MF) task for recommendation, which provides flexible supports for MF models, datasets and federated settings. In this tutorial, we will introduce</p>
+
+<ul>
+  <li>The matrix factorization task in FederatedScope</li>
+  <li>How to implement matrix factorization task with FederatedScope</li>
+  <li>The privacy preserving techniques used in FederatedScope</li>
+</ul>
+
+<h3 id="background">Background</h3>
+<p>Matrix factorization (MF) [1-3] is a fundamental building block in recommendation system. For a matrix, a row corresponds to a user, while a column corresponds to an item. The target of matrix factorization is to approximate unobserved ratings by constructing user embedding $U\in{\mathbb{R}^{n\times{d}}}$ and item embedding $V\in{\mathbb{R}^{m\times{d}}}$.</p>
+
+<p> <img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648197184171-dca7f204-192f-424d-9794-52e8bf0d195c.png#clientId=u9a669a0e-153f-4&amp;crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;from=ui&amp;height=200&amp;id=udb15df61&amp;margin=%5Bobject%20Object%5D&amp;name=mf_task.png&amp;originHeight=368&amp;originWidth=1031&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=false&amp;size=16721&amp;status=done&amp;style=none&amp;taskId=udbf3570a-b126-41e7-bb07-0479a3c4cf7&amp;title=&amp;width=559" alt="mf_task.png" /></p>
+
+<p>Supposing $X\in{\mathbb{R}^{n\times{m}}}$ is the target rating matrix, the task aims at minimizing the loss function:</p>
+
+\[\frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}} \mathcal{L}_{i,j} (X,U,V) = \frac{1}{| \mathcal{D} |} \sum_{(i,j) \in \mathcal{D}}( X_{i,j} - &lt;u_i, v_j&gt;)^2\]
+
+<p>where $u_i \in{\mathbb{R}^{n \times{1}}}$ and $v_j \in{\mathbb{R}^{m \times{1}}}$ are the user and item vectors of $U$ and $V$.</p>
+
+<h3 id="mf-in-federated-learning">MF in Federated Learning</h3>
+<p>In federated learning, the dataset is distributed in different clients. The vanilla federated matrix factorization algorithm runs as follows</p>
+
+<ul>
+  <li>Step1: Server initializes shared parameters</li>
+  <li>Step2: Server broadcasts shared parameters to all participators</li>
+  <li>Step3: Each participator updates their parameters locally</li>
+  <li>Step4: Participators upload their shared parameters to the server</li>
+  <li>Step5: Server aggregates the received parameters and repeat Step2 until the training is finished</li>
+</ul>
+
+<p>With different data partitions, matrix factorization has three FL settings: <strong>Vertical FL</strong>(VFL), <strong>Horizontal FL</strong>(HFL) and <strong>Local FL</strong>(LFL).</p>
+
+<h4 id="vertical-fl">Vertical FL</h4>
+<p>In VFL, the set of users is the same across different databases, and each participators only has partial items. In this setting, the user embedding is shared across all participators and each client maintains its own item embedding.  <br /><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1647842481181-dd8bb1bf-44f2-47a9-aac7-e7cc7226d258.png#crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;from=url&amp;height=262&amp;id=Gb7zt&amp;margin=%5Bobject%20Object%5D&amp;originHeight=600&amp;originWidth=732&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=true&amp;status=done&amp;style=none&amp;title=VFL%20setting%20%5B3%5D&amp;width=320" alt="VFL setting [3]" title="VFL setting [3]" /></p>
+
+<h4 id="horizontal-fl">Horizontal FL</h4>
+<p>In HFL, the set of items is the same across different participators, and they only share the item embedding with the coordination server. <br /><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648018555853-f80b0128-83c6-4acd-9d41-a63571053cbf.png#clientId=u2fd8d2dc-4f3e-4&amp;crop=0&amp;crop=0&amp;crop=1&amp;crop=0.8809&amp;from=ui&amp;height=314&amp;id=uc6843663&amp;margin=%5Bobject%20Object%5D&amp;name=%E6%88%AA%E5%B1%8F2022-03-21%20%E4%B8%8B%E5%8D%882.03.06.png&amp;originHeight=638&amp;originWidth=650&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=true&amp;size=139863&amp;status=done&amp;style=none&amp;taskId=u058a337e-fc56-4087-863a-957ce056aeb&amp;title=HFL%20setting%20%5B3%5D&amp;width=320" alt="截屏2022-03-21 下午2.03.06.png" title="HFL setting [3]" /></p>
+
+<h4 id="local-fl">Local FL</h4>
+<p>LFL is a special case of HFL, where each user owns her/his own ratings. It’s a common scenario on mobile devices. <br /><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/9556273/1648018785541-5623924c-ef1f-49f4-9ce5-025bb46cb970.png#clientId=u2fd8d2dc-4f3e-4&amp;crop=0&amp;crop=0&amp;crop=1&amp;crop=1&amp;from=ui&amp;height=266&amp;id=u3e77b969&amp;margin=%5Bobject%20Object%5D&amp;name=%E6%88%AA%E5%B1%8F2022-03-23%20%E4%B8%8B%E5%8D%882.59.34.png&amp;originHeight=652&amp;originWidth=784&amp;originalType=binary&amp;ratio=1&amp;rotation=0&amp;showTitle=true&amp;size=110371&amp;status=done&amp;style=none&amp;taskId=uf480945a-2c26-4d93-912b-909acadcc62&amp;title=LFL%20setting%20%5B3%5D&amp;width=320" alt="截屏2022-03-23 下午2.59.34.png" title="LFL setting [3]" /></p>
+
+<h3 id="support-of-mf">Support of MF</h3>
+<p>To support federated MF, FederatedScope builds in MF models, datasets and trainer in different federated learning settings.</p>
+
+<h4 id="mf-models">MF models</h4>
+<p>MF model has two trainable parameters: user embedding and item embedding. Based on the given federated setting, they share different embedding with the other participators. FederatedScope achieves <code class="language-plaintext highlighter-rouge">VMFNet</code>and <code class="language-plaintext highlighter-rouge">HMFNet</code>to support the settings of VFL and HFL.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VMFNet</span><span class="p">(</span><span class="n">BasicMFNet</span><span class="p">):</span>
+    <span class="n">name_reserve</span> <span class="o">=</span> <span class="s">"embed_item"</span>
+
+
+<span class="k">class</span> <span class="nc">HMFNet</span><span class="p">(</span><span class="n">BasicMFNet</span><span class="p">):</span>
+    <span class="n">name_reserve</span> <span class="o">=</span> <span class="s">"embed_user"</span>
+</code></pre></div></div>
+<p>The attribute <code class="language-plaintext highlighter-rouge">name_reserve</code>specifics the name of local embedding vector, and the parent class<code class="language-plaintext highlighter-rouge">BasicMFNet</code>defines the common actions, including</p>
+
+<ul>
+  <li>load/fetch parameters, and</li>
+  <li>forward propagation.</li>
+</ul>
+
+<p>Note the rating matrix is usually very sparse. To impove the efficiency, FederatedScope creates the predicted matrix and the target rating matrix as sparse tensors.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BasicMFNet</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="p">...</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">ratings</span><span class="p">):</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">embed_user</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">embed_item</span><span class="p">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span>
+                                        <span class="n">ratings</span><span class="p">,</span>
+                                        <span class="n">size</span><span class="o">=</span><span class="n">pred</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span>
+                                        <span class="n">device</span><span class="o">=</span><span class="n">pred</span><span class="p">.</span><span class="n">device</span><span class="p">,</span>
+                                        <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">).</span><span class="n">to_dense</span><span class="p">()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sparse_coo_tensor</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span>
+                                       <span class="n">np</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ratings</span><span class="p">)),</span>
+                                       <span class="n">size</span><span class="o">=</span><span class="n">pred</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span>
+                                       <span class="n">device</span><span class="o">=</span><span class="n">pred</span><span class="p">.</span><span class="n">device</span><span class="p">,</span>
+                                       <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">).</span><span class="n">to_dense</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">mask</span> <span class="o">*</span> <span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">prod</span><span class="p">(</span><span class="n">pred</span><span class="p">.</span><span class="n">size</span><span class="p">()))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratings</span><span class="p">)</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+<h4 id="mf-datasets">MF Datasets</h4>
+<p>MovieLens is series of movie recommendation datasets collected from the website <a href="https://movielens.org">MovieLens</a>. <br />To satisify the requirement of different FL settings, FederatedScope splits the dataset into <code class="language-plaintext highlighter-rouge">VFLMoviesLens</code>and <code class="language-plaintext highlighter-rouge">HFLMovieLens</code>as follows. For example, if your want to use the dataset MovieLens1M in VFL settings, just set <code class="language-plaintext highlighter-rouge">cfg.data.type='VFLMovieLens1M'</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VFLMovieLens1M</span><span class="p">(</span><span class="n">MovieLens1M</span><span class="p">,</span> <span class="n">VMFDataset</span><span class="p">):</span>
+    <span class="s">"""MovieLens1M dataset in VFL setting
+    
+    """</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">HFLMovieLens1M</span><span class="p">(</span><span class="n">MovieLens1M</span><span class="p">,</span> <span class="n">HMFDataset</span><span class="p">):</span>
+    <span class="s">"""MovieLens1M dataset in HFL setting
+
+    """</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">VFLMovieLens10M</span><span class="p">(</span><span class="n">MovieLens10M</span><span class="p">,</span> <span class="n">VMFDataset</span><span class="p">):</span>
+    <span class="s">"""MovieLens10M dataset in VFL setting
+
+    """</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">HFLMovieLens10M</span><span class="p">(</span><span class="n">MovieLens10M</span><span class="p">,</span> <span class="n">HMFDataset</span><span class="p">):</span>
+    <span class="s">"""MovieLens10M dataset in HFL setting
+
+    """</span>
+    <span class="k">pass</span>
+</code></pre></div></div>
+
+<p>The parent classes of the above datasets define the data information and the FL setting respectively.</p>
+
+<h5 id="data-information">Data information</h5>
+<p>The first parent class <code class="language-plaintext highlighter-rouge">MovieLens1M</code> and <code class="language-plaintext highlighter-rouge">MovieLens10M</code>provide the details (e.g. url, md5, filename).</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MovieLens1M</span><span class="p">(</span><span class="n">MovieLensData</span><span class="p">):</span>
+    <span class="s">"""MoviesLens 1M Dataset
+    (https://grouplens.org/datasets/movielens)
+
+    Format:
+        UserID::MovieID::Rating::Timestamp
+
+    Arguments:
+        root (str): Root directory of dataset where directory
+            ``MoviesLen1M`` exists or will be saved to if download is set to True.
+        config (callable): Parameters related to matrix factorization.
+        train_size (float, optional): The proportion of training data.
+        test_size (float, optional): The proportion of test data.
+        download  (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+
+    """</span>
+    <span class="n">base_folder</span> <span class="o">=</span> <span class="s">'MovieLens1M'</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"https://files.grouplens.org/datasets/movielens/ml-1m.zip"</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s">"ml-1m"</span>
+    <span class="n">zip_md5</span> <span class="o">=</span> <span class="s">"c4d9eecfca2ab87c1945afe126590906"</span>
+    <span class="n">raw_file</span> <span class="o">=</span> <span class="s">"ratings.dat"</span>
+    <span class="n">raw_file_md5</span> <span class="o">=</span> <span class="s">"a89aa3591bc97d6d4e0c89459ff39362"</span>
+
+
+<span class="k">class</span> <span class="nc">MovieLens10M</span><span class="p">(</span><span class="n">MovieLensData</span><span class="p">):</span>
+    <span class="s">"""MoviesLens 10M Dataset
+    (https://grouplens.org/datasets/movielens)
+
+    Format:
+        UserID::MovieID::Rating::Timestamp
+
+    Arguments:
+        root (str): Root directory of dataset where directory
+            ``MoviesLen1M`` exists or will be saved to if download is set to True.
+        config (callable): Parameters related to matrix factorization.
+        train_size (float, optional): The proportion of training data.
+        test_size (float, optional): The proportion of test data.
+        download  (bool, optional): If true, downloads the dataset from the internet and
+            puts it in root directory. If dataset is already downloaded, it is not
+            downloaded again.
+
+    """</span>
+    <span class="n">base_folder</span> <span class="o">=</span> <span class="s">'MovieLens10M'</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"https://files.grouplens.org/datasets/movielens/ml-10m.zip"</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s">"ml-10M100K"</span>
+
+    <span class="n">zip_md5</span> <span class="o">=</span> <span class="s">"ce571fd55effeba0271552578f2648bd"</span>
+    <span class="n">raw_file</span> <span class="o">=</span> <span class="s">"ratings.dat"</span>
+    <span class="n">raw_file_md5</span> <span class="o">=</span> <span class="s">"3f317698625386f66177629fa5c6b2dc"</span>
+</code></pre></div></div>
+
+<h5 id="fl-setting">FL Setting</h5>
+<p><code class="language-plaintext highlighter-rouge">VMFDataset</code>and <code class="language-plaintext highlighter-rouge">HMFDataset</code>specific the spliting of MF datasets (VFL or HFL).</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">VMFDataset</span><span class="p">:</span>
+    <span class="s">"""Dataset of matrix factorization task in vertical federated learning.
+
+    """</span>
+    <span class="k">def</span> <span class="nf">_split_n_clients_rating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratings</span><span class="p">:</span> <span class="n">csc_matrix</span><span class="p">,</span> <span class="n">num_client</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                <span class="n">test_portion</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">id_item</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">n_item</span><span class="p">)</span>
+        <span class="n">shuffle</span><span class="p">(</span><span class="n">id_item</span><span class="p">)</span>
+        <span class="n">items_per_client</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">id_item</span><span class="p">,</span> <span class="n">num_client</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">clientId</span><span class="p">,</span> <span class="n">items</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items_per_client</span><span class="p">):</span>
+            <span class="n">client_ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="p">[:,</span> <span class="n">items</span><span class="p">]</span>
+            <span class="n">train_ratings</span><span class="p">,</span> <span class="n">test_ratings</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_split_train_test_ratings</span><span class="p">(</span>
+                <span class="n">client_ratings</span><span class="p">,</span> <span class="n">test_portion</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">clientId</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"train"</span><span class="p">:</span> <span class="n">train_ratings</span><span class="p">,</span> <span class="s">"test"</span><span class="p">:</span> <span class="n">test_ratings</span><span class="p">}</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+
+<span class="k">class</span> <span class="nc">HMFDataset</span><span class="p">:</span>
+    <span class="s">"""Dataset of matrix factorization task in horizontal federated learning.
+
+    """</span>
+    <span class="k">def</span> <span class="nf">_split_n_clients_rating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratings</span><span class="p">:</span> <span class="n">csc_matrix</span><span class="p">,</span> <span class="n">num_client</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                <span class="n">test_portion</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">id_user</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">n_user</span><span class="p">)</span>
+        <span class="n">shuffle</span><span class="p">(</span><span class="n">id_user</span><span class="p">)</span>
+        <span class="n">users_per_client</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">id_user</span><span class="p">,</span> <span class="n">num_client</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cliendId</span><span class="p">,</span> <span class="n">users</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">users_per_client</span><span class="p">):</span>
+            <span class="n">client_ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="p">[</span><span class="n">users</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">train_ratings</span><span class="p">,</span> <span class="n">test_ratings</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_split_train_test_ratings</span><span class="p">(</span>
+                <span class="n">client_ratings</span><span class="p">,</span> <span class="n">test_portion</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">cliendId</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"train"</span><span class="p">:</span> <span class="n">train_ratings</span><span class="p">,</span> <span class="s">"test"</span><span class="p">:</span> <span class="n">test_ratings</span><span class="p">}</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+</code></pre></div></div>
+
+<h4 id="mf-trainer">MF Trainer</h4>
+<p>Considering the target rating matrix is large and sparse, FederatedScope achieves<code class="language-plaintext highlighter-rouge">MFTrainer</code>to support MF tasks during federated training.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MFTrainer</span><span class="p">(</span><span class="n">GeneralTrainer</span><span class="p">):</span>
+    <span class="s">"""
+    model (torch.nn.module): MF model.
+    data (dict): input data
+    device (str): device.
+    """</span>
+
+    <span class="k">def</span> <span class="nf">_hook_on_fit_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"{}_avg_loss"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">):</span> <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"loss_batch_total_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">))</span> <span class="o">/</span>
+            <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"num_samples_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">)),</span>
+            <span class="s">"{}_total"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">):</span> <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"num_samples_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">))</span>
+        <span class="p">}</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">'eval_metrics'</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_hook_on_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="c1"># update statistics
+</span>        <span class="nb">setattr</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="p">,</span> <span class="s">"loss_batch_total_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">),</span>
+            <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"loss_batch_total_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">))</span> <span class="o">+</span>
+            <span class="n">ctx</span><span class="p">.</span><span class="n">loss_batch</span><span class="p">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="n">ctx</span><span class="p">.</span><span class="n">batch_size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"loss_regular"</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">ctx</span><span class="p">.</span><span class="n">loss_regular</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">loss_regular</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loss_regular</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">loss_regular</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="nb">setattr</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="p">,</span> <span class="s">"loss_regular_total_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">),</span>
+            <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"loss_regular_total_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">))</span> <span class="o">+</span>
+            <span class="n">loss_regular</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="p">,</span> <span class="s">"num_samples_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">),</span>
+            <span class="n">ctx</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"num_samples_{}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">cur_mode</span><span class="p">))</span> <span class="o">+</span> <span class="n">ctx</span><span class="p">.</span><span class="n">batch_size</span><span class="p">)</span>
+
+        <span class="c1"># clean temp ctx
+</span>        <span class="n">ctx</span><span class="p">.</span><span class="n">data_batch</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">loss_task</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">loss_batch</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">loss_regular</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">y_true</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">y_prob</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_hook_on_batch_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">indices</span><span class="p">,</span> <span class="n">ratings</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">data_batch</span>
+        <span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">ratio</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">ratings</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">loss_batch</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="o">*</span> <span class="n">ratio</span>
+
+        <span class="n">ctx</span><span class="p">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratings</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="start-an-example">Start an Example</h3>
+<p>Taking the combination of dataset <code class="language-plaintext highlighter-rouge">MovieLen1M</code>and VFL setting as an example, the running command is as follows.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python main.py <span class="nt">--cfg</span> federatedscope/mf/baseline/fedavg_vfl_fedavg_standalone_on_movielens1m.yaml
+</code></pre></div></div>
+
+<p>More running scripts can be found in <code class="language-plaintext highlighter-rouge">federatedscope/scripts</code>. Partial experimental results are shown as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Federated setting</th>
+      <th>Dataset</th>
+      <th>Number of clients</th>
+      <th>Loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>VFL</td>
+      <td>MovieLens1M</td>
+      <td>5</td>
+      <td>1.16</td>
+    </tr>
+    <tr>
+      <td>HFL</td>
+      <td>MovieLens1M</td>
+      <td>5</td>
+      <td>1.13</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="privacy-protection">Privacy Protection</h3>
+<p>To protect the user privacy, FederatedScope implements two differential privacy algorithms, VFL-SGDMF and HFL-SGDMF in [vldb22] as plug-ins.</p>
+
+<h4 id="vfl-sgdmf">VFL-SGDMF</h4>
+<p>VFL-SGDMF is a DP based algorithm for privacy preserving in VFL setting. It satisfies $(\epsilon, \delta)$privacy by injecting noise into the embedding matrix. More details please refer to [3]. The related parameters are shown as follows.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ------------------------------------------------------------------------ #
+# VFL-SGDMF(dp) related options
+# ------------------------------------------------------------------------ #
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+
+<span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">use</span> <span class="o">=</span> <span class="bp">False</span>    <span class="c1"># if use sgdmf
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">5.</span>         <span class="c1"># The upper bound of rating
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">4.</span>   <span class="c1"># \epsilon in dp
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mf">0.5</span>    <span class="c1"># \delta in dp
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">constant</span> <span class="o">=</span> <span class="mf">1.</span>  <span class="c1"># constant
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">theta</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>     <span class="c1"># -1 means per-rating privacy, otherwise per-user privacy
+</span></code></pre></div></div>
+
+<p>VFL-SGDMF is implemented as plug-in in <code class="language-plaintext highlighter-rouge">federatedscope/mf/trainer/trainer_sgdmf.py</code>. Similar with the other plug-in algorithms, it initializes and registers hook functions in the function<code class="language-plaintext highlighter-rouge">wrap_MFTrainer</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wrap_MFTrainer</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MFTrainer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">MFTrainer</span><span class="p">]:</span>
+    <span class="s">"""Build `SGDMFTrainer` with a plug-in manner, by registering new functions into specific `MFTrainer`
+
+    """</span>
+
+    <span class="c1"># ---------------- attribute-level plug-in -----------------------
+</span>    <span class="n">init_sgdmf_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+
+    <span class="c1"># ---------------- action-level plug-in -----------------------
+</span>    <span class="n">base_trainer</span><span class="p">.</span><span class="n">replace_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_batch_backward</span><span class="p">,</span>
+                                       <span class="n">target_trigger</span><span class="o">=</span><span class="s">"on_batch_backward"</span><span class="p">,</span>
+                                       <span class="n">target_hook_name</span><span class="o">=</span><span class="s">"_hook_on_batch_backward"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base_trainer</span>
+</code></pre></div></div>
+
+<p>The embedding clipping and noise injection is finished in the new hook function <code class="language-plaintext highlighter-rouge">hook_on_batch_backward</code>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">hook_on_batch_backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="s">"""Private local updates in SGDMF
+
+    """</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">loss_task</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+    
+    <span class="c1"># Inject noise
+</span>    <span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_user</span><span class="p">.</span><span class="n">grad</span><span class="p">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">get_random</span><span class="p">(</span>
+        <span class="s">"Normal"</span><span class="p">,</span>
+        <span class="n">sample_shape</span><span class="o">=</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_user</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"loc"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">"scale"</span><span class="p">:</span> <span class="n">ctx</span><span class="p">.</span><span class="n">scale</span>
+        <span class="p">},</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_user</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_item</span><span class="p">.</span><span class="n">grad</span><span class="p">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">get_random</span><span class="p">(</span>
+        <span class="s">"Normal"</span><span class="p">,</span>
+        <span class="n">sample_shape</span><span class="o">=</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_item</span><span class="p">.</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"loc"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">"scale"</span><span class="p">:</span> <span class="n">ctx</span><span class="p">.</span><span class="n">scale</span>
+        <span class="p">},</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_item</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="c1"># Embedding clipping
+</span>    <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">embedding_clip</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_user</span><span class="p">,</span> <span class="n">ctx</span><span class="p">.</span><span class="n">sgdmf_R</span><span class="p">)</span>
+        <span class="n">embedding_clip</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">embed_item</span><span class="p">,</span> <span class="n">ctx</span><span class="p">.</span><span class="n">sgdmf_R</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h5 id="start-an-example-1">Start an Example</h5>
+<p>Similarly, taking <code class="language-plaintext highlighter-rouge">MovieLens1M</code> as an example, the running script is shown as follows.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
+</code></pre></div></div>
+
+<h5 id="evaluation">Evaluation</h5>
+<p>Take the dataset <code class="language-plaintext highlighter-rouge">MovieLens1M</code> as an example, the detailed settings are listed in <code class="language-plaintext highlighter-rouge">federatedscope/mf/baseline/vfl_fedavg_standalone_on_movielens1m.yaml</code> and <code class="language-plaintext highlighter-rouge">federatedscope/mf/baseline/vfl-sgdmf_fedavg_standalone_on_movielens1m.yaml</code>. VFL-SGDMF is evaluated as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Algo</th>
+      <th>$\epsilon$</th>
+      <th>$\delta$</th>
+      <th>Loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>VFL</td>
+      <td>-</td>
+      <td>-</td>
+      <td>1.16</td>
+    </tr>
+    <tr>
+      <td>VFL-SGDMF</td>
+      <td>4</td>
+      <td>0.75</td>
+      <td>1.47</td>
+    </tr>
+    <tr>
+      <td>VFL-SGDMF</td>
+      <td>4</td>
+      <td>0.25</td>
+      <td>1.54</td>
+    </tr>
+    <tr>
+      <td>VFL-SGDMF</td>
+      <td>2</td>
+      <td>0.75</td>
+      <td>1.55</td>
+    </tr>
+    <tr>
+      <td>VFL-SGDMF</td>
+      <td>2</td>
+      <td>0.25</td>
+      <td>1.56</td>
+    </tr>
+    <tr>
+      <td>VFL-SGDMF</td>
+      <td>0.5</td>
+      <td>0.75</td>
+      <td>1.68</td>
+    </tr>
+    <tr>
+      <td>VFL-SGDMF</td>
+      <td>0.5</td>
+      <td>0.25</td>
+      <td>1.84</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="hfl-sgdmf">HFL-SGDMF</h4>
+<p>On the other side,  HFL-SGDMF protects privacy in HFL setting in the same way, and share the same parameters with VFL-SGDMF.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ------------------------------------------------------------------------ #
+# VFL-SGDMF(dp) related options
+# ------------------------------------------------------------------------ #
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+
+<span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">use</span> <span class="o">=</span> <span class="bp">False</span>    <span class="c1"># if use sgdmf
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">5.</span>         <span class="c1"># The upper bound of rating
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">4.</span>   <span class="c1"># \epsilon in dp
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mf">0.5</span>    <span class="c1"># \delta in dp
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">constant</span> <span class="o">=</span> <span class="mf">1.</span>  <span class="c1"># constant
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">sgdmf</span><span class="p">.</span><span class="n">theta</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>     <span class="c1"># -1 means per-rating privacy, otherwise per-user privacy
+</span></code></pre></div></div>
+
+<h5 id="start-and-example">Start and Example</h5>
+<p>Run an example of HFL-SGDMF by the following command.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/mf/baseline/hfl-sgdmf_fedavg_standalone_on_movielens1m.yaml
+</code></pre></div></div>
+
+<h5 id="evaluation-1">Evaluation</h5>
+<p>The evaluation results of HFL-SGDMF on the dataset MovieLens1M are shown as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Algo</th>
+      <th>$\epsilon$</th>
+      <th>$\delta$</th>
+      <th>Loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>HFL</td>
+      <td>-</td>
+      <td>-</td>
+      <td>1.13</td>
+    </tr>
+    <tr>
+      <td>HFL-SGDMF</td>
+      <td>4</td>
+      <td>0.75</td>
+      <td>1.56</td>
+    </tr>
+    <tr>
+      <td>HFL-SGDMF</td>
+      <td>4</td>
+      <td>0.25</td>
+      <td>1.62</td>
+    </tr>
+    <tr>
+      <td>HFL-SGDMF</td>
+      <td>2</td>
+      <td>0.75</td>
+      <td>1.60</td>
+    </tr>
+    <tr>
+      <td>HFL-SGDMF</td>
+      <td>2</td>
+      <td>0.25</td>
+      <td>1.64</td>
+    </tr>
+    <tr>
+      <td>HFL-SGDMF</td>
+      <td>0.5</td>
+      <td>0.75</td>
+      <td>1.66</td>
+    </tr>
+    <tr>
+      <td>HFL-SGDMF</td>
+      <td>0.5</td>
+      <td>0.25</td>
+      <td>1.73</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+<h3 id="references">References</h3>
+<p>[1] Ma H, Yang H, Lyu M R, et al. “SoRec: social recommendation using probabilistic matrix factorization”. Proceedings of the ACM Conference on Information and Knowledge Management, 2008.</p>
+
+<p>[2] Jamali M, Ester M. “A matrix factorization technique with trust propagation for recommendation in social networks”. Proceedings of the ACM Conference on Recommender Systems, 2010.</p>
+
+<p>[3] Li Z, Ding B, Zhang C, et al. “Federated matrix factorization with privacy guarantee”. Proceedings of the VLDB Endowment, 2022.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-13">April 13, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/contributor/" class="pagination--pager" title="Contributing to FederatedScope
+">Previous</a>
+    
+    
+      <a href="/docs/dp/" class="pagination--pager" title="Differential Privacy
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

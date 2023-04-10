@@ -1,0 +1,949 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>AlgoZoo - FederatedScope</title>
+<meta name="description" content="About AlgoZoo.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="AlgoZoo">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/algozoo/">
+
+
+  <meta property="og:description" content="About AlgoZoo.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="AlgoZoo">
+  <meta name="twitter:description" content="About AlgoZoo.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/algozoo/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-04-09T23:50:02-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-02T10:40:42-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/algozoo/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/" class="active">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="AlgoZoo">
+    <meta itemprop="description" content="About AlgoZoo.">
+    <meta itemprop="datePublished" content="2023-04-09T23:50:02-04:00">
+    <meta itemprop="dateModified" content="2022-04-02T10:40:42-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">AlgoZoo
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#buildin-methods">Buildin Methods</a><ul><li><a href="#distributed-optimization-methods">Distributed Optimization Methods</a><ul><li><a href="#fedavg">FedAvg</a></li><li><a href="#fedopt">FedOpt</a></li><li><a href="#fedprox">FedProx</a></li></ul></li><li><a href="#personalization-methods">Personalization Methods</a><ul><li><a href="#fedbn">FedBN</a></li><li><a href="#pfedme">pFedMe</a></li><li><a href="#ditto">Ditto</a></li><li><a href="#fedem">FedEM</a></li></ul></li></ul></li><li><a href="#implementation">Implementation</a><ul><li><a href="#preliminary">Preliminary</a></li><li><a href="#example-fedprox">Example (Fedprox)</a><ul><li><a href="#prepare-parameters">Prepare parameters</a></li><li><a href="#prepare-hook-functions">Prepare Hook Functions</a></li><li><a href="#assemble-algorithm">Assemble algorithm</a></li></ul></li></ul></li><li><a href="#run-an-example">Run an Example</a><ul><li><a href="#note">Note</a></li></ul></li><li><a href="#references">References</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>FederatedScope has built in various advanced federated learning algorithms. All of them are implemented as plug-ins, which are detachable and combinable.</p>
+
+<ul>
+  <li>Detachable: only the activated code will participate in the operation,</li>
+  <li>Combinable: different algorithms can be combined.</li>
+</ul>
+
+<p>In this tutorial, you will learn the buildin algorithms, and how to implement a new federated algorithm in FederatedScope.</p>
+
+<h2 id="buildin-methods">Buildin Methods</h2>
+
+<h3 id="distributed-optimization-methods">Distributed Optimization Methods</h3>
+<p>To tackle the challenge of statistical heterogeneity, we implement the following distributed optimization methods: FedAvg (Default), FedProx and FedOpt. Set the parameter <code class="language-plaintext highlighter-rouge">cfg.{METHOD_NAME}.use</code>as <code class="language-plaintext highlighter-rouge">True</code> to call them.</p>
+
+<h4 id="fedavg">FedAvg</h4>
+<p>FedAvg [1] is a basic distributed optimization method in federated learning. During federated training, it broadcasts the initialized model to all clients, and aggregates the updated weights collected from several clients. FederatedScope implements it with a fedavg aggregator. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/aggregator.py</code>.</p>
+
+<p>We provide some evaluation results for fedavg on different tasks as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy(%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>68.36</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>84.93</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>43.80</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>To reproduce the results, the running scripts are listed as follows.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># logistic regression</span>
+python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/nlp/baseline/fedavg_lr_on_synthetic.yaml
+
+<span class="c"># image classification on femnist</span>
+python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/cv/baseline/fedavg_convnet2_on_femnist.yaml
+
+<span class="c"># next-character prediction on Shackespeare</span>
+python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/nlp/baseline/fedavg_lstm_on_shakespeare.yaml
+</code></pre></div></div>
+
+<h4 id="fedopt">FedOpt</h4>
+<p>FedOpt [2] is an advanced distributed optimization method in federated learning. Compare with FedAvg, it permits the server to update weights rather than simply averaging the collected weights. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/aggregator.py</code>.</p>
+
+<p>Similar with FedAvg, we perform some evaluation of FedAvg on different tasks.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Learning rate (Server)</th>
+      <th>Accuracy(%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>0.5</td>
+      <td>68.32</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>1.0</td>
+      <td>84.92</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>0.5</td>
+      <td>47.39</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="fedprox">FedProx</h4>
+<p>FedProx [3] is designed to solve the problem of heterogeneity, which updates model with a proximal regularizer. FederatedScope provides build-in FedProx implementation and it can easily be combined with other algorithms. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainer/flpackage/core/trainers/trainer_fedprox.py</code>.</p>
+
+<p>The evaluation results are presented as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>$\mu$</th>
+      <th>Accuracy(%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>0.1</td>
+      <td>68.36</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>0.01</td>
+      <td>84.77</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>0.01</td>
+      <td>47.85</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="personalization-methods">Personalization Methods</h3>
+
+<h4 id="fedbn">FedBN</h4>
+
+<p><a href="https://arxiv.org/abs/2102.07623">FedBN</a> [4] is a simple yet effective approach to address feature shift non-iid challenge, in which the client BN parameters are trained locally, without communication and aggregation via server. FederatedScope provides simple configuration to implement FedBN and other variants that need to keep parameters of some model sub-modules local.</p>
+
+<p>We provide some evaluation results for FedBN on different tasks as follows, in which the models contain batch normalization. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/fedbn</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>85.48</td>
+    </tr>
+    <tr>
+      <td>Graph classification</td>
+      <td>multi-task-molecule</td>
+      <td>72.90</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="pfedme">pFedMe</h4>
+
+<p><a href="https://arxiv.org/abs/2006.08848">pFedMe</a> [5]  is an effective pFL approach to address data heterogeneity, in which<br />the personalized model and global model are decoupled with Moreau envelops. FederatedScope implements pFedMe in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_pFedMe.py</code> and <code class="language-plaintext highlighter-rouge">ServerClientsInterpolateAggregator</code> in <code class="language-plaintext highlighter-rouge">federatedscope/core/aggregator.py</code>.</p>
+
+<p>We provide some evaluation results for pFedMe on different tasks as follows. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/pfedme</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>68.73</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>87.65</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>37.40</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="ditto">Ditto</h4>
+
+<p><a href="https://arxiv.org/abs/2012.04221">Ditto</a> [6] is a SOTA pFL approach that improves fairness and robustness of FL via training local personalized model and global model simultaneously, in which the local model update is based on regularization to global model parameters. FederatedScope provides built-in Ditto implementation and users can easily extend to other pFL methods by re-using the model-para regularization. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_Ditto.py</code>.</p>
+
+<p>We provide some evaluation results for Ditto on different tasks as follows. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/ditto</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>69.67</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>86.61</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>45.14</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="fedem">FedEM</h4>
+<p><a href="https://arxiv.org/abs/2108.10252">FedEM</a> [7] is a SOTA pFL approach that assumes local data distribution is a mixture of unknown underlying distributions, and correspondingly learn a mixture of multiple internal models with Expectation-Maximization learning. FederatedScope provides built-in FedEM implementation and users can easily extends to other multi-model pFL methods based on this example. More details can be found in <code class="language-plaintext highlighter-rouge">federatedscope/core/trainers/trainer_FedEM.py</code>.</p>
+
+<p>We provide some evaluation results for FedBN on different tasks as follows. Complete results, config files and running scripts can be found in <code class="language-plaintext highlighter-rouge">scripts/personalization_exp_scripts/fedem</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Data</th>
+      <th>Accuracy (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic regression</td>
+      <td>Synthetic</td>
+      <td>68.80</td>
+    </tr>
+    <tr>
+      <td>Image classification</td>
+      <td>FEMNIST</td>
+      <td>84.79</td>
+    </tr>
+    <tr>
+      <td>Next-character Prediction</td>
+      <td>Shakespeare</td>
+      <td>48.06</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="implementation">Implementation</h2>
+<h3 id="preliminary">Preliminary</h3>
+<p>Before implementing a new federated algorithm, you need to realize the structure of <a href="/docs/trainer/#trainer-structure">Trainer</a>  and <a href="/docs/trainer/#trainer-context">Context</a>. If you already have the knowledge about them, in this part we’ll learn how to add an algorithm in FederatedScope.</p>
+
+<p>In FederatedScope, there are three steps to implement a new federated algorithm:</p>
+
+<ul>
+  <li>Prepare parameters: figure out the parameters required by your algorithm, and fill them into the <code class="language-plaintext highlighter-rouge">Context</code></li>
+  <li>Prepare hook functions: split your algorithm into several functions according to their insert positions within Trainer/Server,</li>
+  <li>Assemble algorithm: create a warp function to assemble your algorithm before create the trainer object.</li>
+</ul>
+
+<h3 id="example-fedprox">Example (Fedprox)</h3>
+<p>Let’s take FedProx as an example to show how to implement a new federated algorithm.</p>
+
+<h4 id="prepare-parameters">Prepare parameters</h4>
+<p>First, FedProx requires to set proximal regularizer and its factor <code class="language-plaintext highlighter-rouge">ctx.regularizer.mu</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ------------------------------------------------------------------------ #
+# Init variables for FedProx algorithm
+# ------------------------------------------------------------------------ #
+</span><span class="k">def</span> <span class="nf">init_fedprox_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">):</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="p">.</span><span class="n">ctx</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="p">.</span><span class="n">cfg</span>
+
+    <span class="n">cfg</span><span class="p">.</span><span class="n">regularizer</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'proximal_regularizer'</span>
+    <span class="n">cfg</span><span class="p">.</span><span class="n">regularizer</span><span class="p">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">.</span><span class="n">fedprox</span><span class="p">.</span><span class="n">mu</span>
+
+    <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.regularizer_builder</span> <span class="kn">import</span> <span class="n">get_regularizer</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="n">get_regularizer</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">regularizer</span><span class="p">.</span><span class="nb">type</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="prepare-hook-functions">Prepare Hook Functions</h4>
+<p>During training,<code class="language-plaintext highlighter-rouge">FredProx</code>requires to record the initalized weights before local updating. Therefore, we create two hook functions to maintain the initialized weights.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">record_initialization</code>: record initialized weights, and</li>
+  <li><code class="language-plaintext highlighter-rouge">del_initialization</code>: delete initialized weights to avoid memory leakage</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ------------------------------------------------------------------------ #
+# Additional functions for FedProx algorithm
+# ------------------------------------------------------------------------ #
+</span><span class="k">def</span> <span class="nf">record_initialization</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">weight_init</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">_</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">detach</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()])</span>
+
+
+<span class="k">def</span> <span class="nf">del_initialization</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">weight_init</span> <span class="o">=</span> <span class="bp">None</span>
+</code></pre></div></div>
+
+<h4 id="assemble-algorithm">Assemble algorithm</h4>
+<p>After preparing parameters and hook functions, we assemble FedProx within the function <code class="language-plaintext highlighter-rouge">wrap_fedprox_trainer</code> in two steps:</p>
+
+<ul>
+  <li>initialize parameters (call function<code class="language-plaintext highlighter-rouge">init_fedprox_ctx</code>)</li>
+  <li>register hook functions for the given trainer</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wrap_fedprox_trainer</span><span class="p">(</span>
+        <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTrainer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTrainer</span><span class="p">]:</span>
+    <span class="s">"""Implementation of fedprox refer to `Federated Optimization in Heterogeneous Networks` [Tian Li, et al., 2020]
+        (https://proceedings.mlsys.org/paper/2020/file/38af86134b65d0f10fe33d30dd76442e-Paper.pdf)
+
+    """</span>
+
+    <span class="c1"># ---------------- attribute-level plug-in -----------------------
+</span>    <span class="n">init_fedprox_ctx</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+
+    <span class="c1"># ---------------- action-level plug-in -----------------------
+</span>    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">record_initialization</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_fit_start'</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">record_initialization</span><span class="p">,</span>
+                                       <span class="n">trigger</span><span class="o">=</span><span class="s">'on_fit_start'</span><span class="p">,</span>
+                                       <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">del_initialization</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_fit_end'</span><span class="p">,</span>
+                                        <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">del_initialization</span><span class="p">,</span>
+                                       <span class="n">trigger</span><span class="o">=</span><span class="s">'on_fit_end'</span><span class="p">,</span>
+                                       <span class="n">insert_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base_trainer</span>
+</code></pre></div></div>
+
+<p>Finally, add FedProx into the function <code class="language-plaintext highlighter-rouge">get_trainer</code>(<code class="language-plaintext highlighter-rouge">federatedscope/core/auxiliaries/trainer_builder.py</code>).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_trainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">only_for_eval</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">is_attacker</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    
+    <span class="n">trainer</span> <span class="o">=</span> <span class="p">...</span>
+    
+    <span class="c1"># fed algorithm plug-in
+</span>    <span class="k">if</span> <span class="n">config</span><span class="p">.</span><span class="n">fedprox</span><span class="p">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers.trainer_fedprox</span> <span class="kn">import</span> <span class="n">wrap_fedprox_trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_fedprox_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="run-an-example">Run an Example</h2>
+<p>Generally, build-in algorithms are called by setting the parameter <code class="language-plaintext highlighter-rouge">$cfg.{METHOD_NAME}.use</code> as True. For more infomation about their parameters, you can refer to <code class="language-plaintext highlighter-rouge">federatedscope/config.py</code>. Similarily, taking FedProx as an exmple, its parameters in <code class="language-plaintext highlighter-rouge">federatedscope/core/config.py</code> are</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ------------------------------------------------------------------------ #
+# fedprox related options
+# ------------------------------------------------------------------------ #
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">fedprox</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+
+<span class="n">cfg</span><span class="p">.</span><span class="n">fedprox</span><span class="p">.</span><span class="n">use</span> <span class="o">=</span> <span class="bp">True</span>		<span class="c1"># Whether to use fedprox
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">fedprox</span><span class="p">.</span><span class="n">mu</span> <span class="o">=</span> <span class="mf">0.</span> 		<span class="c1"># The regularizer factor within fedprox
+</span></code></pre></div></div>
+
+<p>You can call FedProx by the following command in the terminal</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> <span class="o">{</span>YOUR_CONFIG_FILE<span class="o">}</span> fedprox.use True fedprox.mu 0.1
+</code></pre></div></div>
+
+<p>More example scripts are refer to<code class="language-plaintext highlighter-rouge">scripts/example_configs/.</code></p>
+
+<h3 id="note">Note</h3>
+<p>Most combinations of the buildin methods have been tested. When implementing your own methods, it is suggested to carefully check the code to avoid conflicts (e.g. duplication of variables).</p>
+
+<hr />
+<h2 id="references">References</h2>
+<p>[1] McMahan B, Moore E, Ramage D, et al. “Communication-efficient learning of deep networks from decentralized data”. International Conference on Artificial Intelligence and Statistics, 2017.</p>
+
+<p>[2] Reddi S J, Charles Z, Zaheer M, et al. “Adaptive federated optimization”. Intertional Conference on Learning Representations, 2021.</p>
+
+<p>[3] Li T, Sahu A K, Zaheer M, et al. “Federated optimization in heterogeneous networks”. Proceedings of Machine Learning and Systems, 2020.</p>
+
+<p>[4] Li X, Jiang M, Zhang X, et al. “Fedbn: Federated learning on non-iid features via local batch normalization”. arXiv preprint arXiv:2102.07623 (2021).</p>
+
+<p>[5] Dinh C T, Tran N H, and Nguyen T D. “Personalized federated learning with moreau envelopes”. Advances in Neural Information Processing Systems 33 (2020): 21394-21405.</p>
+
+<p>[6] Li T, Hu S, Beirami A, et al. “Ditto: Fair and robust federated learning through personalization”. International Conference on Machine Learning. PMLR, 2021.</p>
+
+<p>[7] Marfoq O, Neglia G, Bellet A, et al. “Federated multi-task learning under a mixture of distributions”. Advances in Neural Information Processing Systems 34 (2021).</p>
+
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-02">April 2, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/modelzoo/" class="pagination--pager" title="ModelZoo
+">Previous</a>
+    
+    
+      <a href="/docs/use-hpo/" class="pagination--pager" title="Tuning Federated Learning
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>
