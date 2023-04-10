@@ -21,6 +21,8 @@ jobs:
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
         git branch
+        git stash
+        git fetch
         echo 1
         git checkout origin/gh-pages       # checkout to your branch
         echo 2
