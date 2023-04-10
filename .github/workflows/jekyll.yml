@@ -22,10 +22,10 @@ jobs:
         git config --global user.email 'action@github.com'
         git stash
         git fetch
-        git checkout gh-pages       # checkout to your branch
-        git checkout master -- $files # copy files from the source branch
+        git checkout gh-pages
+        git checkout master -- $files
         git add $files
         git mv _refs/_* refs/
-        git diff-index --quiet HEAD ||  git commit -am "deploy files"  # commit to the repository (ignore if no modification)
+        git diff-index --quiet HEAD ||  git commit -am "deploy files"
         git push origin gh-pages # push to remote branch
          
