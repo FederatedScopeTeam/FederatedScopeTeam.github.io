@@ -15,8 +15,6 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         target_branch: 'gh-pages'
-        
-    - uses: actions/checkout@master
     - name: Copy
       run: |
         files=$(find _refs/_* -type f) # get the file list
@@ -24,7 +22,7 @@ jobs:
         git config --global user.email 'action@github.com'
         git fetch                         # fetch branches
         git checkout gh-pages       # checkout to your branch
-        git checkout ${GITHUB_REF##*/} -- $files # copy files from the source branch
+        git checkout master -- $files # copy files from the source branch
         git add -A
         git mv $files refs/
         git diff-index --quiet HEAD ||  git commit -am "deploy files"  # commit to the repository (ignore if no modification)
