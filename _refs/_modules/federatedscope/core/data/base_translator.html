@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.data.base_translator &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.data.base_translator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.data.base_translator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.splitter_builder</span> <span class="kn">import</span> <span class="n">get_splitter</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.data</span> <span class="kn">import</span> <span class="n">ClientData</span><span class="p">,</span> <span class="n">StandaloneDataDict</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseDataTranslator"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_translator.BaseDataTranslator">[docs]</a><span class="k">class</span> <span class="nc">BaseDataTranslator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translator is a tool to convert a centralized dataset to \</span>
+<span class="sd">    ``StandaloneDataDict``, which is the input data of runner.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The ``Translator`` is consist of several stages:</span>
+
+<span class="sd">        Dataset -&gt; ML split (``split_train_val_test()``) -&gt; \</span>
+<span class="sd">        FL split (``split_to_client()``) -&gt; ``StandaloneDataDict``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_cfg</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data to `StandaloneDataDict`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            global_cfg: global CfgNode</span>
+<span class="sd">            client_cfgs: client cfg `Dict`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span> <span class="o">=</span> <span class="n">global_cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span> <span class="o">=</span> <span class="n">client_cfgs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splitter</span> <span class="o">=</span> <span class="n">get_splitter</span><span class="p">(</span><span class="n">global_cfg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            dataset: `torch.utils.data.Dataset`, `List` of (feature, label)</span>
+<span class="sd">                or split dataset tuple of (train, val, test) or Tuple of</span>
+<span class="sd">                split dataset with [train, val, test]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datadict: instance of `StandaloneDataDict`, which is a subclass of</span>
+<span class="sd">            `dict`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">datadict</span> <span class="o">=</span> <span class="n">StandaloneDataDict</span><span class="p">(</span><span class="n">datadict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">datadict</span>
+
+<div class="viewcode-block" id="BaseDataTranslator.split"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_translator.BaseDataTranslator.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform ML split and FL split.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict of ``ClientData`` with client_idx as key to build \</span>
+<span class="sd">            ``StandaloneDataDict``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_train_val_test</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_to_client</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datadict</span></div>
+
+<div class="viewcode-block" id="BaseDataTranslator.split_train_val_test"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_translator.BaseDataTranslator.split_train_val_test">[docs]</a>    <span class="k">def</span> <span class="nf">split_train_val_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Split dataset to train, val, test if not provided.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">             List: List of split dataset, like ``[train, val, test]``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Subset</span>
+
+        <span class="k">if</span> <span class="n">cfg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">splits</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">splits</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="c1"># No need to split train/val/test for tuple dataset.</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;If dataset is tuple, it must contains &#39;</span> \
+                        <span class="s1">&#39;train, valid and test split.&#39;</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]),</span> <span class="n">error_msg</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
+        <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+        <span class="n">val_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+            <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">index</span><span class="p">[:</span><span class="n">train_size</span><span class="p">])</span>
+            <span class="n">val_dataset</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span>
+                                 <span class="n">index</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">val_size</span><span class="p">])</span>
+            <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">index</span><span class="p">[</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">val_size</span><span class="p">:])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_dataset</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">[:</span><span class="n">train_size</span><span class="p">]]</span>
+            <span class="n">val_dataset</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">dataset</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">val_size</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="n">test_dataset</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">[</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">val_size</span><span class="p">:]]</span>
+        <span class="k">return</span> <span class="n">train_dataset</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span></div>
+
+<div class="viewcode-block" id="BaseDataTranslator.split_to_client"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.base_translator.BaseDataTranslator.split_to_client">[docs]</a>    <span class="k">def</span> <span class="nf">split_to_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Split dataset to clients and build ``ClientData``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: dict of ``ClientData`` with ``client_idx`` as key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialization</span>
+        <span class="n">client_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">client_num</span>
+        <span class="n">split_train</span><span class="p">,</span> <span class="n">split_val</span><span class="p">,</span> <span class="n">split_test</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">client_num</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="n">train_label_distribution</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Split train/val/test to client</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">split_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">splitter</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">consistent_label_distribution</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">train_label_distribution</span> <span class="o">=</span> <span class="p">[[</span><span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+                                                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">split_train</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s1">&#39;Cannot access train label distribution for &#39;</span>
+                        <span class="s1">&#39;splitter.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">split_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">splitter</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">train_label_distribution</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">split_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">splitter</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">train_label_distribution</span><span class="p">)</span>
+
+        <span class="c1"># Build data dict with `ClientData`, key `0` for server.</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="n">ClientData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">client_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                <span class="n">client_cfg</span><span class="o">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;client_</span><span class="si">{</span><span class="n">client_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">client_cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_cfg</span>
+            <span class="n">data_dict</span><span class="p">[</span><span class="n">client_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClientData</span><span class="p">(</span><span class="n">client_cfg</span><span class="p">,</span>
+                                              <span class="n">train</span><span class="o">=</span><span class="n">split_train</span><span class="p">[</span><span class="n">client_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                                              <span class="n">val</span><span class="o">=</span><span class="n">split_val</span><span class="p">[</span><span class="n">client_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                                              <span class="n">test</span><span class="o">=</span><span class="n">split_test</span><span class="p">[</span><span class="n">client_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">data_dict</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

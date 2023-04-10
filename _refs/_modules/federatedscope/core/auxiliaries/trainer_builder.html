@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.auxiliaries.trainer_builder &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.auxiliaries.trainer_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.auxiliaries.trainer_builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+
+<span class="kn">import</span> <span class="nn">federatedscope.register</span> <span class="k">as</span> <span class="nn">register</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">Trainer</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.contrib.trainer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1"> in `federatedscope.contrib.trainer`, some modules are not &#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;available.&#39;</span><span class="p">)</span>
+
+<span class="n">TRAINER_CLASS_DICT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cvtrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;CVTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nlptrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;NLPTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;graphminibatch_trainer&quot;</span><span class="p">:</span> <span class="s2">&quot;GraphMiniBatchTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;linkfullbatch_trainer&quot;</span><span class="p">:</span> <span class="s2">&quot;LinkFullBatchTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;linkminibatch_trainer&quot;</span><span class="p">:</span> <span class="s2">&quot;LinkMiniBatchTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nodefullbatch_trainer&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeFullBatchTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nodeminibatch_trainer&quot;</span><span class="p">:</span> <span class="s2">&quot;NodeMiniBatchTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;flitplustrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;FLITPlusTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;flittrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;FLITTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedvattrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;FedVATTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedfocaltrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;FedFocalTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mftrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;MFTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cltrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;CLTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lptrainer&quot;</span><span class="p">:</span> <span class="s2">&quot;LPTrainer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;atc_trainer&quot;</span><span class="p">:</span> <span class="s2">&quot;ATCTrainer&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_trainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.auxiliaries.trainer_builder.get_trainer">[docs]</a><span class="k">def</span> <span class="nf">get_trainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">only_for_eval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">is_attacker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">monitor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function builds an instance of trainer.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        model: model used in FL course</span>
+<span class="sd">        data: data used in FL course</span>
+<span class="sd">        device: where to train model (``cpu`` or ``gpu``)</span>
+<span class="sd">        config: configurations for FL, see ``federatedscope.core.configs``</span>
+<span class="sd">        only_for_eval: ``True`` or ``False``, if ``True``, ``train`` \</span>
+<span class="sd">        routine will be removed in this trainer</span>
+<span class="sd">        is_attacker: ``True`` or ``False`` to determine whether this client \</span>
+<span class="sd">        is an attacker</span>
+<span class="sd">        monitor: an instance of ``federatedscope.core.monitors.Monitor`` to \</span>
+<span class="sd">        observe the evaluation and system metrics</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of trainer.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      The key-value pairs of ``cfg.trainer.type`` and trainers:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Trainer Type                        Source</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``general``                         \</span>
+<span class="sd">        ``core.trainers.GeneralTorchTrainer`` and \</span>
+<span class="sd">        ``core.trainers.GeneralTFTrainer``</span>
+<span class="sd">        ``cvtrainer``                       ``cv.trainer.trainer.CVTrainer``</span>
+<span class="sd">        ``nlptrainer``                      ``nlp.trainer.trainer.NLPTrainer``</span>
+<span class="sd">        ``graphminibatch_trainer``          \</span>
+<span class="sd">        ``gfl.trainer.graphtrainer.GraphMiniBatchTrainer``</span>
+<span class="sd">        ``linkfullbatch_trainer``           \</span>
+<span class="sd">        ``gfl.trainer.linktrainer.LinkFullBatchTrainer``</span>
+<span class="sd">        ``linkminibatch_trainer``           \</span>
+<span class="sd">        ``gfl.trainer.linktrainer.LinkMiniBatchTrainer``</span>
+<span class="sd">        ``nodefullbatch_trainer``           \</span>
+<span class="sd">        ``gfl.trainer.nodetrainer.NodeFullBatchTrainer``</span>
+<span class="sd">        ``nodeminibatch_trainer``           \</span>
+<span class="sd">        ``gfl.trainer.nodetrainer.NodeMiniBatchTrainer``</span>
+<span class="sd">        ``flitplustrainer``                 \</span>
+<span class="sd">        ``gfl.flitplus.trainer.FLITPlusTrainer``</span>
+<span class="sd">        ``flittrainer``                     \</span>
+<span class="sd">        ``gfl.flitplus.trainer.FLITTrainer``</span>
+<span class="sd">        ``fedvattrainer``                   \</span>
+<span class="sd">        ``gfl.flitplus.trainer.FedVATTrainer``</span>
+<span class="sd">        ``fedfocaltrainer``                 \</span>
+<span class="sd">        ``gfl.flitplus.trainer.FedFocalTrainer``</span>
+<span class="sd">        ``mftrainer``                       \</span>
+<span class="sd">        ``federatedscope.mf.trainer.MFTrainer``</span>
+<span class="sd">        ``mytorchtrainer``                  \</span>
+<span class="sd">        ``contrib.trainer.torch_example.MyTorchTrainer``</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">      Wrapper functions are shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Wrapper Functions                   Source</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        ``nbafl``                           \</span>
+<span class="sd">        ``core.trainers.wrap_nbafl_trainer``</span>
+<span class="sd">        ``sgdmf``                           ``mf.trainer.wrap_MFTrainer``</span>
+<span class="sd">        ``pfedme``                          \</span>
+<span class="sd">        ``core.trainers.wrap_pFedMeTrainer``</span>
+<span class="sd">        ``ditto``                           ``core.trainers.wrap_DittoTrainer``</span>
+<span class="sd">        ``fedem``                           ``core.trainers.FedEMTrainer``</span>
+<span class="sd">        ``fedprox``                         \</span>
+<span class="sd">        ``core.trainers.wrap_fedprox_trainer``</span>
+<span class="sd">        ``attack``                          \</span>
+<span class="sd">        ``attack.trainer.wrap_benignTrainer`` and \</span>
+<span class="sd">        ``attack.auxiliary.attack_trainer_builder.wrap_attacker_trainer``</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;general&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">GeneralTorchTrainer</span>
+            <span class="n">trainer</span> <span class="o">=</span> <span class="n">GeneralTorchTrainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                          <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                          <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                          <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                                          <span class="n">only_for_eval</span><span class="o">=</span><span class="n">only_for_eval</span><span class="p">,</span>
+                                          <span class="n">monitor</span><span class="o">=</span><span class="n">monitor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">GeneralTFTrainer</span>
+            <span class="n">trainer</span> <span class="o">=</span> <span class="n">GeneralTFTrainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                       <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                       <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                       <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                                       <span class="n">only_for_eval</span><span class="o">=</span><span class="n">only_for_eval</span><span class="p">,</span>
+                                       <span class="n">monitor</span><span class="o">=</span><span class="n">monitor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">TRAINER_CLASS_DICT</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cvtrainer&#39;</span><span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.cv.trainer.trainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nlptrainer&#39;</span><span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.nlp.trainer.trainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cltrainer&#39;</span><span class="p">,</span> <span class="s1">&#39;lptrainer&#39;</span><span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.cl.trainer.trainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;graphminibatch_trainer&#39;</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.gfl.trainer.graphtrainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;linkfullbatch_trainer&#39;</span><span class="p">,</span> <span class="s1">&#39;linkminibatch_trainer&#39;</span>
+        <span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.gfl.trainer.linktrainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;nodefullbatch_trainer&#39;</span><span class="p">,</span> <span class="s1">&#39;nodeminibatch_trainer&#39;</span>
+        <span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.gfl.trainer.nodetrainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;flitplustrainer&#39;</span><span class="p">,</span> <span class="s1">&#39;flittrainer&#39;</span><span class="p">,</span> <span class="s1">&#39;fedvattrainer&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;fedfocaltrainer&#39;</span>
+        <span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.gfl.flitplus.trainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mftrainer&#39;</span><span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.mf.trainer.trainer&quot;</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;atc_trainer&#39;</span><span class="p">]:</span>
+            <span class="n">dict_path</span> <span class="o">=</span> <span class="s2">&quot;federatedscope.nlp.hetero_tasks.trainer&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
+        <span class="n">trainer_cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">dict_path</span><span class="p">),</span>
+                              <span class="n">TRAINER_CLASS_DICT</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()])</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">trainer_cls</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                              <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                              <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                              <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                              <span class="n">only_for_eval</span><span class="o">=</span><span class="n">only_for_eval</span><span class="p">,</span>
+                              <span class="n">monitor</span><span class="o">=</span><span class="n">monitor</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;verticaltrainer&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.tree_based_models.trainer.utils</span> \
+            <span class="kn">import</span> <span class="nn">get_vertical_trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">get_vertical_trainer</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                                       <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                       <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                       <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                       <span class="n">monitor</span><span class="o">=</span><span class="n">monitor</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># try to find user registered trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">trainer_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">trainer_cls</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">trainer_cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">trainer</span> <span class="o">=</span> <span class="n">trainer_cls</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                      <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                      <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                      <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                                      <span class="n">only_for_eval</span><span class="o">=</span><span class="n">only_for_eval</span><span class="p">,</span>
+                                      <span class="n">monitor</span><span class="o">=</span><span class="n">monitor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trainer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Trainer </span><span class="si">{}</span><span class="s1"> is not provided&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">Trainer</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Hook-like plug-in functions cannot be enabled when &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;using </span><span class="si">{</span><span class="n">trainer</span><span class="si">}</span><span class="s1">. If you want use our wrapper &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;functions for your trainer please consider &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;inheriting from &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;`federatedscope.core.trainers.Trainer` instead.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">trainer</span>
+
+    <span class="c1"># differential privacy plug-in</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">nbafl</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">wrap_nbafl_trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_nbafl_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">sgdmf</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.mf.trainer</span> <span class="kn">import</span> <span class="n">wrap_MFTrainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_MFTrainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="c1"># personalization plug-in</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pfedme&quot;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">wrap_pFedMeTrainer</span>
+        <span class="c1"># wrap style: instance a (class A) -&gt; instance a (class A)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_pFedMeTrainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ditto&quot;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">wrap_DittoTrainer</span>
+        <span class="c1"># wrap style: instance a (class A) -&gt; instance a (class A)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_DittoTrainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fedem&quot;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">FedEMTrainer</span>
+        <span class="c1"># copy construct style: instance a (class A) -&gt; instance b (class B)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">FedEMTrainer</span><span class="p">(</span><span class="n">model_nums</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_num_per_trainer</span><span class="p">,</span>
+                               <span class="n">base_trainer</span><span class="o">=</span><span class="n">trainer</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fedrep&quot;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">wrap_FedRepTrainer</span>
+        <span class="c1"># wrap style: instance a (class A) -&gt; instance a (class A)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_FedRepTrainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="c1"># attacker plug-in</span>
+    <span class="k">if</span> <span class="s1">&#39;backdoor&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.trainer</span> <span class="kn">import</span> <span class="n">wrap_benignTrainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_benignTrainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_attacker</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;backdoor&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;--------This client is a backdoor attacker --------&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------- This client is an privacy attacker --------&#39;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary.attack_trainer_builder</span> \
+            <span class="kn">import</span> <span class="nn">wrap_attacker_trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_attacker_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="s1">&#39;backdoor&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;----- This client is a benign client for backdoor attacks -----&#39;</span><span class="p">)</span>
+
+    <span class="c1"># fed algorithm plug-in</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">fedprox</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">wrap_fedprox_trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_fedprox_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="c1"># different fine-tuning</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">finetune</span><span class="o">.</span><span class="n">before_eval</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">finetune</span><span class="o">.</span><span class="n">simple_tuning</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">wrap_Simple_tuning_Trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">wrap_Simple_tuning_Trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">trainer</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

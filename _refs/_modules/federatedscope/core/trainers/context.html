@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.context &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.trainers.context</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.context</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.criterion_builder</span> <span class="kn">import</span> <span class="n">get_criterion</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.model_builder</span> <span class="kn">import</span> \
+    <span class="n">get_trainable_para_names</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.regularizer_builder</span> <span class="kn">import</span> <span class="n">get_regularizer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.enums</span> <span class="kn">import</span> <span class="n">MODE</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.utils</span> <span class="kn">import</span> <span class="n">calculate_batch_epoch_num</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">LifecycleDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A customized dict that provides lifecycle management</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        init_dict: initialized dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="fm">__delattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__delitem__</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> is not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">init_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">LifecycleDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">init_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lifecycles</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CtxVar</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lifecycles</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">lifecycle</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">LifecycleDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">LifecycleDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lifecycle</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lifecycles</span><span class="p">[</span><span class="n">lifecycle</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lifecycles</span><span class="p">[</span><span class="n">lifecycle</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Context"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Context">[docs]</a><span class="k">class</span> <span class="nc">Context</span><span class="p">(</span><span class="n">LifecycleDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Record and pass variables among different hook functions.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        model: training model</span>
+<span class="sd">        cfg: config</span>
+<span class="sd">        data (dict): a dict contains train/val/test dataset or dataloader</span>
+<span class="sd">        device: running device</span>
+<span class="sd">        init_dict (dict): a dict used to initialize the instance of Context</span>
+<span class="sd">        init_attr (bool): if set up the static variables</span>
+<span class="sd">    Note:</span>
+<span class="sd">        - The variables within an instance of class `Context` can be set/get \</span>
+<span class="sd">        as an attribute.</span>
+<span class="sd">        ```</span>
+<span class="sd">        ctx.${NAME_VARIABLE} = ${VALUE_VARIABLE}</span>
+<span class="sd">        ```</span>
+<span class="sd">        where ``${NAME_VARIABLE}`` and ``${VALUE_VARIABLE}``</span>
+<span class="sd">        is the name and value of the variable.</span>
+
+<span class="sd">        - To achieve automatically lifecycle management, you can \</span>
+<span class="sd">        wrap the variable with ``CtxVar`` and a lifecycle parameter \</span>
+<span class="sd">        as follows</span>
+<span class="sd">        ```</span>
+<span class="sd">        ctx.${NAME_VARIABLE} = CtxVar(${VALUE_VARIABLE}, ${LIFECYCLE})</span>
+<span class="sd">        ```</span>
+<span class="sd">        The parameter ``${LIFECYCLE}`` can be chosen from \</span>
+<span class="sd">        ``LIFECYCLE.BATCH``, ``LIFECYCLE.EPOCH`` and ``LIFECYCLE.ROUTINE``. \</span>
+<span class="sd">        Then the variable ``ctx.${NAME_VARIABLE}`` will be deleted at \</span>
+<span class="sd">        the end of the corresponding stage</span>
+<span class="sd">            - ``LIFECYCLE.BATCH``: the variables will \</span>
+<span class="sd">            be deleted after running a batch</span>
+<span class="sd">            - ``LIFECYCLE.EPOCH``: the variables will be \</span>
+<span class="sd">            deleted after running a epoch</span>
+<span class="sd">            - ``LIFECYCLE.ROUTINE``: the variables will be \</span>
+<span class="sd">            deleted after running a routine</span>
+<span class="sd">        More details please refer to our</span>
+<span class="sd">        [tutorial](https://federatedscope.io/docs/trainer/).</span>
+
+<span class="sd">        We classify and show the default attributes below:</span>
+
+<span class="sd">        Data-related attributes</span>
+<span class="sd">          - ``ctx.data``: the raw data (not split) the trainer holds</span>
+<span class="sd">          - ``ctx.num_samples``: the number of samples used in training</span>
+<span class="sd">          - ``ctx.train_data``, ``ctx.val_data``, ``ctx.test_data``: the \</span>
+<span class="sd">          split data the trainer holds</span>
+<span class="sd">          - ``ctx.train_loader``, ``ctx.val_loader``, ``ctx.test_loader``: \</span>
+<span class="sd">          the DataLoader of each split data</span>
+<span class="sd">          - ``ctx.num_train_data``, ``ctx.num_val_data``, \</span>
+<span class="sd">          ``ctx.num_test_data``: the number of samples of  the split data \</span>
+<span class="sd">          Model-related attributes</span>
+<span class="sd">          - ``ctx.model``: the model used</span>
+<span class="sd">          - ``ctx.models``: the multi models if use</span>
+<span class="sd">          - ``ctx.mirrored_models``: the mirrored models</span>
+<span class="sd">          - ``ctx.trainable_para_names``: the trainable parameter names of \</span>
+<span class="sd">          the model</span>
+<span class="sd">        Optimizer-related attributes</span>
+<span class="sd">          - ``ctx.optimizer``: see ``torch.optim``</span>
+<span class="sd">          - ``ctx.scheduler``: decays the learning rate of each parameter group</span>
+<span class="sd">          - ``ctx.criterion``: loss/criterion function</span>
+<span class="sd">          - ``ctx.regularizer``: regular terms</span>
+<span class="sd">          - ``ctx.grad_clip``: gradient clipping</span>
+<span class="sd">        Mode-related attributes</span>
+<span class="sd">          - ``ctx.cur_mode``: mode of trainer, which is one of ``[&#39;train&#39;, \</span>
+<span class="sd">          &#39;val&#39;, &#39;test&#39;]``</span>
+<span class="sd">          - ``ctx.mode_stack``: stack of mode, only used for switching mode</span>
+<span class="sd">          - ``ctx.cur_split``: split of data, which is one of ``[&#39;train&#39;, \</span>
+<span class="sd">          &#39;val&#39;, &#39;test&#39;]`` (Note: use ``train`` data in ``test`` mode is \</span>
+<span class="sd">          allowed)</span>
+<span class="sd">          - ``ctx.split_stack``: stack of split, only used for switching data \</span>
+<span class="sd">          split</span>
+<span class="sd">        Metric-related attributes</span>
+<span class="sd">          - ``ctx.loss_batch_total``: Loss of current batch</span>
+<span class="sd">          - ``ctx.loss_regular_total``: Loss of regular term</span>
+<span class="sd">          - ``ctx.y_true``:  true label of batch data</span>
+<span class="sd">          - ``ctx.y_prob``: output of the model with batch data as input</span>
+<span class="sd">          - ``ctx.ys_true``: true label of data</span>
+<span class="sd">          - ``ctx.ys_prob``: output of the model</span>
+<span class="sd">          - ``ctx.eval_metrics``: evaluation metrics calculated by \</span>
+<span class="sd">          ``ctx.monitor``</span>
+<span class="sd">          - ``ctx.monitor``: used for monitor trainer&#39;s behavior and statistics</span>
+<span class="sd">        Other (statistics) attributes (@property, query from ``cfg`` if not \</span>
+<span class="sd">        set)</span>
+<span class="sd">          - ``ctx.cfg``: configuration of FL course</span>
+<span class="sd">          - ``ctx.device``: current device, such as ``cpu`` and ``gpu0``.</span>
+<span class="sd">          - ``ctx.num_train_batch_last_epoch``, \</span>
+<span class="sd">          ``ctx.num_total_train_batch``: the number of batch</span>
+<span class="sd">          - ``ctx.num_train_epoch``, ``ctx.num_val_epoch``, \</span>
+<span class="sd">          ``ctx.num_test_epoch``: the number of epoch in each data split</span>
+<span class="sd">          - ``ctx.num_train_batch``, ``ctx.num_val_batch``, \</span>
+<span class="sd">          ``ctx.num_test_batch``: the number of batch in each data split</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Context</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_split</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_stack</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lifecycles</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+        <span class="c1"># Setup optimize-related context variable</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainable_para_names</span> <span class="o">=</span> <span class="n">get_trainable_para_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+            <span class="c1"># TODO: make `criterion` and `regularizer` @property and cached</span>
+            <span class="c1">#  to compare whether changes happen</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="n">get_regularizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">regularizer</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">grad_clip</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">process_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainable_para_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">trainable_variables</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regularizer</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Train related property, query from `cfg` if not set</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_train_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_train_batch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_train_batch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_train_batch_last_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_train_batch_last_epoch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_train_batch_last_epoch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_train_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_train_epoch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_train_epoch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_total_train_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_total_train_batch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_total_train_batch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="c1"># Val related property, query from `cfg` if not set</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_val_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_val_batch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_val_batch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_val_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_val_epoch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_val_epoch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># Test related property, query from `cfg` if not set</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_test_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_test_batch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_test_batch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_test_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_test_epoch&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_test_epoch&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_epoch_num</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_batch_epoch_num</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">!=</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;cur_mode `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span><span class="si">}</span><span class="s1">` mismatch mode `</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">`, &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;will use `</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">` to calculate `ctx.var`.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_split</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;cur_split `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_split</span><span class="si">}</span><span class="s1">` not found in data_split, &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;will use `train` split to calculate `ctx.var`.&#39;</span><span class="p">)</span>
+            <span class="n">cur_split</span> <span class="o">=</span> <span class="s1">&#39;train&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cur_split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_split</span>
+
+        <span class="n">num_batch_last_epoch</span><span class="p">,</span> <span class="n">num_total_batch</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;finetune&#39;</span><span class="p">]:</span>
+            <span class="n">num_batch</span><span class="p">,</span> <span class="n">num_batch_last_epoch</span><span class="p">,</span> <span class="n">num_epoch</span><span class="p">,</span> <span class="n">num_total_batch</span> <span class="o">=</span> \
+                <span class="n">calculate_batch_epoch_num</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">local_update_steps</span> <span class="o">*</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">grad_accum_count</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">batch_or_epoch</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;num_</span><span class="si">{</span><span class="n">cur_split</span><span class="si">}</span><span class="s1">_data&#39;</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">drop_last</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]:</span>
+            <span class="n">num_epoch</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">num_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;num_</span><span class="si">{</span><span class="n">cur_split</span><span class="si">}</span><span class="s1">_data&#39;</span>
+                                 <span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span>
+                                     <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">drop_last</span>
+                                     <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;num_</span><span class="si">{</span><span class="n">cur_split</span><span class="si">}</span><span class="s1">_data&#39;</span><span class="p">)</span> <span class="o">%</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataloader</span><span class="o">.</span><span class="n">batch_size</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">num_batch</span><span class="p">,</span> <span class="n">num_batch_last_epoch</span><span class="p">,</span> <span class="n">num_epoch</span><span class="p">,</span> <span class="n">num_total_batch</span>
+
+    <span class="k">def</span> <span class="nf">track_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode_stack</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">change_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># change state</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;train&#39;</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">MODE</span><span class="o">.</span><span class="n">TRAIN</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">MODE</span><span class="o">.</span><span class="n">FINETUNE</span> <span class="k">else</span> <span class="s1">&#39;eval&#39;</span><span class="p">)()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">track_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="c1"># stack-style to enable mixture usage such as evaluation on train</span>
+        <span class="c1"># dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">reset_split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_stack</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">check_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_split_name</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target_split_name</span><span class="si">}</span><span class="s2">_data&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target_split_name</span><span class="si">}</span><span class="s2">_loader&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">target_split_name</span><span class="si">}</span><span class="s2">_data or&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">target_split_name</span><span class="si">}</span><span class="s2">_loader in the trainer, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;will skip evaluation.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;If this is not the case you want, please check &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;whether there is typo for the name&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">target_split_name</span><span class="si">}</span><span class="s2">_data or&quot;</span>
+                                 <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">target_split_name</span><span class="si">}</span><span class="s2">_loader in the trainer&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">merge_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">other_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">CtxVar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic variable class</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        lifecycle: specific lifecycle of the attribute</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">LIFECYCLES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;batch&quot;</span><span class="p">,</span> <span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="s2">&quot;routine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">lifecycle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">lifecycle</span> <span class="ow">in</span> <span class="n">CtxVar</span><span class="o">.</span><span class="n">LIFECYCLES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lifecycle</span> <span class="o">=</span> <span class="n">lifecycle</span>
+
+
+<span class="k">def</span> <span class="nf">lifecycle</span><span class="p">(</span><span class="n">lifecycle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manage the lifecycle of the variables within context, \</span>
+<span class="sd">    and blind these operations from user.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        lifecycle: the type of lifecycle, choose from &quot;batch/epoch/routine&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">lifecycle</span> <span class="o">==</span> <span class="s2">&quot;routine&quot;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">dataset_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">track_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">track_split</span><span class="p">(</span><span class="n">dataset_name</span> <span class="ow">or</span> <span class="n">mode</span><span class="p">)</span>
+
+                <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
+
+                <span class="c1"># Clear the variables at the end of lifecycles</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">lifecycle</span><span class="p">)</span>
+
+                <span class="c1"># rollback the model and data_split</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">reset_mode</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">reset_split</span><span class="p">()</span>
+
+                <span class="c1"># Move the model into CPU to avoid memory leak</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discharge_model</span><span class="p">()</span>
+
+                <span class="k">return</span> <span class="n">res</span>
+
+            <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="c1"># Clear the variables at the end of lifecycles</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">lifecycle</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">res</span>
+
+            <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="k">return</span> <span class="n">decorate</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

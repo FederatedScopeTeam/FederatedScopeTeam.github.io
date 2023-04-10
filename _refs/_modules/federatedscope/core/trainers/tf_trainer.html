@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.tf_trainer &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.trainers.tf_trainer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.tf_trainer</h1><div class="highlight"><pre>
+<span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">tf</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers</span> <span class="kn">import</span> <span class="n">Trainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.enums</span> <span class="kn">import</span> <span class="n">MODE</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.utils</span> <span class="kn">import</span> <span class="n">batch_iter</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.context</span> <span class="kn">import</span> <span class="n">CtxVar</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.enums</span> <span class="kn">import</span> <span class="n">LIFECYCLE</span>
+
+
+<div class="viewcode-block" id="GeneralTFTrainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer">[docs]</a><span class="k">class</span> <span class="nc">GeneralTFTrainer</span><span class="p">(</span><span class="n">Trainer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">hooks_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span> <span class="k">if</span> <span class="n">hooks_set</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hooks_set</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">check_split</span><span class="p">(</span><span class="n">target_data_split_name</span><span class="p">)</span>
+
+        <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_routine</span><span class="p">(</span><span class="n">MODE</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span>
+                                        <span class="n">target_data_split_name</span><span class="p">)</span>
+
+        <span class="c1"># TODO: The return values should be more flexible? Now: sample_num,</span>
+        <span class="c1">#  model_para, results={k:v}</span>
+
+        <span class="k">return</span> <span class="n">num_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span>
+
+<div class="viewcode-block" id="GeneralTFTrainer.parse_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer.parse_data">[docs]</a>    <span class="k">def</span> <span class="nf">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Populate &quot;{}_data&quot;, &quot;{}_loader&quot; and &quot;num_{}_data&quot; for different</span>
+<span class="sd">        modes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                    <span class="n">init_dict</span><span class="p">[</span><span class="s2">&quot;num_</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Type of data should be dict.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">init_dict</span></div>
+
+    <span class="k">def</span> <span class="nf">register_default_hooks_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_start_init</span><span class="p">,</span>
+                                    <span class="s2">&quot;on_fit_start&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_epoch_start</span><span class="p">,</span>
+                                    <span class="s2">&quot;on_epoch_start&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_start_init</span><span class="p">,</span>
+                                    <span class="s2">&quot;on_batch_start&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_forward</span><span class="p">,</span>
+                                    <span class="s2">&quot;on_batch_forward&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_forward_regularizer</span><span class="p">,</span>
+                                    <span class="s2">&quot;on_batch_forward&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_backward</span><span class="p">,</span>
+                                    <span class="s2">&quot;on_batch_backward&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_end</span><span class="p">,</span> <span class="s2">&quot;on_batch_end&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_end</span><span class="p">,</span> <span class="s2">&quot;on_fit_end&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">register_default_hooks_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># test/val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_start_init</span><span class="p">,</span>
+                                   <span class="s2">&quot;on_fit_start&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_epoch_start</span><span class="p">,</span> <span class="s2">&quot;on_epoch_start&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_start_init</span><span class="p">,</span>
+                                   <span class="s2">&quot;on_batch_start&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_forward</span><span class="p">,</span>
+                                   <span class="s2">&quot;on_batch_forward&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_batch_end</span><span class="p">,</span> <span class="s2">&quot;on_batch_end&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hook_on_fit_end</span><span class="p">,</span> <span class="s2">&quot;on_fit_end&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GeneralTFTrainer._hook_on_fit_start_init"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer._hook_on_fit_start_init">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_fit_start_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.model``                       Move to `ctx.device`</span>
+<span class="sd">            ``ctx.loss_batch_total``            Initialize to 0</span>
+<span class="sd">            ``ctx.loss_regular_total``          Initialize to 0</span>
+<span class="sd">            ``ctx.num_samples``                 Initialize to 0</span>
+<span class="sd">            ``ctx.ys_true``                     Initialize to ``[]``</span>
+<span class="sd">            ``ctx.ys_prob``                     Initialize to ``[]``</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># prepare model</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># prepare statistics</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch_total</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_regular_total</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">([],</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">([],</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeneralTFTrainer._hook_on_epoch_start"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer._hook_on_epoch_start">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.{cur_split}_loader``          Initialize DataLoader</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># prepare dataloader</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_split</span><span class="p">),</span>
+                <span class="n">batch_iter</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_split</span><span class="p">))))</span></div>
+
+<div class="viewcode-block" id="GeneralTFTrainer._hook_on_batch_start_init"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer._hook_on_batch_start_init">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_batch_start_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.data_batch``                  Initialize batch data</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># prepare data batch</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_loader&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_split</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span></div>
+
+<div class="viewcode-block" id="GeneralTFTrainer._hook_on_batch_forward"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer._hook_on_batch_forward">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_batch_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.optimizer``                   Initialize optimizer</span>
+<span class="sd">            ``ctx.batch_size``                  Calculate batch size</span>
+<span class="sd">            ``ctx.loss_batch``                  Calculate batch loss</span>
+<span class="sd">            ``ctx.model``                       Forward propagation</span>
+<span class="sd">            ``ctx.y_true``                      Get y_true from batch</span>
+<span class="sd">            ``ctx.y_prob``                      Forward propagation to get \</span>
+<span class="sd">            `y_prob`</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span>
+
+        <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+            <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sess</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+                <span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">input_x</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">input_y</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+                <span class="p">}</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">batch_loss</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_prob</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train_op</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">losses</span><span class="p">,</span>
+                        <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">input_y</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">out</span>
+                    <span class="p">],</span>
+                    <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch</span> <span class="o">=</span> <span class="n">batch_loss</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">BATCH</span><span class="p">)</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">y_prob</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">y_prob</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">BATCH</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_hook_on_batch_forward_regularizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_hook_on_batch_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="GeneralTFTrainer._hook_on_batch_end"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer._hook_on_batch_end">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.num_samples``                 Add ``ctx.batch_size``</span>
+<span class="sd">            ``ctx.loss_batch_total``            Add batch loss</span>
+<span class="sd">            ``ctx.loss_regular_total``          Add batch regular loss</span>
+<span class="sd">            ``ctx.ys_true``                     Append ``ctx.y_true``</span>
+<span class="sd">            ``ctx.ys_prob``                     Append ``ctx.ys_prob``</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: the same with the torch_trainer</span>
+        <span class="c1"># update statistics</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">+=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">batch_size</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch_total</span> <span class="o">+=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">loss_batch</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">loss_regular_total</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loss_regular&quot;</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+
+        <span class="c1"># cache label for evaluate</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">y_true</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">y_prob</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="GeneralTFTrainer._hook_on_fit_end"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer._hook_on_fit_end">[docs]</a>    <span class="k">def</span> <span class="nf">_hook_on_fit_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate metrics.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">          The modified attributes and according operations are shown below:</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            Attribute                           Operation</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">            ``ctx.ys_true``                     Convert to `numpy.array`</span>
+<span class="sd">            ``ctx.ys_prob``                     Convert to `numpy.array`</span>
+<span class="sd">            ``ctx.monitor``                     Evaluate the results</span>
+<span class="sd">            ``ctx.eval_metrics``                Get evaluated results from \</span>
+<span class="sd">            ``ctx.monitor``</span>
+<span class="sd">            ==================================  ===========================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">ys_true</span><span class="p">),</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">ys_prob</span><span class="p">),</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s1">&#39;eval_metrics&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeneralTFTrainer.update"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralTFTrainer.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_parameters</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">model_parameters</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cur_round</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">discharge_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

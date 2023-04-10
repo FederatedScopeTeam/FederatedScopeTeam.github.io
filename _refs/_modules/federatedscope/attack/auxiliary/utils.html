@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.attack.auxiliary.utils &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.attack.auxiliary.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.attack.auxiliary.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">federatedscope.register</span> <span class="k">as</span> <span class="nn">register</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">label_to_onehot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">cross_entropy_for_onehot</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">target</span> <span class="o">*</span> <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="iDLG_trick"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.auxiliary.iDLG_trick">[docs]</a><span class="k">def</span> <span class="nf">iDLG_trick</span><span class="p">(</span><span class="n">original_gradient</span><span class="p">,</span> <span class="n">num_class</span><span class="p">,</span> <span class="n">is_one_hot_label</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Using iDLG trick to recover the label. Paper: &quot;iDLG: Improved Deep</span>
+<span class="sd">    Leakage from Gradients&quot;, link: https://arxiv.org/abs/2001.02610</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        original_gradient: the gradient of the FL model; type: list</span>
+<span class="sd">        num_class: the total number of class in the data</span>
+<span class="sd">        is_one_hot_label: whether the dataset&#39;s label is in the form of one</span>
+<span class="sd">        hot. Type: bool</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The recovered label by iDLG trick.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">last_weight_min</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">original_gradient</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+                                   <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">is_one_hot_label</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label_to_onehot</span><span class="p">(</span>
+            <span class="n">last_weight_min</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="p">))</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span> <span class="n">num_class</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">last_weight_min</span>
+    <span class="k">return</span> <span class="n">label</span></div>
+
+
+<span class="k">def</span> <span class="nf">cos_sim</span><span class="p">(</span><span class="n">input_gradient</span><span class="p">,</span> <span class="n">gt_gradient</span><span class="p">):</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">cosine_similarity</span><span class="p">(</span>
+        <span class="n">input_gradient</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">gt_gradient</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">)</span>
+
+    <span class="c1"># total = 0</span>
+    <span class="c1"># input_norm= 0</span>
+    <span class="c1"># gt_norm = 0</span>
+    <span class="c1">#</span>
+    <span class="c1"># total -= (input_gradient * gt_gradient).sum()</span>
+    <span class="c1"># input_norm += input_gradient.pow(2).sum()</span>
+    <span class="c1"># gt_norm += gt_gradient.pow(2).sum()</span>
+    <span class="c1"># total += 1 + total / input_norm.sqrt() / gt_norm.sqrt()</span>
+
+    <span class="k">return</span> <span class="n">total</span>
+
+
+<span class="k">def</span> <span class="nf">total_variation</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Anisotropic TV.&quot;&quot;&quot;</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:]))</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]))</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">())):</span>
+        <span class="n">total</span> <span class="o">*=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">dx</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">total</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">approximate_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">C1</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">C2</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Approximate the function f(x) = 0 if x&lt;0.5 otherwise 1</span>
+<span class="sd">    Args:</span>
+<span class="sd">        x: input data;</span>
+<span class="sd">        device:</span>
+<span class="sd">        C1:</span>
+<span class="sd">        C2:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        1/(1+e^{-1*C1 (x-C2)})</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">C1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">C1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">C2</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">C1</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">C2</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">get_classifier</span><span class="p">(</span><span class="n">classifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">model</span>
+
+    <span class="k">if</span> <span class="n">classifier</span> <span class="o">==</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span>
+    <span class="k">elif</span> <span class="n">classifier</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;randomforest&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span>
+    <span class="k">elif</span> <span class="n">classifier</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;svm&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+        <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+        <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">make_pipeline</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">SVC</span><span class="p">(</span><span class="n">gamma</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="ne">ValueError</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="get_data_info"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.auxiliary.get_data_info">[docs]</a><span class="k">def</span> <span class="nf">get_data_info</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the dataset information, including the feature dimension, number of</span>
+<span class="sd">    total classes, whether the label is represented in one-hot version</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset_name:dataset name; str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        data_feature_dim, num_class, is_one_hot_label</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dataset_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;femnist&#39;</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">],</span> <span class="mi">36</span><span class="p">,</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;Please provide the data info of </span><span class="si">{}</span><span class="s1">: data_feature_dim, num_class&#39;</span><span class="o">.</span>
+            <span class="nb">format</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_data_sav_fn</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dataset_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;femnist&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sav_femnist_image</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reconstructed data saving function is not provided for &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;dataset: </span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">sav_femnist_image</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sav_pth</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="c1"># print(data.shape)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="c1"># print(data.shape)</span>
+
+    <span class="c1"># plt.imshow(data * 127.5 + 127.5, cmap=&#39;gray&#39;)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">127.5</span> <span class="o">+</span> <span class="mf">127.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+        <span class="c1"># plt.imshow(generated_data[i, 0, :, :] , cmap=&#39;gray&#39;)</span>
+        <span class="c1"># plt.imshow()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sav_pth</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">get_info_diff_loss</span><span class="p">(</span><span class="n">info_diff_type</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">info_diff_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;l2&#39;</span><span class="p">:</span>
+        <span class="n">info_diff_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">info_diff_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;l1&#39;</span><span class="p">:</span>
+        <span class="n">info_diff_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">SmoothL1Loss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">info_diff_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;sim&#39;</span><span class="p">:</span>
+        <span class="n">info_diff_loss</span> <span class="o">=</span> <span class="n">cos_sim</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;info_diff_type: </span><span class="si">{}</span><span class="s1"> is not supported&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_diff_type</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">info_diff_loss</span>
+
+
+<div class="viewcode-block" id="get_reconstructor"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.auxiliary.get_reconstructor">[docs]</a><span class="k">def</span> <span class="nf">get_reconstructor</span><span class="p">(</span><span class="n">atk_method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atk_method: the attack method name, and currently supporting &quot;DLG:</span>
+<span class="sd">        deep leakage from gradient&quot;, and &quot;IG: Inverting gradient&quot; ; Type: str</span>
+<span class="sd">        **kwargs: other arguments</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">atk_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dlg&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.privacy_attacks.reconstruction_opt</span> <span class="kn">import</span>\
+            <span class="n">DLG</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;--------- Getting reconstructor: DLG --------------------&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">DLG</span><span class="p">(</span><span class="n">max_ite</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;max_ite&#39;</span><span class="p">],</span>
+                   <span class="n">lr</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">],</span>
+                   <span class="n">federate_loss_fn</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;federate_loss_fn&#39;</span><span class="p">],</span>
+                   <span class="n">device</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">],</span>
+                   <span class="n">federate_lr</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;federate_lr&#39;</span><span class="p">],</span>
+                   <span class="n">optim</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;optim&#39;</span><span class="p">],</span>
+                   <span class="n">info_diff_type</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;info_diff_type&#39;</span><span class="p">],</span>
+                   <span class="n">federate_method</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;federate_method&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">atk_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;ig&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.privacy_attacks.reconstruction_opt</span> <span class="kn">import</span>\
+            <span class="n">InvertGradient</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;------- Getting reconstructor: InvertGradient ------------------&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">InvertGradient</span><span class="p">(</span><span class="n">max_ite</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;max_ite&#39;</span><span class="p">],</span>
+                              <span class="n">lr</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">],</span>
+                              <span class="n">federate_loss_fn</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;federate_loss_fn&#39;</span><span class="p">],</span>
+                              <span class="n">device</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;device&#39;</span><span class="p">],</span>
+                              <span class="n">federate_lr</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;federate_lr&#39;</span><span class="p">],</span>
+                              <span class="n">optim</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;optim&#39;</span><span class="p">],</span>
+                              <span class="n">info_diff_type</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;info_diff_type&#39;</span><span class="p">],</span>
+                              <span class="n">federate_method</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;federate_method&#39;</span><span class="p">],</span>
+                              <span class="n">alpha_TV</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;alpha_TV&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;attack method: </span><span class="si">{}</span><span class="s2"> lacks reconstructor implementation&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">atk_method</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_generator"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.auxiliary.get_generator">[docs]</a><span class="k">def</span> <span class="nf">get_generator</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the dataset&#39;s corresponding generator.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        dataset_name: The dataset name; Type: str</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        The generator; Type: object</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;femnist&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.models.gan_based_model</span> <span class="kn">import</span> \
+            <span class="n">GeneratorFemnist</span>
+        <span class="k">return</span> <span class="n">GeneratorFemnist</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The generator to generate data like </span><span class="si">{}</span><span class="s2"> is not defined!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">dataset_name</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_data_property</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># A SHOWCASE for Femnist dataset: Property := whether contains a circle.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">data_batch</span><span class="p">]</span>
+
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">positive_labels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="ow">in</span> <span class="n">positive_labels</span><span class="p">:</span>
+            <span class="n">prop</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">prop</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prop</span>
+
+
+<div class="viewcode-block" id="get_passive_PIA_auxiliary_dataset"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.auxiliary.get_passive_PIA_auxiliary_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_passive_PIA_auxiliary_dataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset_name (str): dataset name</span>
+
+<span class="sd">    :returns:</span>
+
+<span class="sd">    the auxiliary dataset for property inference attack. Type: dict</span>
+
+<span class="sd">    {</span>
+<span class="sd">        &#39;x&#39;: array,</span>
+<span class="sd">        &#39;y&#39;: array,</span>
+<span class="sd">        &#39;prop&#39;: array</span>
+<span class="sd">                    }</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">auxiliary_data_loader_PIA_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">criterion</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">criterion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">criterion</span>
+    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;toy&#39;</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="n">instance_num</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">feature_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">save_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Generate data in Runner format</span>
+<span class="sd">            Args:</span>
+<span class="sd">                instance_num:</span>
+<span class="sd">                feature_num:</span>
+<span class="sd">                save_data:</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                {</span>
+<span class="sd">                            &#39;x&#39;: ...,</span>
+<span class="sd">                            &#39;y&#39;: ...,</span>
+<span class="sd">                            &#39;prop&#39;: ...</span>
+<span class="sd">                        }</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">feature_num</span><span class="p">)</span>
+            <span class="n">bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="n">prop_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                                            <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                                            <span class="n">size</span><span class="o">=</span><span class="n">feature_num</span><span class="p">)</span>
+            <span class="n">prop_bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                                 <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                 <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">instance_num</span><span class="p">,</span> <span class="n">feature_num</span><span class="p">))</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">bias</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">prop_weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">prop_bias</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">prop</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">data_train</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;prop&#39;</span><span class="p">:</span> <span class="n">prop</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">data_train</span>
+
+        <span class="k">return</span> <span class="n">_generate_data</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The data cannot be loaded. Please specify the data load function.&#39;</span>
+        <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_mia_loss_compare</span><span class="p">(</span><span class="n">loss_in_pth</span><span class="p">,</span> <span class="n">loss_out_pth</span><span class="p">,</span> <span class="n">in_round</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">loss_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">loss_in_pth</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">loss_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">loss_out_pth</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="n">loss_in_all</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">loss_out_all</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">loss_in</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">in_round</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loss_in_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss_in</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">loss_out_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss_out</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_out_all</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;not-in&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_in_all</span><span class="p">,</span>
+             <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;in&#39;</span><span class="p">,</span>
+             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+             <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Round&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$L_x$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
