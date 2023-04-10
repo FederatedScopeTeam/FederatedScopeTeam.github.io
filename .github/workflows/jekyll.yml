@@ -20,14 +20,10 @@ jobs:
         files=$(find _refs/_* -type f) # get the file list
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
-        git branch
         git stash
         git fetch
-        echo 1
         git checkout gh-pages       # checkout to your branch
-        echo 2
         git checkout master -- $files # copy files from the source branch
-        echo 3
         git add $files
         git mv _refs/_* refs/
         git diff-index --quiet HEAD ||  git commit -am "deploy files"  # commit to the repository (ignore if no modification)
