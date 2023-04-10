@@ -20,8 +20,6 @@ jobs:
         files=$(find _refs/_* -type f) # get the file list
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
-        git branch
-        git fetch                         # fetch branches
         git checkout gh-pages       # checkout to your branch
         git checkout master -- $files # copy files from the source branch
         git add $files
