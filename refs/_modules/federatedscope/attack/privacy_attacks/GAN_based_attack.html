@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.attack.privacy_attacks.GAN_based_attack &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.attack.privacy_attacks.GAN_based_attack</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.attack.privacy_attacks.GAN_based_attack</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary.utils</span> <span class="kn">import</span> <span class="n">get_generator</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<div class="viewcode-block" id="GANCRA"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.GANCRA">[docs]</a><span class="k">class</span> <span class="nc">GANCRA</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The implementation of GAN based class representative attack.</span>
+<span class="sd">    https://dl.acm.org/doi/abs/10.1145/3133956.3134012</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">        Hitaj, Briland, Giuseppe Ateniese, and Fernando Perez-Cruz.</span>
+<span class="sd">    &quot;Deep models under the GAN: information leakage from collaborative deep</span>
+<span class="sd">    learning.&quot; Proceedings of the 2017 ACM SIGSAC conference on computer</span>
+<span class="sd">    and communications security. 2017.</span>
+
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            - target_label_ind (int): the label index whose representative</span>
+<span class="sd">            - fl_model (object):</span>
+<span class="sd">            - device (str or int): the device to run; &#39;cpu&#39; or the device</span>
+<span class="sd">            index to select; default: &#39;cpu&#39;.</span>
+<span class="sd">            - dataset_name (str): the dataset name; default: None</span>
+<span class="sd">            - noise_dim (int): the dimension of the noise that fed into the</span>
+<span class="sd">            generator; default: 100</span>
+<span class="sd">            - batch_size (int): the number of data generated into training;</span>
+<span class="sd">            default: 16</span>
+<span class="sd">            - generator_train_epoch (int): the number of training steps</span>
+<span class="sd">            when training the generator; default: 10</span>
+<span class="sd">            - lr (float): the learning rate of the generator training;</span>
+<span class="sd">            default: 0.001</span>
+<span class="sd">            - sav_pth (str): the path to save the generated data; default:</span>
+<span class="sd">            &#39;data/&#39;</span>
+<span class="sd">            - round_num (int): the FL round that starting the attack;</span>
+<span class="sd">            default: -1.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">target_label_ind</span><span class="p">,</span>
+                 <span class="n">fl_model</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+                 <span class="n">dataset_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">noise_dim</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                 <span class="n">generator_train_epoch</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+                 <span class="n">sav_pth</span><span class="o">=</span><span class="s1">&#39;data/&#39;</span><span class="p">,</span>
+                 <span class="n">round_num</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="c1"># get dataset&#39;s corresponding generator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">get_generator</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">)()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_label_ind</span> <span class="o">=</span> <span class="n">target_label_ind</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">fl_model</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_loss_fun</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_train_epoch</span> <span class="o">=</span> <span class="n">generator_train_epoch</span>
+
+        <span class="c1"># the dimension of the noise input to generator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_dim</span> <span class="o">=</span> <span class="n">noise_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+
+        <span class="c1"># define generator optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span>
+            <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sav_pth</span> <span class="o">=</span> <span class="n">sav_pth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_num</span> <span class="o">=</span> <span class="n">round_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_loss_summary</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="GANCRA.update_discriminator"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.GANCRA.update_discriminator">[docs]</a>    <span class="k">def</span> <span class="nf">update_discriminator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Copy the model of the server as the discriminator</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (object): the model in the server</span>
+
+<span class="sd">        Returns: the discriminator</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">discriminator_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="GANCRA.generator_loss"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.GANCRA.generator_loss">[docs]</a>    <span class="k">def</span> <span class="nf">generator_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discriminator_output</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the generator loss based on the discriminator&#39;s output</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            discriminator_output (Tensor): the discriminator&#39;s output;</span>
+<span class="sd">                size: batch_size * n_class</span>
+
+<span class="sd">        Returns: generator_loss</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_class</span> <span class="o">=</span> <span class="n">discriminator_output</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ideal_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_label_ind</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="n">discriminator_output</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+        <span class="c1"># ideal_results[:] =  self.target_label_ind</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_loss_fun</span><span class="p">(</span><span class="n">discriminator_output</span><span class="p">,</span>
+                                       <span class="n">ideal_results</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_gradient_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">noise</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+            <span class="n">generated_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">discriminator_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span><span class="p">(</span><span class="n">generated_images</span><span class="p">)</span>
+            <span class="n">generator_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_loss</span><span class="p">(</span><span class="n">discriminator_output</span><span class="p">)</span>
+
+            <span class="n">generator_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">generator_loss</span>
+
+        <span class="k">return</span> <span class="n">closure</span>
+
+    <span class="k">def</span> <span class="nf">generator_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_train_epoch</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generator_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_dim</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+            <span class="n">closure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_closure</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">tmp_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">closure</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generator_loss_summary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">tmp_loss</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">generate_fake_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data_num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">data_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_dim</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+        <span class="n">generated_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+
+        <span class="n">generated_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_label_ind</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_class</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">generated_label</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_label_ind</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">generated_label</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_label_ind</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">generated_images</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">generated_label</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">sav_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generated_data</span><span class="p">):</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">generated_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">generated_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">127.5</span> <span class="o">+</span> <span class="mf">127.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+            <span class="c1"># plt.imshow(generated_data[i, 0, :, :] , cmap=&#39;gray&#39;)</span>
+            <span class="c1"># plt.imshow()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sav_pth</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span>
+                    <span class="s1">&#39;image_round_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">round_num</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">sav_plot_gan_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_loss_summary</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sav_pth</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span>
+                    <span class="s1">&#39;generator_loss_round_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">round_num</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GANCRA.generate_and_save_images"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.GANCRA.generate_and_save_images">[docs]</a>    <span class="k">def</span> <span class="nf">generate_and_save_images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Save the generated data and the generator training loss</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">generated_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_fake_data</span><span class="p">()</span>
+        <span class="n">generated_data</span> <span class="o">=</span> <span class="n">generated_data</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sav_image</span><span class="p">(</span><span class="n">generated_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sav_plot_gan_loss</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.splitters.graph.analyzer &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.splitters.graph.analyzer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.splitters.graph.analyzer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.utils</span> <span class="kn">import</span> <span class="n">to_networkx</span><span class="p">,</span> <span class="n">to_dense_adj</span><span class="p">,</span> <span class="n">dense_to_sparse</span>
+
+
+<div class="viewcode-block" id="Analyzer"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer">[docs]</a><span class="k">class</span> <span class="nc">Analyzer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Analyzer for raw graph and split subgraphs.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        raw_data (PyG.data): raw graph.</span>
+<span class="sd">        split_data (list): the list for subgraphs split by splitter.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">split_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Data</span><span class="p">]):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_data</span> <span class="o">=</span> <span class="n">split_data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_graph</span> <span class="o">=</span> <span class="n">to_networkx</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">to_undirected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_graphs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">to_networkx</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">to_undirected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">split_data</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="Analyzer.num_missing_edge"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.num_missing_edge">[docs]</a>    <span class="k">def</span> <span class="nf">num_missing_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the number of missing edge and the rate of missing edge.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">missing_edge</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_adj</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">rate_missing_edge</span> <span class="o">=</span> <span class="n">missing_edge</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">missing_edge</span><span class="p">,</span> <span class="n">rate_missing_edge</span></div>
+
+<div class="viewcode-block" id="Analyzer.fl_adj"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.fl_adj">[docs]</a>    <span class="k">def</span> <span class="nf">fl_adj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the adj for missing edge ADJ.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">raw_adj</span> <span class="o">=</span> <span class="n">to_dense_adj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">raw_adj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;index_orig&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">sub_g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_data</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">sub_g</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">T</span><span class="p">:</span>
+                    <span class="n">adj</span><span class="p">[</span><span class="n">sub_g</span><span class="o">.</span><span class="n">index_orig</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()]][</span><span class="n">sub_g</span><span class="o">.</span><span class="n">index_orig</span><span class="p">[</span>
+                        <span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;index_orig not in Split Data.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dense_to_sparse</span><span class="p">(</span><span class="n">adj</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Analyzer.fl_data"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.fl_data">[docs]</a>    <span class="k">def</span> <span class="nf">fl_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the split edge index.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fl_data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;edge_index&#39;</span><span class="p">:</span>
+                <span class="n">fl_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_adj</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fl_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="k">return</span> <span class="n">fl_data</span></div>
+
+<div class="viewcode-block" id="Analyzer.missing_data"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.missing_data">[docs]</a>    <span class="k">def</span> <span class="nf">missing_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the graph data built by missing edge index.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ms_data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="n">raw_edge_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">numpy</span><span class="p">()}</span>
+        <span class="n">split_edge_set</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_data</span><span class="p">()</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">ms_set</span> <span class="o">=</span> <span class="n">raw_edge_set</span> <span class="o">-</span> <span class="n">split_edge_set</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;edge_index&#39;</span><span class="p">:</span>
+                <span class="n">ms_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ms_set</span><span class="p">],</span>
+                                            <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ms_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="k">return</span> <span class="n">ms_data</span></div>
+
+<div class="viewcode-block" id="Analyzer.portion_ms_node"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.portion_ms_node">[docs]</a>    <span class="k">def</span> <span class="nf">portion_ms_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the proportion of nodes who miss egde.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cnt_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ms_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">missing_data</span><span class="p">()</span><span class="o">.</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])}</span>
+        <span class="k">for</span> <span class="n">sub_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_data</span><span class="p">:</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sub_data</span><span class="o">.</span><span class="n">index_orig</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="ow">in</span> <span class="n">ms_set</span><span class="p">:</span>
+                    <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">cnt_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cnt</span> <span class="o">/</span> <span class="n">sub_data</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cnt_list</span></div>
+
+<div class="viewcode-block" id="Analyzer.average_clustering"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.average_clustering">[docs]</a>    <span class="k">def</span> <span class="nf">average_clustering</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the average clustering coefficient for the raw G and split G</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">networkx.algorithms.cluster</span> <span class="k">as</span> <span class="nn">cluster</span>
+
+        <span class="k">return</span> <span class="n">cluster</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_graph</span><span class="p">),</span> <span class="n">cluster</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span>
+                <span class="n">to_networkx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fl_data</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Analyzer.homophily_value"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.homophily_value">[docs]</a>    <span class="k">def</span> <span class="nf">homophily_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            calculate homophily_value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">torch_sparse</span> <span class="kn">import</span> <span class="n">SparseTensor</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">SparseTensor</span><span class="p">):</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">edge_index</span><span class="o">.</span><span class="n">coo</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">edge_index</span>
+
+        <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="n">y</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span> <span class="n">row</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Analyzer.homophily"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.homophily">[docs]</a>    <span class="k">def</span> <span class="nf">homophily</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the homophily for the raw G and split G</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">homophily_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">homophily_value</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">fl_data</span><span class="p">()</span><span class="o">.</span><span class="n">edge_index</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">fl_data</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Analyzer.hamming_distance_graph"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.hamming_distance_graph">[docs]</a>    <span class="k">def</span> <span class="nf">hamming_distance_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            calculate the hamming distance of graph data</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">edge_index</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">edge_index</span><span class="o">.</span><span class="n">T</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">cnt</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">cnt</span> <span class="o">/</span> <span class="n">edge_index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Analyzer.hamming"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.Analyzer.hamming">[docs]</a>    <span class="k">def</span> <span class="nf">hamming</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the average hamming distance of feature for the raw G, split G</span>
+<span class="sd">            and missing edge G</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hamming_distance_graph</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hamming_distance_graph</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fl_data</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hamming_distance_graph</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">missing_data</span><span class="p">())</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

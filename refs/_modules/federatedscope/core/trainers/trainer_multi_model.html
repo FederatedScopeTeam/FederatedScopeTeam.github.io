@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.trainer_multi_model &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.trainers.trainer_multi_model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.trainer_multi_model</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.optimizer_builder</span> <span class="kn">import</span> <span class="n">get_optimizer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.torch_trainer</span> <span class="kn">import</span> <span class="n">GeneralTorchTrainer</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="GeneralMultiModelTrainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralMultiModelTrainer">[docs]</a><span class="k">class</span> <span class="nc">GeneralMultiModelTrainer</span><span class="p">(</span><span class="n">GeneralTorchTrainer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">model_nums</span><span class="p">,</span>
+                 <span class="n">models_interact_mode</span><span class="o">=</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTorchTrainer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            `GeneralMultiModelTrainer` supports train/eval via multiple</span>
+<span class="sd">            internal models</span>
+
+<span class="sd">            Arguments:</span>
+<span class="sd">                model_nums (int): how many internal models and optimizers</span>
+<span class="sd">                will be held by the trainer</span>
+<span class="sd">                models_interact_mode (str): how the models interact, can be</span>
+<span class="sd">                &quot;sequential&quot; or &quot;parallel&quot;.</span>
+<span class="sd">                model: training model</span>
+<span class="sd">                data: a dict contains train/val/test data</span>
+<span class="sd">                device: device to run</span>
+<span class="sd">                config: for trainer-related configuration</span>
+<span class="sd">                base_trainer: if given, the GeneralMultiModelTrainer init</span>
+<span class="sd">                will based on base_trainer copy</span>
+
+<span class="sd">                The sequential mode indicates the interaction at</span>
+<span class="sd">                run_routine level</span>
+<span class="sd">                [one model runs its whole routine, then do sth. for</span>
+<span class="sd">                interaction, then next model runs its whole routine]</span>
+<span class="sd">                ... -&gt; run_routine_model_i</span>
+<span class="sd">                    -&gt; _switch_model_ctx</span>
+<span class="sd">                    -&gt; (on_fit_end, _interact_to_other_models)</span>
+<span class="sd">                    -&gt; run_routine_model_i+1</span>
+<span class="sd">                    -&gt; ...</span>
+
+<span class="sd">                The parallel mode indicates the interaction</span>
+<span class="sd">                at point-in-time level</span>
+<span class="sd">                [At a specific point-in-time, one model call hooks (</span>
+<span class="sd">                including interaction), then next model call hooks]</span>
+<span class="sd">                ... -&gt;  (on_xxx_point, hook_xxx_model_i)</span>
+<span class="sd">                    -&gt;  (on_xxx_point, _interact_to_other_models)</span>
+<span class="sd">                    -&gt;  (on_xxx_point, _switch_model_ctx)</span>
+<span class="sd">                    -&gt;  (on_xxx_point, hook_xxx_model_i+1)</span>
+<span class="sd">                    -&gt; ...</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># support two initialization methods for the `GeneralMultiModelTrainer`</span>
+        <span class="c1"># 1) from another trainer; or 2) standard init manner given (model,</span>
+        <span class="c1"># data, device, config)</span>
+        <span class="k">if</span> <span class="n">base_trainer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                   <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                   <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                   <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;when not copy construction, (model, &quot;</span> \
+                                       <span class="s2">&quot;data, device, config) should not be &quot;</span> \
+                                       <span class="s2">&quot;None&quot;</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">GeneralMultiModelTrainer</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">,</span> <span class="n">GeneralMultiModelTrainer</span><span class="p">)</span> <span class="ow">or</span> \
+                   <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">),</span> <span class="n">GeneralMultiModelTrainer</span><span class="p">)</span> \
+                   <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">,</span> <span class="n">GeneralTorchTrainer</span><span class="p">)</span> <span class="ow">or</span> \
+                   <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">),</span> <span class="n">GeneralTorchTrainer</span><span class="p">)</span> <span class="ow">or</span> \
+                   <span class="s2">&quot;can only copy instances of `GeneralMultiModelTrainer` &quot;</span> \
+                   <span class="s2">&quot;and its subclasses, or &quot;</span> \
+                   <span class="s2">&quot;`GeneralTorchTrainer` and its subclasses&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">base_trainer</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">models_interact_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span> <span class="s2">&quot;parallel&quot;</span><span class="p">],</span> \
+            <span class="sa">f</span><span class="s2">&quot;Invalid models_interact_mode, should be `sequential` or &quot;</span> \
+            <span class="sa">f</span><span class="s2">&quot;`parallel`, but got </span><span class="si">{</span><span class="n">models_interact_mode</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span> <span class="o">=</span> <span class="n">models_interact_mode</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">model_nums</span><span class="p">)</span> <span class="o">!=</span> <span class="n">model_nums</span> <span class="ow">or</span> <span class="n">model_nums</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;model_nums should be integer and &gt;= 1, got </span><span class="si">{</span><span class="n">model_nums</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">=</span> <span class="n">model_nums</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># used to mark cur model</span>
+
+        <span class="c1"># different internal models can have different hook_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_multiple_models</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_multiple_model_hooks</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">)</span> <span class="o">==</span> <span class="n">model_nums</span> <span class="o">==</span> \
+               <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="p">),</span>\
+            <span class="s2">&quot;After init, len(hooks_in_train_multiple_models), &quot;</span> \
+            <span class="s2">&quot;len(hooks_in_eval_multiple_models), &quot;</span> \
+            <span class="s2">&quot;len(ctx.models) and model_nums should be the same&quot;</span>
+
+<div class="viewcode-block" id="GeneralMultiModelTrainer.init_multiple_models"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralMultiModelTrainer.init_multiple_models">[docs]</a>    <span class="k">def</span> <span class="nf">init_multiple_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            init multiple models and optimizers: the default implementation</span>
+<span class="sd">            is copy init manner;</span>
+<span class="sd">            ========================= Extension =============================</span>
+<span class="sd">            users can override this function according to their own</span>
+<span class="sd">            requirements</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">additional_models</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">]</span> <span class="o">+</span> <span class="n">additional_models</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">optimizers</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">get_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="GeneralMultiModelTrainer.register_multiple_model_hooks"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralMultiModelTrainer.register_multiple_model_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">register_multiple_model_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By default, all internal models adopt the same hook_set.</span>
+
+<span class="sd">        Extension</span>
+<span class="sd">          Users can override this function to register customized hooks \</span>
+<span class="sd">        for different internal models.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">          - for sequential mode, users can append interact_hook on \</span>
+<span class="sd">            begin/end triggers such as \</span>
+<span class="sd">            &quot; -&gt; (on_fit_end, _interact_to_other_models) -&gt; &quot;</span>
+<span class="sd">          - for parallel mode, users can append interact_hook on any \</span>
+<span class="sd">            trigger they want such as \</span>
+<span class="sd">                &quot; -&gt; (on_xxx_point, _interact_to_other_models) -&gt; &quot;</span>
+<span class="sd">          - we must tell the running hooks which data_loader to \</span>
+<span class="sd">          call and which num_samples to count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">)</span>
+        <span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">init_multiple_model_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_multiple_model_hooks</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span> <span class="o">==</span> <span class="s2">&quot;sequential&quot;</span><span class="p">:</span>
+            <span class="c1"># hooks_in_xxx is a list of dict, hooks_in_xxx[i] stores</span>
+            <span class="c1"># specific set for i-th internal model;</span>
+            <span class="c1"># for each dict, the key indicates point-in-time and the value</span>
+            <span class="c1"># indicates specific hook</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span> <span class="o">==</span> <span class="s2">&quot;parallel&quot;</span><span class="p">:</span>
+            <span class="c1"># hooks_in_xxx is a dict whose key indicates point-in-time and</span>
+            <span class="c1"># value indicates specific hook</span>
+            <span class="k">for</span> <span class="n">trigger</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span>
+                        <span class="p">[</span><span class="n">trigger</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_switch_model_ctx</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">][</span><span class="n">trigger</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_switch_model_ctx</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid models_interact_mode, should be `sequential` or &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`parallel`,&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                               <span class="n">new_hook</span><span class="p">,</span>
+                               <span class="n">trigger</span><span class="p">,</span>
+                               <span class="n">model_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">insert_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">base_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">insert_mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train_multiple_models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_hook</span><span class="p">(</span><span class="n">base_hook</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">insert_mode</span><span class="p">,</span> <span class="n">insert_pos</span><span class="p">,</span>
+                            <span class="n">new_hook</span><span class="p">,</span> <span class="n">trigger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">new_hook</span><span class="p">,</span>
+                              <span class="n">trigger</span><span class="p">,</span>
+                              <span class="n">model_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                              <span class="n">insert_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">base_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">insert_mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval_multiple_models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_hook</span><span class="p">(</span><span class="n">base_hook</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">insert_mode</span><span class="p">,</span> <span class="n">insert_pos</span><span class="p">,</span>
+                            <span class="n">new_hook</span><span class="p">,</span> <span class="n">trigger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_switch_model_ctx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_model_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">next_model_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">next_model_idx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_model_idx</span> <span class="o">=</span> <span class="n">next_model_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">next_model_idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">optimizers</span><span class="p">[</span><span class="n">next_model_idx</span><span class="p">]</span>
+
+<div class="viewcode-block" id="GeneralMultiModelTrainer._run_routine"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralMultiModelTrainer._run_routine">[docs]</a>    <span class="k">def</span> <span class="nf">_run_routine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">dataset_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the hooks_set and maintain the mode for multiple internal models</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            mode: running mode of client, chosen from train/val/test</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Considering evaluation could be in ```hooks_set[</span>
+<span class="sd">            &quot;on_epoch_end&quot;]```, there could be two data loaders in \</span>
+<span class="sd">            self.ctx, we must tell the running hooks which data_loader to \</span>
+<span class="sd">            call and which num_samples to count</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_samples_model</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span> <span class="o">==</span> <span class="s2">&quot;sequential&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks_set</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks_set</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                              <span class="nb">dict</span><span class="p">),</span> \
+                <span class="s2">&quot;When models_interact_mode=sequential, &quot;</span> \
+                <span class="s2">&quot;hooks_set should be a list of dict&quot;</span> \
+                <span class="s2">&quot;hooks_set[i] stores specific set for i-th internal model.&quot;</span> \
+                <span class="s2">&quot;For each dict, the key indicates point-in-time and the &quot;</span> \
+                <span class="s2">&quot;value indicates specific hook&quot;</span>
+            <span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">)):</span>
+                <span class="c1"># switch different hooks &amp; ctx for different internal models</span>
+                <span class="n">hooks_set_model_i</span> <span class="o">=</span> <span class="n">hooks_set</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_switch_model_ctx</span><span class="p">(</span><span class="n">model_idx</span><span class="p">)</span>
+                <span class="c1"># [Interaction at run_routine level]</span>
+                <span class="c1"># one model runs its whole routine, then do sth. for</span>
+                <span class="c1"># interaction, then next model runs its whole routine</span>
+                <span class="c1"># ... -&gt; run_routine_model_i</span>
+                <span class="c1">#     -&gt; _switch_model_ctx</span>
+                <span class="c1">#     -&gt; (on_fit_end, _interact_to_other_models)</span>
+                <span class="c1">#     -&gt; run_routine_model_i+1</span>
+                <span class="c1">#     -&gt; ...</span>
+                <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_run_routine</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">hooks_set_model_i</span><span class="p">,</span>
+                                                   <span class="n">dataset_name</span><span class="p">)</span>
+                <span class="n">num_samples_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span> <span class="o">==</span> <span class="s2">&quot;parallel&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks_set</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> \
+                <span class="s2">&quot;When models_interact_mode=parallel, hooks_set should be a &quot;</span> \
+                <span class="s2">&quot;dict whose key indicates point-in-time and value indicates &quot;</span> \
+                <span class="s2">&quot;specific hook&quot;</span>
+            <span class="c1"># [Interaction at point-in-time level]</span>
+            <span class="c1"># at a specific point-in-time, one model call hooks (including</span>
+            <span class="c1"># interaction), then next model call hooks</span>
+            <span class="c1"># ... -&gt;  (on_xxx_point, hook_xxx_model_i)</span>
+            <span class="c1">#     -&gt;  (on_xxx_point, _interact_to_other_models)</span>
+            <span class="c1">#     -&gt;  (on_xxx_point, _switch_model_ctx)</span>
+            <span class="c1">#     -&gt;  (on_xxx_point, hook_xxx_model_i+1)</span>
+            <span class="c1">#     -&gt; ...</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_run_routine</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
+            <span class="n">num_samples_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid models_interact_mode, should be `sequential` or &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`parallel`,&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">models_interact_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># For now, we return the average number of samples for different models</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">num_samples_model</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeneralMultiModelTrainer.get_model_para"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralMultiModelTrainer.get_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">get_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            return multiple model parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">trained_model_para</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">):</span>
+            <span class="n">trained_model_para</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_param_filter</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()))</span>
+
+        <span class="k">return</span> <span class="n">trained_model_para</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">trained_model_para</span></div>
+
+<div class="viewcode-block" id="GeneralMultiModelTrainer.update"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.GeneralMultiModelTrainer.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_parameters</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># update multiple model paras</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            model_parameters (list[dict]): Multiple pyTorch Module object&#39;s</span>
+<span class="sd">            state_dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">model_parameters</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_parameters</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">model_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">),</span> \
+                <span class="s2">&quot;model_parameters should a list of multiple state_dict&quot;</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_parameters</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">,</span> \
+                <span class="sa">f</span><span class="s2">&quot;model_parameters should has the same length to &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;self.model_nums, &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_parameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;respectively&quot;</span>
+            <span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_param_filter</span><span class="p">(</span>
+                    <span class="n">model_parameters</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]),</span>
+                                                           <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">):</span>
+        <span class="c1"># return multiple model paras</span>
+        <span class="n">sample_size</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">target_data_split_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sample_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_para</span><span class="p">(),</span> <span class="n">results</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

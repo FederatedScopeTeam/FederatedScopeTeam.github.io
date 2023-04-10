@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.gfl.dataset.kg &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.gfl.dataset.kg</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.gfl.dataset.kg</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This file is part of https://github.com/pyg-team/pytorch_geometric</span>
+<span class="sd">Copyright (c) 2021 Matthias Fey, Jiaxuan You &lt;matthias.fey@tu-dortmund.de,</span>
+<span class="sd">jiaxuan@cs.stanford.edu&gt;</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in</span>
+<span class="sd">all copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="sd">THE SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">InMemoryDataset</span><span class="p">,</span> <span class="n">Data</span><span class="p">,</span> <span class="n">download_url</span>
+
+
+<div class="viewcode-block" id="KG"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.dataset.KG">[docs]</a><span class="k">class</span> <span class="nc">KG</span><span class="p">(</span><span class="n">InMemoryDataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">pre_transform</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">edge_type</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">raw_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">processed_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;processed&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">processed_file_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;data.pt&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">raw_file_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s1">&#39;entities.dict&#39;</span><span class="p">,</span> <span class="s1">&#39;relations.dict&#39;</span><span class="p">,</span> <span class="s1">&#39;test.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;train.txt&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;valid.txt&#39;</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="KG.download"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.dataset.KG.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/MichSchli/&#39;</span> \
+              <span class="s1">&#39;RelationPrediction/master/data/&#39;</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;fb15k&#39;</span><span class="p">:</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;FB15k&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fb15k-237&#39;</span><span class="p">:</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;FB-Toutanova&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;wn18&#39;</span><span class="p">:</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;wn18&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;toy&#39;</span><span class="p">:</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;Toy&#39;</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_file_names</span><span class="p">:</span>
+            <span class="n">download_url</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">urls</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="KG.process"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.dataset.KG.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="p">,</span> <span class="s1">&#39;entities.dict&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">entities_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="p">,</span> <span class="s1">&#39;relations.dict&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">relations_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">}</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s1">.txt&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="n">entities_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+                <span class="n">rel</span> <span class="o">=</span> <span class="p">[</span><span class="n">relations_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="p">[</span><span class="n">entities_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s1">_edge_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s1">_edge_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
+
+        <span class="c1"># For message passing, we add reverse edges and types to the graph:</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;train_edge_index&#39;</span><span class="p">]</span>
+        <span class="n">edge_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;train_edge_type&#39;</span><span class="p">]</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">col</span><span class="p">,</span> <span class="n">row</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">edge_type</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">edge_type</span><span class="p">,</span> <span class="n">edge_type</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">relations_dict</span><span class="p">)])</span>
+        <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">entities_dict</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">num_nodes</span><span class="o">=</span><span class="n">num_nodes</span><span class="p">,</span>
+                    <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">,</span>
+                    <span class="n">edge_type</span><span class="o">=</span><span class="n">edge_type</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">train_edge_index</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">valid_edge_index</span><span class="p">,</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">test_edge_index</span><span class="p">),</span>
+                               <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">edge_type</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">train_edge_type</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">valid_edge_type</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test_edge_type</span><span class="p">),</span>
+            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">num_edges</span> <span class="o">=</span> <span class="n">edge_index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">train_edge_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">train_edge_mask</span><span class="p">[:</span><span class="n">data</span><span class="o">.</span><span class="n">train_edge_index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">valid_edge_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">valid_edge_mask</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">train_edge_index</span><span class="o">.</span>
+                        <span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">test_edge_index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">test_edge_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">test_edge_mask</span><span class="p">[</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">test_edge_index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">):]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">,</span>
+                    <span class="n">index_orig</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">),</span>
+                    <span class="n">edge_type</span><span class="o">=</span><span class="n">edge_type</span><span class="p">,</span>
+                    <span class="n">num_nodes</span><span class="o">=</span><span class="n">num_nodes</span><span class="p">,</span>
+                    <span class="n">train_edge_mask</span><span class="o">=</span><span class="n">train_edge_mask</span><span class="p">,</span>
+                    <span class="n">valid_edge_mask</span><span class="o">=</span><span class="n">valid_edge_mask</span><span class="p">,</span>
+                    <span class="n">test_edge_mask</span><span class="o">=</span><span class="n">test_edge_mask</span><span class="p">,</span>
+                    <span class="n">input_edge_index</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">)</span>
+
+        <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">data_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_filter</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">]</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">collate</span><span class="p">([</span><span class="n">data</span><span class="p">])),</span> <span class="bp">self</span><span class="o">.</span><span class="n">processed_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

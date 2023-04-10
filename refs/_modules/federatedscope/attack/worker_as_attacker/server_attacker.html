@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.attack.worker_as_attacker.server_attacker &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.attack.worker_as_attacker.server_attacker</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.attack.worker_as_attacker.server_attacker</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">federatedscope.core.workers</span> <span class="kn">import</span> <span class="n">Server</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.message</span> <span class="kn">import</span> <span class="n">Message</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.criterion_builder</span> <span class="kn">import</span> <span class="n">get_criterion</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary.utils</span> <span class="kn">import</span> <span class="n">get_data_sav_fn</span><span class="p">,</span> \
+    <span class="n">get_reconstructor</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">federatedscope.attack.privacy_attacks.passive_PIA</span> <span class="kn">import</span> \
+    <span class="n">PassivePropertyInference</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BackdoorServer"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.worker_as_attacker.BackdoorServer">[docs]</a><span class="k">class</span> <span class="nc">BackdoorServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    For backdoor attacks, we will choose different sampling stratergies.</span>
+<span class="sd">    fix-frequency, all-round ,or random sampling.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">ID</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">client_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">total_round_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">unseen_clients_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BackdoorServer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">ID</span><span class="p">,</span>
+                                             <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                                             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                                             <span class="n">client_num</span><span class="o">=</span><span class="n">client_num</span><span class="p">,</span>
+                                             <span class="n">total_round_num</span><span class="o">=</span><span class="n">total_round_num</span><span class="p">,</span>
+                                             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                             <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+                                             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BackdoorServer.broadcast_model_para"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.worker_as_attacker.BackdoorServer.broadcast_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">broadcast_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">msg_type</span><span class="o">=</span><span class="s1">&#39;model_para&#39;</span><span class="p">,</span>
+                             <span class="n">sample_client_num</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="n">filter_unseen_clients</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        To broadcast the message to all clients or sampled clients</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            msg_type: &#39;model_para&#39; or other user defined msg_type</span>
+<span class="sd">            sample_client_num: the number of sampled clients in the broadcast</span>
+<span class="sd">                behavior. And sample_client_num = -1 denotes to broadcast to</span>
+<span class="sd">                all the clients.</span>
+<span class="sd">            filter_unseen_clients: whether filter out the unseen clients that</span>
+<span class="sd">                do not contribute to FL process by training on their local</span>
+<span class="sd">                data and uploading their local model update. The splitting is</span>
+<span class="sd">                useful to check participation generalization gap in [ICLR&#39;22,</span>
+<span class="sd">                What Do We Mean by Generalization in Federated Learning?]</span>
+<span class="sd">                You may want to set it to be False when in evaluation stage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">filter_unseen_clients</span><span class="p">:</span>
+            <span class="c1"># to filter out the unseen clients when sampling</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unseen_clients_id</span><span class="p">,</span> <span class="s1">&#39;unseen&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sample_client_num</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># only activated at training process</span>
+            <span class="n">attacker_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span>
+            <span class="n">setting</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">setting</span>
+            <span class="n">insert_round</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">insert_round</span>
+
+            <span class="k">if</span> <span class="n">attacker_id</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+
+                <span class="n">receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                            <span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span><span class="p">,</span>
+                                            <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;fix&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">client_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">client_list</span><span class="p">,</span>
+                                                <span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                                <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="n">receiver</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;starting the fix-frequency poisoning attack&#39;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s1">&#39;starting poisoning round: </span><span class="si">{:d}</span><span class="s1">, the attacker ID: </span><span class="si">{:d}</span><span class="s1">&#39;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">client_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">client_list</span><span class="p">,</span>
+                                                <span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span><span class="p">,</span>
+                                                <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;single&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">insert_round</span><span class="p">:</span>
+                <span class="n">client_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">client_list</span><span class="p">,</span>
+                                            <span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                            <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">receiver</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;starting the single-shot poisoning attack&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;starting poisoning round: </span><span class="si">{:d}</span><span class="s1">, the attacker ID: </span><span class="si">{:d}</span><span class="s1">&#39;</span><span class="o">.</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+
+                <span class="n">client_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">client_list</span><span class="p">,</span>
+                                            <span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                            <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">receiver</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;starting the all-round poisoning attack&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;starting poisoning round: </span><span class="si">{:d}</span><span class="s1">, the attacker ID: </span><span class="si">{:d}</span><span class="s1">&#39;</span><span class="o">.</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attacker_id</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">receiver</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                            <span class="n">size</span><span class="o">=</span><span class="n">sample_client_num</span><span class="p">,</span>
+                                            <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># broadcast to all clients</span>
+            <span class="n">receiver</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noise_injector</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">msg_type</span> <span class="o">==</span> <span class="s1">&#39;model_para&#39;</span><span class="p">:</span>
+            <span class="c1"># Inject noise only when broadcast parameters</span>
+            <span class="k">for</span> <span class="n">model_idx_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">)):</span>
+                <span class="n">num_sample_clients</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">v</span><span class="p">[</span><span class="s2">&quot;num_sample&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_in_info</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_noise_injector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">,</span> <span class="n">num_sample_clients</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx_i</span><span class="p">])</span>
+
+        <span class="n">skip_broadcast</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;global&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">model_para</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">if</span> <span class="n">skip_broadcast</span> <span class="k">else</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+                          <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model_para</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">skip_broadcast</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span><span class="n">msg_type</span><span class="o">=</span><span class="n">msg_type</span><span class="p">,</span>
+                    <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                    <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">),</span>
+                    <span class="n">content</span><span class="o">=</span><span class="n">model_para</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">online_aggr</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_num</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aggregators</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">filter_unseen_clients</span><span class="p">:</span>
+            <span class="c1"># restore the state of the unseen clients within sampler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unseen_clients_id</span><span class="p">,</span> <span class="s1">&#39;seen&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PassiveServer"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.worker_as_attacker.PassiveServer">[docs]</a><span class="k">class</span> <span class="nc">PassiveServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    In passive attack, the server store the model and the message collected</span>
+<span class="sd">    from the client,and perform the optimization based reconstruction,</span>
+<span class="sd">    such as DLG, InvertGradient.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">ID</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">client_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">total_round_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">state_to_reconstruct</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">client_to_reconstruct</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PassiveServer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">ID</span><span class="p">,</span>
+                                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                                            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                            <span class="n">client_num</span><span class="o">=</span><span class="n">client_num</span><span class="p">,</span>
+                                            <span class="n">total_round_num</span><span class="o">=</span><span class="n">total_round_num</span><span class="p">,</span>
+                                            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                            <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+                                            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># self.offline_reconstruct = offline_reconstruct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atk_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_to_reconstruct</span> <span class="o">=</span> <span class="n">state_to_reconstruct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_to_reconstruct</span> <span class="o">=</span> <span class="n">client_to_reconstruct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># the loss function of the global model; the global model can be</span>
+        <span class="c1"># obtained in self.aggregator.model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_criterion</span> <span class="o">=</span> <span class="n">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary.utils</span> <span class="kn">import</span> <span class="n">get_data_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_one_hot_label</span> <span class="o">=</span> <span class="n">get_data_info</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconstructor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_reconstructor</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconstructed_data_sav_fn</span> <span class="o">=</span> <span class="n">get_data_sav_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_data_summary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_reconstructor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">get_reconstructor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atk_method</span><span class="p">,</span>
+            <span class="n">max_ite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">max_ite</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">reconstruct_lr</span><span class="p">,</span>
+            <span class="n">federate_loss_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_criterion</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">federate_lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">optim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">reconstruct_optim</span><span class="p">,</span>
+            <span class="n">info_diff_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">info_diff_type</span><span class="p">,</span>
+            <span class="n">federate_method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">alpha_TV</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">alpha_TV</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_para</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">sender</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------- reconstruct round:</span><span class="si">{}</span><span class="s1">, client:</span><span class="si">{}</span><span class="s1">---------&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">sender</span><span class="p">))</span>
+        <span class="n">dummy_data</span><span class="p">,</span> <span class="n">dummy_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstructor</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)),</span>
+            <span class="n">original_info</span><span class="o">=</span><span class="n">model_para</span><span class="p">,</span>
+            <span class="n">data_feature_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dim</span><span class="p">,</span>
+            <span class="n">num_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_class</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_data</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_data</span><span class="p">[</span><span class="n">state</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">dummy_data</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">dummy_label</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">run_reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sender_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">state_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">state_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="c1"># After FL running, using gradient based reconstruction method to</span>
+        <span class="c1"># recover client&#39;s private training data</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">state_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sender_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sender_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">sender_list</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="n">state</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct</span><span class="p">(</span><span class="n">model_para</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                  <span class="n">batch_size</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                  <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                                  <span class="n">sender</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PassiveServer.callback_funcs_model_para"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.worker_as_attacker.PassiveServer.callback_funcs_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">callback_funcs_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;finish&#39;</span>
+
+        <span class="nb">round</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;idle&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span>
+
+        <span class="c1"># run reconstruction before the clear of self.msg_buffer</span>
+        <span class="k">if</span> <span class="s1">&#39;DLG_loss&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;DLG_loss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;DLG_loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;DLG_loss&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_to_reconstruct</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">message</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">state_to_reconstruct</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_to_reconstruct</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span> <span class="ow">in</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">client_to_reconstruct</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_reconstruct</span><span class="p">(</span><span class="n">state_list</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">state</span><span class="p">],</span>
+                                     <span class="n">sender_list</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">])</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;Finish DLG attack; Final DLG reconstruction loss: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reconstructor</span><span class="o">.</span><span class="n">dlg_recover_loss</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;DLG_loss&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">][</span>
+                    <span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstructor</span><span class="o">.</span><span class="n">dlg_recover_loss</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstructed_data_sav_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reconstructed_data_sav_fn</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_data</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">state</span><span class="p">][</span>
+                            <span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">sav_pth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;image_state_</span><span class="si">{}</span><span class="s1">_client_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">message</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="PassivePIAServer"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.worker_as_attacker.PassivePIAServer">[docs]</a><span class="k">class</span> <span class="nc">PassivePIAServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The implementation of the batch property classifier, the algorithm 3 in</span>
+<span class="sd">    paper: Exploiting Unintended Feature Leakage in Collaborative Learning</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">    Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly</span>
+<span class="sd">    Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative</span>
+<span class="sd">    Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">ID</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">client_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">total_round_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PassivePIAServer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">ID</span><span class="p">,</span>
+                                               <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                                               <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                               <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                               <span class="n">client_num</span><span class="o">=</span><span class="n">client_num</span><span class="p">,</span>
+                                               <span class="n">total_round_num</span><span class="o">=</span><span class="n">total_round_num</span><span class="p">,</span>
+                                               <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                               <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># self.offline_reconstruct = offline_reconstruct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atk_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">attack_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pia_attacker</span> <span class="o">=</span> <span class="n">PassivePropertyInference</span><span class="p">(</span>
+            <span class="n">classier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">attack</span><span class="o">.</span><span class="n">classifier_PIA</span><span class="p">,</span>
+            <span class="n">fl_model_criterion</span><span class="o">=</span><span class="n">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">criterion</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">grad_clip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">grad_clip</span><span class="p">,</span>
+            <span class="n">dataset_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+            <span class="n">fl_local_update_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">local_update_steps</span><span class="p">,</span>
+            <span class="n">fl_type_optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+            <span class="n">fl_lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="c1"># self.optimizer = get_optimizer(</span>
+        <span class="c1"># type=self._cfg.fedopt.type_optimizer, model=self.model,</span>
+        <span class="c1"># lr=self._cfg.fedopt.optimizer.lr)</span>
+        <span class="c1"># print(self.optimizer)</span>
+<div class="viewcode-block" id="PassivePIAServer.callback_funcs_model_para"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.worker_as_attacker.PassivePIAServer.callback_funcs_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">callback_funcs_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finish</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;finish&#39;</span>
+
+        <span class="nb">round</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">change_state</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;idle&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="nb">round</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span>
+
+        <span class="c1"># collect the updates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pia_attacker</span><span class="o">.</span><span class="n">collect_updates</span><span class="p">(</span>
+            <span class="n">previous_para</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+            <span class="n">updated_parameter</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="nb">round</span><span class="o">=</span><span class="nb">round</span><span class="p">,</span>
+            <span class="n">client_id</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pia_attacker</span><span class="o">.</span><span class="n">get_data_for_dataset_prop_classifier</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">online_aggr</span><span class="p">:</span>
+            <span class="c1"># TODO: put this line to `check_and_move_on`</span>
+            <span class="c1"># currently, no way to know the latest `sender`</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="o">.</span><span class="n">inc</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_and_move_on</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_round_num</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pia_attacker</span><span class="o">.</span><span class="n">train_property_classifier</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pia_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pia_attacker</span><span class="o">.</span><span class="n">infer_collected</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pia_results</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

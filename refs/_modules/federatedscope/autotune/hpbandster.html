@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.autotune.hpbandster &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.autotune.hpbandster</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.autotune.hpbandster</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ConfigSpace</span> <span class="k">as</span> <span class="nn">CS</span>
+<span class="kn">import</span> <span class="nn">hpbandster.core.nameserver</span> <span class="k">as</span> <span class="nn">hpns</span>
+<span class="kn">from</span> <span class="nn">hpbandster.core.worker</span> <span class="kn">import</span> <span class="n">Worker</span>
+<span class="kn">from</span> <span class="nn">hpbandster.optimizers</span> <span class="kn">import</span> <span class="n">BOHB</span><span class="p">,</span> <span class="n">HyperBand</span><span class="p">,</span> <span class="n">RandomSearch</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.autotune.utils</span> <span class="kn">import</span> <span class="n">eval_in_fs</span><span class="p">,</span> <span class="n">log2wandb</span><span class="p">,</span> \
+    <span class="n">summarize_hpo_results</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">clear_cache</span><span class="p">(</span><span class="n">working_folder</span><span class="p">):</span>
+    <span class="c1"># Clear cached ckpt</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">working_folder</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.pth&#39;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">osp</span><span class="p">(</span><span class="n">working_folder</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">MyRandomSearch</span><span class="p">(</span><span class="n">RandomSearch</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_folder</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span> <span class="o">=</span> <span class="n">working_folder</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyRandomSearch</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyBOHB</span><span class="p">(</span><span class="n">BOHB</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_folder</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span> <span class="o">=</span> <span class="n">working_folder</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyBOHB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_next_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">iteration_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span><span class="p">):</span>
+            <span class="n">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyBOHB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_next_iteration</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span>
+                                                      <span class="n">iteration_kwargs</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyHyperBand</span><span class="p">(</span><span class="n">HyperBand</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_folder</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span> <span class="o">=</span> <span class="n">working_folder</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyHyperBand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_next_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">iteration_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span><span class="p">):</span>
+            <span class="n">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_folder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MyHyperBand</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_next_iteration</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">iteration_kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MyWorker"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.hpbandster.MyWorker">[docs]</a><span class="k">class</span> <span class="nc">MyWorker</span><span class="p">(</span><span class="n">Worker</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">cfg</span><span class="p">,</span>
+                 <span class="n">ss</span><span class="p">,</span>
+                 <span class="n">sleep_interval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyWorker</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_interval</span> <span class="o">=</span> <span class="n">sleep_interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span> <span class="o">=</span> <span class="n">client_cfgs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">ss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_perfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trial_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="MyWorker.compute"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.hpbandster.MyWorker.compute">[docs]</a>    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">eval_in_fs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">budget</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_cfgs</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">trial_index</span><span class="p">)</span>
+        <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">metric</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">key1</span><span class="p">][</span><span class="n">key2</span><span class="p">]</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">budget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_perfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_interval</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Evaluate the </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_perfs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s1">-th config &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s1">, and get performance </span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+            <span class="n">tmp_results</span> <span class="o">=</span> \
+                <span class="n">summarize_hpo_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">_perfs</span><span class="p">,</span>
+                                      <span class="n">white_list</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                                      <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">,</span>
+                                      <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">log2wandb</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_perfs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">tmp_results</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trial_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="n">res</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="n">res</span><span class="p">}</span></div>
+
+    <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">summarize_hpo_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_configs</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_perfs</span><span class="p">,</span>
+                                        <span class="n">white_list</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                                        <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">larger_better</span><span class="p">,</span>
+                                        <span class="n">use_wandb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;========================== HPO Final ==========================&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                                    <span class="s1">&#39;results.csv&#39;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;====================================================&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="k">def</span> <span class="nf">run_hpbandster</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">config_space</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">_search_space</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;wrap_&#39;</span><span class="p">):</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="n">CS</span><span class="o">.</span><span class="n">ConfigurationSpace</span><span class="p">()</span>
+        <span class="n">ss</span><span class="o">.</span><span class="n">add_hyperparameter</span><span class="p">(</span><span class="n">config_space</span><span class="p">[</span><span class="s1">&#39;hpo.table.idx&#39;</span><span class="p">])</span>
+        <span class="n">config_space</span> <span class="o">=</span> <span class="n">ss</span>
+    <span class="n">NS</span> <span class="o">=</span> <span class="n">hpns</span><span class="o">.</span><span class="n">NameServer</span><span class="p">(</span><span class="n">run_id</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ns_host</span><span class="p">,</span> <span class="n">ns_port</span> <span class="o">=</span> <span class="n">NS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">MyWorker</span><span class="p">(</span><span class="n">sleep_interval</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">ss</span><span class="o">=</span><span class="n">config_space</span><span class="p">,</span>
+                 <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+                 <span class="n">nameserver</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+                 <span class="n">nameserver_port</span><span class="o">=</span><span class="n">ns_port</span><span class="p">,</span>
+                 <span class="n">run_id</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
+                 <span class="n">client_cfgs</span><span class="o">=</span><span class="n">client_cfgs</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">opt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;configspace&#39;</span><span class="p">:</span> <span class="n">config_space</span><span class="p">,</span>
+        <span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span>
+        <span class="s1">&#39;nameserver&#39;</span><span class="p">:</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;nameserver_port&#39;</span><span class="p">:</span> <span class="n">ns_port</span><span class="p">,</span>
+        <span class="s1">&#39;eta&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">elim_rate</span><span class="p">,</span>
+        <span class="s1">&#39;min_budget&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="s1">&#39;max_budget&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s1">&#39;working_folder&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rs&#39;</span><span class="p">,</span> <span class="s1">&#39;wrap_rs&#39;</span><span class="p">]:</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">MyRandomSearch</span><span class="p">(</span><span class="o">**</span><span class="n">opt_kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;hb&#39;</span><span class="p">,</span> <span class="s1">&#39;wrap_hb&#39;</span><span class="p">]:</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">MyHyperBand</span><span class="p">(</span><span class="o">**</span><span class="n">opt_kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bo_kde&#39;</span><span class="p">,</span> <span class="s1">&#39;bohb&#39;</span><span class="p">,</span> <span class="s1">&#39;wrap_bo_kde&#39;</span><span class="p">,</span> <span class="s1">&#39;wrap_bohb&#39;</span><span class="p">]:</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">MyBOHB</span><span class="p">(</span><span class="o">**</span><span class="n">opt_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">iter</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">n_iterations</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">iter</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_iterations</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">opt_kwargs</span><span class="p">[</span><span class="s1">&#39;min_budget&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">opt_kwargs</span><span class="p">[</span><span class="s1">&#39;max_budget&#39;</span><span class="p">])</span> <span class="o">/</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">opt_kwargs</span><span class="p">[</span><span class="s1">&#39;eta&#39;</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">n_iterations</span><span class="o">=</span><span class="n">n_iterations</span><span class="p">)</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">shutdown_workers</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">NS</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="n">all_runs</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get_all_runs</span><span class="p">()</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">info</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_runs</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

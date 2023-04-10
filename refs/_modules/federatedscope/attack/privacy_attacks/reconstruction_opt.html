@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.attack.privacy_attacks.reconstruction_opt &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.attack.privacy_attacks.reconstruction_opt</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.attack.privacy_attacks.reconstruction_opt</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary.utils</span> <span class="kn">import</span> <span class="n">iDLG_trick</span><span class="p">,</span> \
+    <span class="n">total_variation</span><span class="p">,</span> <span class="n">get_info_diff_loss</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DLG"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.DLG">[docs]</a><span class="k">class</span> <span class="nc">DLG</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Implementation of the paper &quot;Deep Leakage from Gradients&quot;:</span>
+<span class="sd">    https://papers.nips.cc/paper/2019/file/ \</span>
+<span class="sd">    60a6c4002cc7b29142def8871531281a-Paper.pdf</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">        Zhu, Ligeng, Zhijian Liu, and Song Han. &quot;Deep leakage from gradients.&quot;</span>
+<span class="sd">        Advances in Neural Information Processing Systems 32 (2019).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            - max_ite (int): the max iteration number;</span>
+<span class="sd">            - lr (float): learning rate in optimization based reconstruction;</span>
+<span class="sd">            - federate_loss_fn (object): The loss function used in FL training;</span>
+<span class="sd">            - device (str): the device running the reconstruction;</span>
+<span class="sd">            - federate_method (str): The federated learning method;</span>
+<span class="sd">            - federate_lr (float):The learning rate used in FL training;</span>
+<span class="sd">            default None.</span>
+<span class="sd">            - optim (str): The optimization method used in reconstruction;</span>
+<span class="sd">            default: &quot;Adam&quot;; supported: &#39;sgd&#39;, &#39;adam&#39;, &#39;lbfgs&#39;</span>
+<span class="sd">            - info_diff_type (str): The type of loss between the</span>
+<span class="sd">            ground-truth gradient/parameter updates info and the</span>
+<span class="sd">            reconstructed info; default: &quot;l2&quot;</span>
+<span class="sd">            - is_one_hot_label (bool): whether the label is one-hot;</span>
+<span class="sd">            default: False</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">max_ite</span><span class="p">,</span>
+                 <span class="n">lr</span><span class="p">,</span>
+                 <span class="n">federate_loss_fn</span><span class="p">,</span>
+                 <span class="n">device</span><span class="p">,</span>
+                 <span class="n">federate_method</span><span class="p">,</span>
+                 <span class="n">federate_lr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">optim</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span>
+                 <span class="n">info_diff_type</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span>
+                 <span class="n">is_one_hot_label</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">federate_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fedavg&quot;</span><span class="p">:</span>
+            <span class="c1"># check whether the received info is parameter. If yes,</span>
+            <span class="c1"># the reconstruction attack requires the learning rate of FL</span>
+            <span class="k">assert</span> <span class="n">federate_lr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">info_is_para</span> <span class="o">=</span> <span class="n">federate_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fedavg&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">federate_lr</span> <span class="o">=</span> <span class="n">federate_lr</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_ite</span> <span class="o">=</span> <span class="n">max_ite</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optim</span> <span class="o">=</span> <span class="n">optim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">federate_loss_fn</span> <span class="o">=</span> <span class="n">federate_loss_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_type</span> <span class="o">=</span> <span class="n">info_diff_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_loss</span> <span class="o">=</span> <span class="n">get_info_diff_loss</span><span class="p">(</span><span class="n">info_diff_type</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_one_hot_label</span> <span class="o">=</span> <span class="n">is_one_hot_label</span>
+
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_setup_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;adam&#39;</span><span class="p">:</span>
+            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;sgd&#39;</span><span class="p">:</span>  <span class="c1"># actually gd</span>
+            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span>
+                                        <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+                                        <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                                        <span class="n">nesterov</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;lbfgs&#39;</span><span class="p">:</span>
+            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">LBFGS</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">optimizer</span>
+
+    <span class="k">def</span> <span class="nf">_gradient_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">dummy_data</span><span class="p">,</span> <span class="n">dummy_label</span><span class="p">,</span>
+                          <span class="n">original_info</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">federate_loss_fn</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">(</span><span class="n">dummy_data</span><span class="p">),</span>
+                <span class="n">dummy_label</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)))</span>
+
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span>
+                                           <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+                                           <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">info_diff</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">g_dumby</span><span class="p">,</span> <span class="n">gt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">original_info</span><span class="p">):</span>
+                <span class="n">info_diff</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_loss</span><span class="p">(</span><span class="n">g_dumby</span><span class="p">,</span> <span class="n">gt</span><span class="p">)</span>
+            <span class="n">info_diff</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">info_diff</span>
+
+        <span class="k">return</span> <span class="n">closure</span>
+
+    <span class="k">def</span> <span class="nf">_run_simple_reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">dummy_data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span>
+                                <span class="n">original_gradient</span><span class="p">,</span> <span class="n">closure_fn</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">ite</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_ite</span><span class="p">):</span>
+            <span class="n">closure</span> <span class="o">=</span> <span class="n">closure_fn</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">dummy_data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span>
+                                 <span class="n">original_gradient</span><span class="p">)</span>
+            <span class="n">info_diff</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">closure</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">ite</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_ite</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ite</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Ite: </span><span class="si">{}</span><span class="s1">, gradient difference: </span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">ite</span><span class="p">,</span> <span class="n">info_diff</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dlg_recover_loss</span> <span class="o">=</span> <span class="n">info_diff</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dummy_data</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">label</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DLG.get_original_gradient_from_para"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.DLG.get_original_gradient_from_para">[docs]</a>    <span class="k">def</span> <span class="nf">get_original_gradient_from_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">original_info</span><span class="p">,</span>
+                                        <span class="n">model_para_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Transfer the model parameter updates to gradient based on:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            P_{t} = P - \eta g,</span>
+<span class="sd">        where</span>
+<span class="sd">        :math:`P_{t}` is the parameters updated by the client at current round;</span>
+<span class="sd">        :math:`P` is the parameters of the global model at the end of the</span>
+<span class="sd">        last round;</span>
+<span class="sd">        :math:`\eta` is the learning rate of clients&#39; local training;</span>
+<span class="sd">        :math:`g` is the gradient</span>
+
+
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - model (object): The model owned by the Server</span>
+<span class="sd">            - original_info (dict): The model parameter updates received by</span>
+<span class="sd">            Server</span>
+<span class="sd">            - model_para_name (list): The list of model name. Be sure the</span>
+<span class="sd">            :attr:`model_para_name` is consistent with the the key name in</span>
+<span class="sd">            :attr:`original_info`</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            - original_gradient (list): the list of the gradient</span>
+<span class="sd">            corresponding to the model updates</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">original_gradient</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">((</span><span class="n">original_para</span> <span class="o">-</span>
+              <span class="n">original_info</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)))</span> <span class="o">/</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">federate_lr</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">original_para</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">model_para_name</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">original_gradient</span></div>
+
+<div class="viewcode-block" id="DLG.reconstruct"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.DLG.reconstruct">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">original_info</span><span class="p">,</span> <span class="n">data_feature_dim</span><span class="p">,</span> <span class="n">num_class</span><span class="p">,</span>
+                    <span class="n">batch_size</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Reconstruct the original training data and label.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model: The model used in FL; Type: object</span>
+<span class="sd">            original_info: The message received to perform reconstruction,</span>
+<span class="sd">            usually the gradient/parameter updates; Type: list</span>
+<span class="sd">            data_feature_dim: The feature dimension of dataset; Type: list</span>
+<span class="sd">            or Tensor.Size</span>
+<span class="sd">            num_class: the number of total classes in the dataset; Type: int</span>
+<span class="sd">            batch_size: the number of samples in the batch that</span>
+<span class="sd">            generate the original_info; Type: int</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            - The reconstructed data (Tensor); Size: [batch_size,</span>
+<span class="sd">            data_feature_dim]</span>
+<span class="sd">            - The reconstructed label (Tensor): Size: [batch_size]</span>
+
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># inital dummy data and label</span>
+        <span class="n">dummy_data_dim</span> <span class="o">=</span> <span class="p">[</span><span class="n">batch_size</span><span class="p">]</span>
+        <span class="n">dummy_data_dim</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data_feature_dim</span><span class="p">)</span>
+        <span class="n">dummy_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">dummy_data_dim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">para_trainable_name</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+            <span class="n">para_trainable_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_is_para</span><span class="p">:</span>
+            <span class="n">original_gradient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_original_gradient_from_para</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span> <span class="n">original_info</span><span class="p">,</span> <span class="n">model_para_name</span><span class="o">=</span><span class="n">para_trainable_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">original_gradient</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">grad</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">grad</span> <span class="ow">in</span> <span class="n">original_info</span>
+            <span class="p">]</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="n">iDLG_trick</span><span class="p">(</span><span class="n">original_gradient</span><span class="p">,</span>
+                           <span class="n">num_class</span><span class="o">=</span><span class="n">num_class</span><span class="p">,</span>
+                           <span class="n">is_one_hot_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_one_hot_label</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+
+        <span class="c1"># setup optimizer</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_optimizer</span><span class="p">([</span><span class="n">dummy_data</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_simple_reconstruct</span><span class="p">(</span><span class="n">model</span><span class="p">,</span>
+                                     <span class="n">optimizer</span><span class="p">,</span>
+                                     <span class="n">dummy_data</span><span class="p">,</span>
+                                     <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                                     <span class="n">original_gradient</span><span class="o">=</span><span class="n">original_gradient</span><span class="p">,</span>
+                                     <span class="n">closure_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gradient_closure</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dummy_data</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">label</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="InvertGradient"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.InvertGradient">[docs]</a><span class="k">class</span> <span class="nc">InvertGradient</span><span class="p">(</span><span class="n">DLG</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The implementation of &quot;Inverting Gradients - How easy is it to break</span>
+<span class="sd">    privacy in federated learning?&quot;.</span>
+<span class="sd">    Link: https://proceedings.neurips.cc/paper/2020/hash/ \</span>
+<span class="sd">    c4ede56bbd98819ae6112b20ac6bf145-Abstract.html</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">        Geiping, Jonas, et al. &quot;Inverting gradients-how easy is it to break</span>
+<span class="sd">        privacy in federated learning?.&quot; Advances in Neural Information</span>
+<span class="sd">        Processing Systems 33 (2020): 16937-16947.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">            - max_ite (int): the max iteration number;</span>
+<span class="sd">            - lr (float): learning rate in optimization based reconstruction;</span>
+<span class="sd">            - federate_loss_fn (object): The loss function used in FL training;</span>
+<span class="sd">            - device (str): the device running the reconstruction;</span>
+<span class="sd">            - federate_method (str): The federated learning method;</span>
+<span class="sd">            - federate_lr (float): The learning rate used in FL training;</span>
+<span class="sd">            default: None.</span>
+<span class="sd">            - alpha_TV (float): the hyper-parameter of the total variance</span>
+<span class="sd">            term; default: 0.001</span>
+<span class="sd">            - info_diff_type (str): The type of loss between the</span>
+<span class="sd">            ground-truth gradient/parameter updates info and the</span>
+<span class="sd">            reconstructed info; default: &quot;l2&quot;</span>
+<span class="sd">            - optim (str): The optimization method used in reconstruction;</span>
+<span class="sd">            default: &quot;Adam&quot;; supported: &#39;sgd&#39;, &#39;adam&#39;, &#39;lbfgs&#39;</span>
+<span class="sd">            - info_diff_type (str): The type of loss between the</span>
+<span class="sd">            ground-truth gradient/parameter updates info and the</span>
+<span class="sd">            reconstructed info; default: &quot;l2&quot;</span>
+<span class="sd">            - is_one_hot_label (bool): whether the label is one-hot;</span>
+<span class="sd">            default: False</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">max_ite</span><span class="p">,</span>
+                 <span class="n">lr</span><span class="p">,</span>
+                 <span class="n">federate_loss_fn</span><span class="p">,</span>
+                 <span class="n">device</span><span class="p">,</span>
+                 <span class="n">federate_method</span><span class="p">,</span>
+                 <span class="n">federate_lr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">alpha_TV</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+                 <span class="n">info_diff_type</span><span class="o">=</span><span class="s1">&#39;sim&#39;</span><span class="p">,</span>
+                 <span class="n">optim</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span>
+                 <span class="n">is_one_hot_label</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InvertGradient</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">max_ite</span><span class="p">,</span>
+                                             <span class="n">lr</span><span class="p">,</span>
+                                             <span class="n">federate_loss_fn</span><span class="p">,</span>
+                                             <span class="n">device</span><span class="p">,</span>
+                                             <span class="n">federate_method</span><span class="p">,</span>
+                                             <span class="n">federate_lr</span><span class="o">=</span><span class="n">federate_lr</span><span class="p">,</span>
+                                             <span class="n">optim</span><span class="o">=</span><span class="n">optim</span><span class="p">,</span>
+                                             <span class="n">info_diff_type</span><span class="o">=</span><span class="n">info_diff_type</span><span class="p">,</span>
+                                             <span class="n">is_one_hot_label</span><span class="o">=</span><span class="n">is_one_hot_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_TV</span> <span class="o">=</span> <span class="n">alpha_TV</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_type</span> <span class="o">!=</span> <span class="s1">&#39;sim&#39;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;Force the info_diff_type to be cosine similarity loss in &#39;</span>
+                <span class="s1">&#39;InvertGradient attack method!&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_type</span> <span class="o">=</span> <span class="s1">&#39;sim&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_loss</span> <span class="o">=</span> <span class="n">get_info_diff_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info_diff_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gradient_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">dummy_data</span><span class="p">,</span> <span class="n">dummy_label</span><span class="p">,</span>
+                          <span class="n">original_gradient</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">federate_loss_fn</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">(</span><span class="n">dummy_data</span><span class="p">),</span>
+                <span class="n">dummy_label</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)))</span>
+
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span>
+                                           <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+                                           <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">gradient_diff</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">g_dummy</span><span class="p">,</span> <span class="n">gt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">original_gradient</span><span class="p">):</span>
+                <span class="n">gradient_diff</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_diff_loss</span><span class="p">(</span><span class="n">g_dummy</span><span class="p">,</span> <span class="n">gt</span><span class="p">)</span>
+
+            <span class="c1"># add total variance regularization</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_TV</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">gradient_diff</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_TV</span> <span class="o">*</span> <span class="n">total_variation</span><span class="p">(</span><span class="n">dummy_data</span><span class="p">)</span>
+            <span class="n">gradient_diff</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">gradient_diff</span>
+
+        <span class="k">return</span> <span class="n">closure</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

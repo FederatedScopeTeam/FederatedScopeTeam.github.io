@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.autotune.utils &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.autotune.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.autotune.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">ConfigSpace</span> <span class="k">as</span> <span class="nn">CS</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">generate_hpo_exp_name</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">scheduler</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">sha</span><span class="o">.</span><span class="n">budgets</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">metric</span><span class="si">}</span><span class="s1">&#39;</span>
+
+
+<div class="viewcode-block" id="parse_condition_param"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.utils.parse_condition_param">[docs]</a><span class="k">def</span> <span class="nf">parse_condition_param</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">ss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse conditions param to generate ``ConfigSpace.conditions``</span>
+
+<span class="sd">    Condition parameters: EqualsCondition, NotEqualsCondition, \</span>
+<span class="sd">    LessThanCondition, GreaterThanCondition, InCondition</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        condition (dict): configspace condition dict, which is supposed to</span>
+<span class="sd">        have four keys for</span>
+<span class="sd">        ss (CS.ConfigurationSpace): configspace</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ConfigSpace.conditions: the conditions for configspace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">str_func_mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;equal&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">EqualsCondition</span><span class="p">,</span>
+        <span class="s1">&#39;not_equal&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">NotEqualsCondition</span><span class="p">,</span>
+        <span class="s1">&#39;less&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">LessThanCondition</span><span class="p">,</span>
+        <span class="s1">&#39;greater&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">GreaterThanCondition</span><span class="p">,</span>
+        <span class="s1">&#39;in&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">InCondition</span><span class="p">,</span>
+        <span class="s1">&#39;and&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">AndConjunction</span><span class="p">,</span>
+        <span class="s1">&#39;or&#39;</span><span class="p">:</span> <span class="n">CS</span><span class="o">.</span><span class="n">OrConjunction</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">cond_type</span> <span class="o">=</span> <span class="n">condition</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">cond_type</span> <span class="ow">in</span> <span class="n">str_func_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;the param condition &#39;</span> \
+                                                 <span class="sa">f</span><span class="s1">&#39;should be in&#39;</span> \
+                                                 <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">str_func_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s1">.&#39;</span>
+
+    <span class="k">if</span> <span class="n">cond_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">str_func_mapping</span><span class="p">[</span><span class="n">cond_type</span><span class="p">](</span>
+            <span class="n">parse_condition_param</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="s1">&#39;child&#39;</span><span class="p">],</span> <span class="n">ss</span><span class="p">),</span>
+            <span class="n">parse_condition_param</span><span class="p">(</span><span class="n">condition</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">],</span> <span class="n">ss</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">str_func_mapping</span><span class="p">[</span><span class="n">cond_type</span><span class="p">](</span>
+            <span class="n">child</span><span class="o">=</span><span class="n">ss</span><span class="p">[</span><span class="n">condition</span><span class="p">[</span><span class="s1">&#39;child&#39;</span><span class="p">]],</span>
+            <span class="n">parent</span><span class="o">=</span><span class="n">ss</span><span class="p">[</span><span class="n">condition</span><span class="p">[</span><span class="s1">&#39;parent&#39;</span><span class="p">]],</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">condition</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="parse_search_space"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.utils.parse_search_space">[docs]</a><span class="k">def</span> <span class="nf">parse_search_space</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse yaml format configuration to generate search space</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        config_path (str): the path of the yaml file.</span>
+<span class="sd">    Return:</span>
+<span class="sd">        ConfigSpace object: the search space.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">CS</span><span class="o">.</span><span class="n">ConfigurationSpace</span><span class="p">()</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ips</span><span class="p">:</span>
+        <span class="n">raw_ss_config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ips</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+
+    <span class="c1"># Add hyperparameters</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">raw_ss_config</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;condition&#39;</span><span class="p">):</span>
+            <span class="c1"># Deal with condition later</span>
+            <span class="k">continue</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">raw_ss_config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">hyper_type</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">hyper_type</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+            <span class="n">hyper_config</span> <span class="o">=</span> <span class="n">CS</span><span class="o">.</span><span class="n">UniformFloatHyperparameter</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">hyper_type</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
+            <span class="n">hyper_config</span> <span class="o">=</span> <span class="n">CS</span><span class="o">.</span><span class="n">UniformIntegerHyperparameter</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">hyper_type</span> <span class="o">==</span> <span class="s1">&#39;cate&#39;</span><span class="p">:</span>
+            <span class="n">hyper_config</span> <span class="o">=</span> <span class="n">CS</span><span class="o">.</span><span class="n">CategoricalHyperparameter</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported hyper type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hyper_type</span><span class="p">))</span>
+        <span class="n">ss</span><span class="o">.</span><span class="n">add_hyperparameter</span><span class="p">(</span><span class="n">hyper_config</span><span class="p">)</span>
+
+    <span class="c1"># Add conditions</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">raw_ss_config</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;condition&#39;</span><span class="p">):</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parse_condition_param</span><span class="p">(</span><span class="n">raw_ss_config</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">ss</span><span class="p">))</span>
+    <span class="n">ss</span><span class="o">.</span><span class="n">add_conditions</span><span class="p">(</span><span class="n">conditions</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ss</span></div>
+
+
+<div class="viewcode-block" id="config2cmdargs"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.utils.config2cmdargs">[docs]</a><span class="k">def</span> <span class="nf">config2cmdargs</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        config (dict): key is cfg node name, value is the specified value.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        results (list): cmd args</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="config2str"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.utils.config2str">[docs]</a><span class="k">def</span> <span class="nf">config2str</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        config (dict): key is cfg node name, value is the choice of</span>
+<span class="sd">        hyper-parameter.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        name (str): the string representation of this config</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+        <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="arm2dict"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.utils.arm2dict">[docs]</a><span class="k">def</span> <span class="nf">arm2dict</span><span class="p">(</span><span class="n">kvs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        kvs (dict): key is hyperparameter name in the form aaa.bb.cccc,</span>
+<span class="sd">                    and value is the choice.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        config (dict): the same specification for creating a cfg node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kvs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">cur_level</span> <span class="o">=</span> <span class="n">results</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">ln</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ln</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cur_level</span><span class="p">:</span>
+                <span class="n">cur_level</span><span class="p">[</span><span class="n">ln</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">cur_level</span> <span class="o">=</span> <span class="n">cur_level</span><span class="p">[</span><span class="n">ln</span><span class="p">]</span>
+        <span class="n">cur_level</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="k">def</span> <span class="nf">summarize_hpo_results</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span>
+                          <span class="n">perfs</span><span class="p">,</span>
+                          <span class="n">white_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">desc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">use_wandb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">white_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">white_list</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;performance&#39;</span><span class="p">]</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">trial_cfg</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span> <span class="n">perfs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">white_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">trial_cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">trial_cfg</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">white_list</span>
+            <span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">result</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">trial_cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">trial_cfg</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">result</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ele</span><span class="p">:</span> <span class="n">ele</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="n">desc</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cols</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">use_wandb</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">wandb</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">({</span><span class="s1">&#39;ConfigurationRank&#39;</span><span class="p">:</span> <span class="n">table</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+
+
+<span class="k">def</span> <span class="nf">parse_logs</span><span class="p">(</span><span class="n">file_list</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="n">FONTSIZE</span> <span class="o">=</span> <span class="mi">40</span>
+    <span class="n">MARKSIZE</span> <span class="o">=</span> <span class="mi">25</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">F</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">F</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">state</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;INFO: &#39;</span><span class="p">)</span>
+                    <span class="n">config</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">):</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="n">performance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+                        <span class="n">line</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;performance&#39;</span><span class="p">):]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">performance</span><span class="p">)</span>
+                    <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">config</span><span class="p">,</span> <span class="n">performance</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">continue</span>
+        <span class="n">best_seen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">tol_budget</span><span class="p">,</span> <span class="n">tmp_b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">config</span><span class="p">,</span> <span class="n">performance</span> <span class="ow">in</span> <span class="n">history</span><span class="p">:</span>
+            <span class="n">tol_budget</span> <span class="o">+=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">best_seen</span> <span class="o">&gt;</span> <span class="n">performance</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span>
+                    <span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">tmp_b</span><span class="p">:</span>
+                <span class="n">best_seen</span> <span class="o">=</span> <span class="n">performance</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tol_budget</span><span class="p">)</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_seen</span><span class="p">)</span>
+            <span class="n">tmp_b</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;federate.total_round_num&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">tol_budget</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># Draw</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">FONTSIZE</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">FONTSIZE</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Fraction of budget&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">FONTSIZE</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">FONTSIZE</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="n">MARKSIZE</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">file_list</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;exp2.pdf&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="eval_in_fs"><a class="viewcode-back" href="../../../autotune.html#federatedscope.autotune.utils.eval_in_fs">[docs]</a><span class="k">def</span> <span class="nf">eval_in_fs</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trial_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        cfg: fs cfg</span>
+<span class="sd">        config: sampled trial CS.Configuration</span>
+<span class="sd">        budget: budget round for this trial</span>
+<span class="sd">        client_cfgs: client-wise cfg</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The best results returned from FedRunner</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">ConfigSpace</span> <span class="k">as</span> <span class="nn">CS</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.utils</span> <span class="kn">import</span> <span class="n">setup_seed</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.data_builder</span> <span class="kn">import</span> <span class="n">get_data</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.worker_builder</span> <span class="kn">import</span> \
+        <span class="n">get_client_cls</span><span class="p">,</span> <span class="n">get_server_cls</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.runner_builder</span> <span class="kn">import</span> <span class="n">get_runner</span>
+    <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osp</span>
+
+    <span class="c1"># Global cfg</span>
+    <span class="n">trial_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">CS</span><span class="o">.</span><span class="n">Configuration</span><span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="c1"># Add FedEx related keys to config</span>
+        <span class="k">if</span> <span class="s1">&#39;hpo.table.idx&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;hpo.table.idx&#39;</span><span class="p">]</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;hpo.fedex.ss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">osp</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_tmp_grid_search_space.yaml&quot;</span><span class="p">)</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;federate.save_to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">osp</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                                             <span class="sa">f</span><span class="s2">&quot;idx_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">.pth&quot;</span><span class="p">)</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;federate.restore_from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">osp</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">working_folder</span><span class="p">,</span>
+                                                  <span class="sa">f</span><span class="s2">&quot;idx_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">.pth&quot;</span><span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;hpo.trial_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_index</span>
+        <span class="c1"># specify the configuration of interest</span>
+        <span class="n">trial_cfg</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">config2cmdargs</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">budget</span><span class="p">:</span>
+        <span class="c1"># specify the budget</span>
+        <span class="n">trial_cfg</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">([</span><span class="s2">&quot;federate.total_round_num&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">budget</span><span class="p">)])</span>
+
+    <span class="n">setup_seed</span><span class="p">(</span><span class="n">trial_cfg</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">trial_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
+    <span class="n">trial_cfg</span><span class="o">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span><span class="n">modified_config</span><span class="p">)</span>
+    <span class="n">trial_cfg</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+    <span class="n">fed_runner</span> <span class="o">=</span> <span class="n">get_runner</span><span class="p">(</span><span class="n">server_class</span><span class="o">=</span><span class="n">get_server_cls</span><span class="p">(</span><span class="n">trial_cfg</span><span class="p">),</span>
+                            <span class="n">client_class</span><span class="o">=</span><span class="n">get_client_cls</span><span class="p">(</span><span class="n">trial_cfg</span><span class="p">),</span>
+                            <span class="n">config</span><span class="o">=</span><span class="n">trial_cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
+                            <span class="n">client_configs</span><span class="o">=</span><span class="n">client_cfgs</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">fed_runner</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="k">def</span> <span class="nf">config_bool2int</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="c1"># TODO: refactor bool/str to int</span>
+    <span class="kn">import</span> <span class="nn">copy</span>
+    <span class="n">new_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_dict</span>
+
+
+<span class="k">def</span> <span class="nf">log2wandb</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">trial_cfg</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">wandb</span>
+    <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="n">trial_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">metric</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">log_res</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Trial_index&#39;</span><span class="p">:</span> <span class="n">trial</span><span class="p">,</span>
+        <span class="s1">&#39;Config&#39;</span><span class="p">:</span> <span class="n">config_bool2int</span><span class="p">(</span><span class="n">config</span><span class="p">),</span>
+        <span class="n">trial_cfg</span><span class="o">.</span><span class="n">hpo</span><span class="o">.</span><span class="n">metric</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="n">key1</span><span class="p">][</span><span class="n">key2</span><span class="p">],</span>
+    <span class="p">}</span>
+    <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_res</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

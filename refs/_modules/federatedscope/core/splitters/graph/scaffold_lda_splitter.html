@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.splitters.graph.scaffold_lda_splitter &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.splitters.graph.scaffold_lda_splitter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.splitters.graph.scaffold_lda_splitter</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">RDLogger</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.splitters.utils</span> <span class="kn">import</span> \
+    <span class="n">dirichlet_distribution_noniid_slice</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.splitters.graph.scaffold_splitter</span> <span class="kn">import</span> \
+    <span class="n">generate_scaffold</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.splitters</span> <span class="kn">import</span> <span class="n">BaseSplitter</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">RDLogger</span><span class="o">.</span><span class="n">DisableLog</span><span class="p">(</span><span class="s1">&#39;rdApp.*&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">GenFeatures</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of ``CanonicalAtomFeaturizer`` and</span>
+<span class="sd">    ``CanonicalBondFeaturizer`` in DGL. \</span>
+<span class="sd">    Source: https://lifesci.dgl.ai/_modules/dgllife/utils/featurizers.html</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        data: PyG.data in PyG.dataset.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        PyG.data: data passing featurizer.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;Si&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;Cl&#39;</span><span class="p">,</span> <span class="s1">&#39;Br&#39;</span><span class="p">,</span> <span class="s1">&#39;Mg&#39;</span><span class="p">,</span> <span class="s1">&#39;Na&#39;</span><span class="p">,</span> <span class="s1">&#39;Ca&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Fe&#39;</span><span class="p">,</span> <span class="s1">&#39;As&#39;</span><span class="p">,</span> <span class="s1">&#39;Al&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;Tl&#39;</span><span class="p">,</span> <span class="s1">&#39;Yb&#39;</span><span class="p">,</span> <span class="s1">&#39;Sb&#39;</span><span class="p">,</span> <span class="s1">&#39;Sn&#39;</span><span class="p">,</span> <span class="s1">&#39;Ag&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Pd&#39;</span><span class="p">,</span> <span class="s1">&#39;Co&#39;</span><span class="p">,</span> <span class="s1">&#39;Se&#39;</span><span class="p">,</span> <span class="s1">&#39;Ti&#39;</span><span class="p">,</span> <span class="s1">&#39;Zn&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">,</span> <span class="s1">&#39;Ge&#39;</span><span class="p">,</span> <span class="s1">&#39;Cu&#39;</span><span class="p">,</span> <span class="s1">&#39;Au&#39;</span><span class="p">,</span> <span class="s1">&#39;Ni&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Cd&#39;</span><span class="p">,</span> <span class="s1">&#39;In&#39;</span><span class="p">,</span> <span class="s1">&#39;Mn&#39;</span><span class="p">,</span> <span class="s1">&#39;Zr&#39;</span><span class="p">,</span> <span class="s1">&#39;Cr&#39;</span><span class="p">,</span> <span class="s1">&#39;Pt&#39;</span><span class="p">,</span> <span class="s1">&#39;Hg&#39;</span><span class="p">,</span> <span class="s1">&#39;Pb&#39;</span><span class="p">,</span> <span class="s1">&#39;other&#39;</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hybridizations</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">HybridizationType</span><span class="o">.</span><span class="n">SP</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">HybridizationType</span><span class="o">.</span><span class="n">SP2</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">HybridizationType</span><span class="o">.</span><span class="n">SP3</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">HybridizationType</span><span class="o">.</span><span class="n">SP3D</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">HybridizationType</span><span class="o">.</span><span class="n">SP3D2</span><span class="p">,</span>
+            <span class="s1">&#39;other&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stereos</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondStereo</span><span class="o">.</span><span class="n">STEREONONE</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondStereo</span><span class="o">.</span><span class="n">STEREOANY</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondStereo</span><span class="o">.</span><span class="n">STEREOZ</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondStereo</span><span class="o">.</span><span class="n">STEREOE</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondStereo</span><span class="o">.</span><span class="n">STEREOCIS</span><span class="p">,</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondStereo</span><span class="o">.</span><span class="n">STEREOTRANS</span><span class="p">,</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">smiles</span><span class="p">)</span>
+
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+            <span class="n">symbol</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>
+                <span class="n">symbol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">())]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">symbol</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="n">degree</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span>
+            <span class="n">degree</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetDegree</span><span class="p">()]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="n">implicit</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span>
+            <span class="n">implicit</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetImplicitValence</span><span class="p">()]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="n">formal_charge</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetFormalCharge</span><span class="p">()</span>
+            <span class="n">radical_electrons</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetNumRadicalElectrons</span><span class="p">()</span>
+            <span class="n">hybridization</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hybridizations</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetHybridization</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hybridizations</span><span class="p">:</span>
+                <span class="n">hybridization</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hybridizations</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
+                    <span class="n">atom</span><span class="o">.</span><span class="n">GetHybridization</span><span class="p">())]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hybridization</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hybridizations</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="n">aromaticity</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIsAromatic</span><span class="p">()</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">hydrogens</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span>
+            <span class="n">hydrogens</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetTotalNumHs</span><span class="p">()]</span> <span class="o">=</span> <span class="mf">1.</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">symbol</span> <span class="o">+</span> <span class="n">degree</span> <span class="o">+</span> <span class="n">implicit</span> <span class="o">+</span> <span class="p">[</span><span class="n">formal_charge</span><span class="p">]</span> <span class="o">+</span>
+                             <span class="p">[</span><span class="n">radical_electrons</span><span class="p">]</span> <span class="o">+</span> <span class="n">hybridization</span> <span class="o">+</span>
+                             <span class="p">[</span><span class="n">aromaticity</span><span class="p">]</span> <span class="o">+</span> <span class="n">hydrogens</span><span class="p">)</span>
+            <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">edge_attrs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetBonds</span><span class="p">():</span>
+            <span class="n">bond_type</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetBondType</span><span class="p">()</span>
+            <span class="n">single</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">bond_type</span> <span class="o">==</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondType</span><span class="o">.</span><span class="n">SINGLE</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">double</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">bond_type</span> <span class="o">==</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondType</span><span class="o">.</span><span class="n">DOUBLE</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">triple</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">bond_type</span> <span class="o">==</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondType</span><span class="o">.</span><span class="n">TRIPLE</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">aromatic</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">bond_type</span> <span class="o">==</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">BondType</span><span class="o">.</span><span class="n">AROMATIC</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">conjugation</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetIsConjugated</span><span class="p">()</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">ring</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">IsInRing</span><span class="p">()</span> <span class="k">else</span> <span class="mf">0.</span>
+            <span class="n">stereo</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span>
+            <span class="n">stereo</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stereos</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">GetStereo</span><span class="p">())]</span> <span class="o">=</span> <span class="mf">1.</span>
+
+            <span class="n">edge_attr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">single</span><span class="p">,</span> <span class="n">double</span><span class="p">,</span> <span class="n">triple</span><span class="p">,</span> <span class="n">aromatic</span><span class="p">,</span> <span class="n">conjugation</span><span class="p">,</span> <span class="n">ring</span><span class="p">]</span> <span class="o">+</span> <span class="n">stereo</span><span class="p">)</span>
+
+            <span class="n">edge_attrs</span> <span class="o">+=</span> <span class="p">[</span><span class="n">edge_attr</span><span class="p">,</span> <span class="n">edge_attr</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_attrs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">edge_attr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_atoms</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">()</span>
+            <span class="n">feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">edge_attrs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">feats</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">feats</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">self_loop_feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">,</span> <span class="n">feats</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">self_loop_feats</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">feats</span><span class="p">,</span> <span class="n">self_loop_feats</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">edge_attr</span> <span class="o">=</span> <span class="n">feats</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span> <span class="nf">gen_scaffold_lda_split</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">client_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    return dict{ID:[idxs]}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Scaffold split might take minutes, please wait...&#39;</span><span class="p">)</span>
+    <span class="n">scaffolds</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+        <span class="n">smiles</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">smiles</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+        <span class="n">scaffold</span> <span class="o">=</span> <span class="n">generate_scaffold</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scaffold</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scaffolds</span><span class="p">:</span>
+            <span class="n">scaffolds</span><span class="p">[</span><span class="n">scaffold</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scaffolds</span><span class="p">[</span><span class="n">scaffold</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+    <span class="c1"># Sort from largest to smallest scaffold sets</span>
+    <span class="n">scaffolds</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">scaffolds</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">scaffold_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">scaffold_set</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">scaffold</span><span class="p">,</span>
+             <span class="n">scaffold_set</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">scaffolds</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                     <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+                                     <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scaffold_list</span><span class="p">)):</span>
+        <span class="n">label</span><span class="p">[</span><span class="n">scaffold_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+    <span class="c1"># Split data to list</span>
+    <span class="n">idx_slice</span> <span class="o">=</span> <span class="n">dirichlet_distribution_noniid_slice</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">client_num</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">idx_slice</span>
+
+
+<div class="viewcode-block" id="ScaffoldLdaSplitter"><a class="viewcode-back" href="../../../../../core.html#federatedscope.core.splitters.graph.ScaffoldLdaSplitter">[docs]</a><span class="k">class</span> <span class="nc">ScaffoldLdaSplitter</span><span class="p">(</span><span class="n">BaseSplitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    First adopt scaffold splitting and then assign the samples to \</span>
+<span class="sd">    clients according to Latent Dirichlet Allocation.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        dataset (List or PyG.dataset): The molecular datasets.</span>
+<span class="sd">        alpha (float): Partition hyperparameter in LDA, smaller alpha \</span>
+<span class="sd">            generates more extreme heterogeneous scenario see \</span>
+<span class="sd">            ``np.random.dirichlet``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">         List(List(PyG.data)): data_list of split dataset via scaffold split.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_num</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ScaffoldLdaSplitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client_num</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="n">featurizer</span> <span class="o">=</span> <span class="n">GenFeatures</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">featurizer</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">idx_slice</span> <span class="o">=</span> <span class="n">gen_scaffold_lda_split</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_num</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">data_list</span> <span class="o">=</span> <span class="p">[[</span><span class="n">dataset</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idxs</span><span class="p">]</span> <span class="k">for</span> <span class="n">idxs</span> <span class="ow">in</span> <span class="n">idx_slice</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">data_list</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

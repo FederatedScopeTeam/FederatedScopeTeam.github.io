@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.gfl.model.graph_level &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.gfl.model.graph_level</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.gfl.model.graph_level</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data.batch</span> <span class="kn">import</span> <span class="n">Batch</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.nn.glob</span> <span class="kn">import</span> <span class="n">global_add_pool</span><span class="p">,</span> <span class="n">global_mean_pool</span><span class="p">,</span> \
+    <span class="n">global_max_pool</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.gfl.model.gcn</span> <span class="kn">import</span> <span class="n">GCN_Net</span>
+<span class="kn">from</span> <span class="nn">federatedscope.gfl.model.sage</span> <span class="kn">import</span> <span class="n">SAGE_Net</span>
+<span class="kn">from</span> <span class="nn">federatedscope.gfl.model.gat</span> <span class="kn">import</span> <span class="n">GAT_Net</span>
+<span class="kn">from</span> <span class="nn">federatedscope.gfl.model.gin</span> <span class="kn">import</span> <span class="n">GIN_Net</span>
+<span class="kn">from</span> <span class="nn">federatedscope.gfl.model.gpr</span> <span class="kn">import</span> <span class="n">GPR_Net</span>
+
+<span class="n">EMD_DIM</span> <span class="o">=</span> <span class="mi">200</span>
+
+
+<span class="k">class</span> <span class="nc">AtomEncoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AtomEncoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_embedding_list</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">in_channels</span><span class="p">):</span>
+            <span class="n">emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">EMD_DIM</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atom_embedding_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">emb</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x_embedding</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">x_embedding</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_embedding_list</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">x</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">x_embedding</span>
+
+
+<div class="viewcode-block" id="GNN_Net_Graph"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.model.GNN_Net_Graph">[docs]</a><span class="k">class</span> <span class="nc">GNN_Net_Graph</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;GNN model with pre-linear layer, pooling layer</span>
+<span class="sd">        and output layer for graph classification tasks.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        in_channels (int): input channels.</span>
+<span class="sd">        out_channels (int): output channels.</span>
+<span class="sd">        hidden (int): hidden dim for all modules.</span>
+<span class="sd">        max_depth (int): number of layers for gnn.</span>
+<span class="sd">        dropout (float): dropout probability.</span>
+<span class="sd">        gnn (str): name of gnn type, use (&quot;gcn&quot; or &quot;gin&quot;).</span>
+<span class="sd">        pooling (str): pooling method, use (&quot;add&quot;, &quot;mean&quot; or &quot;max&quot;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">in_channels</span><span class="p">,</span>
+                 <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+                 <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">dropout</span><span class="o">=</span><span class="mf">.0</span><span class="p">,</span>
+                 <span class="n">gnn</span><span class="o">=</span><span class="s1">&#39;gcn&#39;</span><span class="p">,</span>
+                 <span class="n">pooling</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GNN_Net_Graph</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="c1"># Embedding (pre) layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder_atom</span> <span class="o">=</span> <span class="n">AtomEncoder</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        <span class="c1"># GNN layer</span>
+        <span class="k">if</span> <span class="n">gnn</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">GCN_Net</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">out_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">hidden</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                               <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gnn</span> <span class="o">==</span> <span class="s1">&#39;sage&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">SAGE_Net</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                                <span class="n">out_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                                <span class="n">hidden</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                                <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                                <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gnn</span> <span class="o">==</span> <span class="s1">&#39;gat&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">GAT_Net</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">out_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">hidden</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                               <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gnn</span> <span class="o">==</span> <span class="s1">&#39;gin&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">GIN_Net</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">out_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">hidden</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                               <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gnn</span> <span class="o">==</span> <span class="s1">&#39;gpr&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span> <span class="o">=</span> <span class="n">GPR_Net</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">out_channels</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">hidden</span><span class="o">=</span><span class="n">hidden</span><span class="p">,</span>
+                               <span class="n">K</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                               <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported gnn type: </span><span class="si">{</span><span class="n">gnn</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Pooling layer</span>
+        <span class="k">if</span> <span class="n">pooling</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pooling</span> <span class="o">=</span> <span class="n">global_add_pool</span>
+        <span class="k">elif</span> <span class="n">pooling</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pooling</span> <span class="o">=</span> <span class="n">global_mean_pool</span>
+        <span class="k">elif</span> <span class="n">pooling</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pooling</span> <span class="o">=</span> <span class="n">global_max_pool</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported pooling type: </span><span class="si">{</span><span class="n">pooling</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="c1"># Output layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">hidden</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clf</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GNN_Net_Graph.forward"><a class="viewcode-back" href="../../../../gfl.html#federatedscope.gfl.model.GNN_Net_Graph.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Batch</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">batch</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">batch</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Unsupported data type!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder_atom</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gnn</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pooling</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

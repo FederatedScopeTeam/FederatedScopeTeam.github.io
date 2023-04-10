@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.trainers.trainer &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.trainers.trainer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.trainers.trainer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.base_trainer</span> <span class="kn">import</span> <span class="n">BaseTrainer</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.enums</span> <span class="kn">import</span> <span class="n">MODE</span><span class="p">,</span> <span class="n">LIFECYCLE</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.decorators</span> <span class="kn">import</span> <span class="n">use_diff</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.utils</span> <span class="kn">import</span> <span class="n">format_log_hooks</span><span class="p">,</span> \
+    <span class="n">filter_by_specified_keywords</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.trainers.context</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">CtxVar</span><span class="p">,</span> <span class="n">lifecycle</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Trainer"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer">[docs]</a><span class="k">class</span> <span class="nc">Trainer</span><span class="p">(</span><span class="n">BaseTrainer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register, organize and run the train/test/val procedures</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">HOOK_TRIGGER</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;on_fit_start&quot;</span><span class="p">,</span> <span class="s2">&quot;on_epoch_start&quot;</span><span class="p">,</span> <span class="s2">&quot;on_batch_start&quot;</span><span class="p">,</span> <span class="s2">&quot;on_batch_forward&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;on_batch_backward&quot;</span><span class="p">,</span> <span class="s2">&quot;on_batch_end&quot;</span><span class="p">,</span> <span class="s2">&quot;on_epoch_end&quot;</span><span class="p">,</span> <span class="s2">&quot;on_fit_end&quot;</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">model</span><span class="p">,</span>
+                 <span class="n">data</span><span class="p">,</span>
+                 <span class="n">device</span><span class="p">,</span>
+                 <span class="n">config</span><span class="p">,</span>
+                 <span class="n">only_for_eval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">monitor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Parse data and setup init vars in ctx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_data_related_var_in_ctx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
+            <span class="sa">f</span><span class="s2">&quot;Monitor not found in trainer with class </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">monitor</span>
+        <span class="c1"># the &quot;model_nums&quot;, and &quot;models&quot; are used for multi-model case and</span>
+        <span class="c1"># model size calculation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_nums</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="p">]</span>
+        <span class="c1"># &quot;mirrored_models&quot;: whether the internal multi-models adopt the</span>
+        <span class="c1"># same architects and almost the same behaviors,</span>
+        <span class="c1"># which is used to simply the flops, model size calculation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">mirrored_models</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Atomic operation during training/evaluation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+        <span class="c1"># By default, use the same trigger keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_ft</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">)</span>
+
+        <span class="c1"># register necessary hooks into self.hooks_in_train and</span>
+        <span class="c1"># self.hooks_in_eval</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">only_for_eval</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_default_hooks_train</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">finetune</span><span class="o">.</span><span class="n">before_eval</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_default_hooks_ft</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_default_hooks_eval</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;distributed&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_trainer_meta_info</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># in standalone mode, by default, we print the trainer info only</span>
+            <span class="c1"># once for better logs readability</span>
+            <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span>
+
+    <span class="nd">@cfg</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_cfg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span> <span class="o">=</span> <span class="n">new_cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">new_cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_data_related_var_in_ctx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Trainer.parse_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer.parse_data">[docs]</a>    <span class="k">def</span> <span class="nf">parse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate ``${split}_data``, ``${split}_loader`` and \</span>
+<span class="sd">        ``num_${split}_data`` for different data splits</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Trainer.setup_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer.setup_data">[docs]</a>    <span class="k">def</span> <span class="nf">setup_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization data by ``cfg``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Trainer._setup_data_related_var_in_ctx"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer._setup_data_related_var_in_ctx">[docs]</a>    <span class="k">def</span> <span class="nf">_setup_data_related_var_in_ctx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populate ``${split}_data``, ``${split}_loader`` and \</span>
+<span class="sd">        ``num_${split}_data`` for different data splits, and setup init var \</span>
+<span class="sd">        in ctx.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_data</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_data</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">merge_from_dict</span><span class="p">(</span><span class="n">init_dict</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">register_default_hooks_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">register_default_hooks_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">register_default_hooks_ft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">reset_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_trigger</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span>
+        <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reset_hook_in_trigger</span><span class="p">(</span><span class="n">hooks_dict</span><span class="p">,</span>
+                                                       <span class="n">target_hook_name</span><span class="p">,</span>
+                                                       <span class="n">target_trigger</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">del_one_hook_idx</span>
+
+    <span class="k">def</span> <span class="nf">reset_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_trigger</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span>
+        <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reset_hook_in_trigger</span><span class="p">(</span><span class="n">hooks_dict</span><span class="p">,</span>
+                                                       <span class="n">target_hook_name</span><span class="p">,</span>
+                                                       <span class="n">target_trigger</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">del_one_hook_idx</span>
+
+    <span class="k">def</span> <span class="nf">replace_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_hook</span><span class="p">,</span> <span class="n">target_trigger</span><span class="p">,</span>
+                              <span class="n">target_hook_name</span><span class="p">):</span>
+        <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_hook_in_train</span><span class="p">(</span>
+            <span class="n">target_trigger</span><span class="o">=</span><span class="n">target_trigger</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="o">=</span><span class="n">target_hook_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">new_hook</span><span class="p">,</span>
+                                    <span class="n">trigger</span><span class="o">=</span><span class="n">target_trigger</span><span class="p">,</span>
+                                    <span class="n">insert_pos</span><span class="o">=</span><span class="n">del_one_hook_idx</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">replace_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_hook</span><span class="p">,</span> <span class="n">target_trigger</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="p">):</span>
+        <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_hook_in_eval</span><span class="p">(</span>
+            <span class="n">target_trigger</span><span class="o">=</span><span class="n">target_trigger</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="o">=</span><span class="n">target_hook_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_hook_in_eval</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">new_hook</span><span class="p">,</span>
+                                   <span class="n">trigger</span><span class="o">=</span><span class="n">target_trigger</span><span class="p">,</span>
+                                   <span class="n">insert_pos</span><span class="o">=</span><span class="n">del_one_hook_idx</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reset_hook_in_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">target_hook_name</span><span class="p">,</span>
+                               <span class="n">target_trigger</span><span class="p">):</span>
+        <span class="c1"># clean/delete existing hooks for a specific trigger,</span>
+        <span class="c1"># if target_hook_name given, will clean only the specific one;</span>
+        <span class="c1"># otherwise, will clean all hooks for the trigger.</span>
+        <span class="k">assert</span> <span class="n">target_trigger</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">HOOK_TRIGGER</span><span class="p">,</span> \
+            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">target_trigger</span><span class="si">}</span><span class="s2"> as hook trigger, you should specify a &quot;</span> \
+            <span class="sa">f</span><span class="s2">&quot;string within </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">HOOK_TRIGGER</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">target_hook_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hooks_dict</span><span class="p">[</span><span class="n">target_trigger</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># -1 indicates del the whole list</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">hook_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hooks_dict</span><span class="p">[</span><span class="n">target_trigger</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="n">target_hook_name</span> <span class="o">==</span> <span class="n">hooks_dict</span><span class="p">[</span><span class="n">target_trigger</span><span class="p">][</span>
+                        <span class="n">hook_idx</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+                    <span class="n">del_one</span> <span class="o">=</span> <span class="n">hooks_dict</span><span class="p">[</span><span class="n">target_trigger</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">hook_idx</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Remove the hook `</span><span class="si">{</span><span class="n">del_one</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">` from &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;hooks_set at trigger `</span><span class="si">{</span><span class="n">target_trigger</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+                    <span class="n">del_one_hook_idx</span> <span class="o">=</span> <span class="n">hook_idx</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">del_one_hook_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;In hook del procedure, can&#39;t find the target hook &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;named </span><span class="si">{</span><span class="n">target_hook_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">del_one_hook_idx</span>
+
+    <span class="k">def</span> <span class="nf">register_hook_in_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                               <span class="n">new_hook</span><span class="p">,</span>
+                               <span class="n">trigger</span><span class="p">,</span>
+                               <span class="n">insert_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">base_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">insert_mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_hook</span><span class="p">(</span><span class="n">base_hook</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">insert_mode</span><span class="p">,</span> <span class="n">insert_pos</span><span class="p">,</span>
+                            <span class="n">new_hook</span><span class="p">,</span> <span class="n">trigger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">register_hook_in_ft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">new_hook</span><span class="p">,</span>
+                            <span class="n">trigger</span><span class="p">,</span>
+                            <span class="n">insert_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">base_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">insert_mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_ft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_hook</span><span class="p">(</span><span class="n">base_hook</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">insert_mode</span><span class="p">,</span> <span class="n">insert_pos</span><span class="p">,</span>
+                            <span class="n">new_hook</span><span class="p">,</span> <span class="n">trigger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">register_hook_in_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">new_hook</span><span class="p">,</span>
+                              <span class="n">trigger</span><span class="p">,</span>
+                              <span class="n">insert_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">base_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">insert_mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">):</span>
+        <span class="n">hooks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_hook</span><span class="p">(</span><span class="n">base_hook</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">insert_mode</span><span class="p">,</span> <span class="n">insert_pos</span><span class="p">,</span>
+                            <span class="n">new_hook</span><span class="p">,</span> <span class="n">trigger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_register_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_hook</span><span class="p">,</span> <span class="n">hooks_dict</span><span class="p">,</span> <span class="n">insert_mode</span><span class="p">,</span> <span class="n">insert_pos</span><span class="p">,</span>
+                       <span class="n">new_hook</span><span class="p">,</span> <span class="n">trigger</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">trigger</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">HOOK_TRIGGER</span><span class="p">,</span> \
+            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">trigger</span><span class="si">}</span><span class="s2"> as hook trigger, you should specify a string &quot;</span> \
+            <span class="sa">f</span><span class="s2">&quot;within </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">HOOK_TRIGGER</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="c1"># parse the insertion position</span>
+        <span class="n">target_hook_set</span> <span class="o">=</span> <span class="n">hooks_dict</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">insert_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">insert_pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">insert_pos</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_hook_set</span><span class="p">)</span>
+                                          <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> \
+                   <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">insert_pos</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">target_hook_set</span><span class="p">))),</span> \
+                   <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">insert_pos</span><span class="si">}</span><span class="s2"> as insert pos, you should specify a &quot;</span> \
+                   <span class="sa">f</span><span class="s2">&quot;integer (1) =-1 &quot;</span> \
+                   <span class="sa">f</span><span class="s2">&quot;or (2) =0 for null target_hook_set;&quot;</span> \
+                   <span class="sa">f</span><span class="s2">&quot;or (3) within [0, </span><span class="si">{</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">target_hook_set</span><span class="p">))</span><span class="si">}</span><span class="s2">].&quot;</span>
+        <span class="k">elif</span> <span class="n">base_hook</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base_hook_pos</span> <span class="o">=</span> <span class="n">target_hook_set</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">base_hook</span><span class="p">)</span>
+            <span class="n">insert_pos</span> <span class="o">=</span> <span class="n">base_hook_pos</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">insert_mode</span> <span class="o">==</span> <span class="s2">&quot;before&quot;</span> <span class="k">else</span> \
+                <span class="n">base_hook_pos</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1"># bounding the insert_pos in rational range</span>
+            <span class="n">insert_pos</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">insert_pos</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">insert_pos</span>
+            <span class="n">insert_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">insert_pos</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">target_hook_set</span><span class="p">)</span> <span class="k">else</span> <span class="n">insert_pos</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">insert_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># By default, the new hook is called finally</span>
+        <span class="c1"># register the new hook</span>
+        <span class="k">if</span> <span class="n">insert_pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">hooks_dict</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_hook</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hooks_dict</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">insert_pos</span><span class="p">,</span> <span class="n">new_hook</span><span class="p">)</span>
+
+    <span class="nd">@use_diff</span>
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">hooks_set</span> <span class="o">=</span> <span class="n">hooks_set</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">check_split</span><span class="p">(</span><span class="n">target_data_split_name</span><span class="p">)</span>
+
+        <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_routine</span><span class="p">(</span><span class="n">MODE</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span>
+                                        <span class="n">target_data_split_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">num_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_para</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">hooks_set</span> <span class="o">=</span> <span class="n">hooks_set</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">check_split</span><span class="p">(</span><span class="n">target_data_split_name</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_routine</span><span class="p">(</span><span class="n">MODE</span><span class="o">.</span><span class="n">TEST</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">eval_metrics</span>
+
+    <span class="k">def</span> <span class="nf">finetune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">hooks_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">hooks_set</span> <span class="o">=</span> <span class="n">hooks_set</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_ft</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">check_split</span><span class="p">(</span><span class="n">target_data_split_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_routine</span><span class="p">(</span><span class="n">MODE</span><span class="o">.</span><span class="n">FINETUNE</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">target_data_split_name</span><span class="p">)</span>
+
+    <span class="nd">@lifecycle</span><span class="p">(</span><span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">ROUTINE</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run_routine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">,</span> <span class="n">dataset_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the hooks_set and maintain the mode</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            mode: running mode of client, chosen from train/val/test</span>
+<span class="sd">        Note:</span>
+<span class="sd">            Considering evaluation could be in ```hooks_set[&quot;on_epoch_end&quot;]```,</span>
+<span class="sd">            there could be two data loaders in self.ctx, we must tell the</span>
+<span class="sd">            running hooks which data_loader to call and which</span>
+<span class="sd">            num_samples to count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_fit_start&quot;</span><span class="p">]:</span>
+            <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_epoch</span><span class="p">(</span><span class="n">hooks_set</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_fit_end&quot;</span><span class="p">]:</span>
+            <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_samples</span>
+
+    <span class="nd">@lifecycle</span><span class="p">(</span><span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">EPOCH</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">epoch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;num_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_split</span><span class="si">}</span><span class="s2">_epoch&quot;</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_epoch_i</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">epoch_i</span><span class="p">,</span> <span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_epoch_start&quot;</span><span class="p">]:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_batch</span><span class="p">(</span><span class="n">hooks_set</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_epoch_end&quot;</span><span class="p">]:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+    <span class="nd">@lifecycle</span><span class="p">(</span><span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">BATCH</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_run_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks_set</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">batch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;num_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_split</span><span class="si">}</span><span class="s2">_batch&quot;</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_batch_i</span> <span class="o">=</span> <span class="n">CtxVar</span><span class="p">(</span><span class="n">batch_i</span><span class="p">,</span> <span class="n">LIFECYCLE</span><span class="o">.</span><span class="n">BATCH</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_batch_start&quot;</span><span class="p">]:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_batch_forward&quot;</span><span class="p">]:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_batch_backward&quot;</span><span class="p">]:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks_set</span><span class="p">[</span><span class="s2">&quot;on_batch_end&quot;</span><span class="p">]:</span>
+                <span class="n">hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">)</span>
+
+            <span class="c1"># Break in the final epoch</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_mode</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">MODE</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">,</span> <span class="n">MODE</span><span class="o">.</span><span class="n">FINETUNE</span>
+            <span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">cur_epoch_i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_epoch</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">batch_i</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">num_train_batch_last_epoch</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+<div class="viewcode-block" id="Trainer.update"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_parameters</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Called by the FL client to update the model parameters</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            model_parameters (dict): {model_name: model_val}</span>
+<span class="sd">            strict (bool): ensure the k-v paris are strictly same</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Trainer.get_model_para"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer.get_model_para">[docs]</a>    <span class="k">def</span> <span class="nf">get_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :return: model_parameters (dict): {model_name: model_val}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Trainer.print_trainer_meta_info"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer.print_trainer_meta_info">[docs]</a>    <span class="k">def</span> <span class="nf">print_trainer_meta_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            print some meta info for code-users, e.g., model type; the para</span>
+<span class="sd">            names will be filtered out, etc.,</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model meta-info: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model meta-info: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="c1"># logger.info(f&quot;Data meta-info: {self.ctx[&#39;data&#39;]}.&quot;)</span>
+
+        <span class="n">ori_para_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">preserved_paras</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+        <span class="n">preserved_para_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">preserved_paras</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">filtered_para_names</span> <span class="o">=</span> <span class="n">ori_para_names</span> <span class="o">-</span> <span class="n">preserved_para_names</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Num of original para names: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ori_para_names</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Num of original trainable para names:&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;trainable_para_names&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Num of preserved para names in local update:&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">preserved_para_names</span><span class="p">)</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Preserved para names in local update: </span><span class="si">{</span><span class="n">preserved_para_names</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Num of filtered para names in local update:&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">filtered_para_names</span><span class="p">)</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Filtered para names in local update: </span><span class="si">{</span><span class="n">filtered_para_names</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After register default hooks,</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">the hooks_in_train is:</span><span class="se">\n\t</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">format_log_hooks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_train</span><span class="p">)</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">the hooks_in_eval is:</span><span class="se">\n\</span>
+<span class="s2">            t</span><span class="si">{</span><span class="n">format_log_hooks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hooks_in_eval</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Trainer._param_filter"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.trainers.Trainer._param_filter">[docs]</a>    <span class="k">def</span> <span class="nf">_param_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">,</span> <span class="n">filter_keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model parameter filter when transmit between local and gloabl,</span>
+<span class="sd">        which is useful in personalization.</span>
+<span class="sd">        e.g., setting cfg.personalization.local_param= [&#39;bn&#39;, &#39;norms&#39;]</span>
+<span class="sd">        indicates the implementation of</span>
+<span class="sd">        &quot;FedBN: Federated Learning on Non-IID Features via Local Batch</span>
+<span class="sd">        Normalization, ICML2021&quot;, which can be found in</span>
+<span class="sd">        https://openreview.net/forum?id=6YEQUn0QICG</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            state_dict (dict): PyTorch Module object&#39;s state_dict.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            state_dict (dict): remove the keys that match any of the given</span>
+<span class="sd">            keywords.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;global&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">filter_keywords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filter_keywords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">local_param</span>
+
+        <span class="n">trainable_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">personalization</span><span class="o">.</span><span class="n">share_non_trainable_para</span> <span class="k">else</span> \
+            <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">trainable_para_names</span>
+        <span class="n">keyword_filter</span> <span class="o">=</span> <span class="n">filter_by_specified_keywords</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">elem</span><span class="p">:</span> <span class="n">trainable_filter</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> <span class="n">keyword_filter</span><span class="p">(</span>
+                    <span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filter_keywords</span><span class="p">),</span> <span class="n">state_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div>
+
+    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cur_round</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;The function `save_model` should be implemented according to &quot;</span>
+            <span class="s2">&quot;the ML backend (Pytorch, Tensorflow ...).&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;The function `load_model` should be implemented according to &quot;</span>
+            <span class="s2">&quot;the ML backend (Pytorch, Tensorflow ...).&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

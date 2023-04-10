@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.auxiliaries.data_builder &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.auxiliaries.data_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.auxiliaries.data_builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.data.utils</span> <span class="kn">import</span> <span class="n">RegexInverseMap</span><span class="p">,</span> <span class="n">load_dataset</span><span class="p">,</span> \
+    <span class="n">convert_data_mode</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.utils</span> <span class="kn">import</span> <span class="n">setup_seed</span>
+
+<span class="kn">import</span> <span class="nn">federatedscope.register</span> <span class="k">as</span> <span class="nn">register</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.contrib.data</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1"> in `federatedscope.contrib.data`, some modules are not &#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;available.&#39;</span><span class="p">)</span>
+
+<span class="c1"># TODO: Add PyGNodeDataTranslator and PyGLinkDataTranslator</span>
+<span class="c1"># TODO: move splitter to PyGNodeDataTranslator and PyGLinkDataTranslator</span>
+<span class="n">TRANS_DATA_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;BaseDataTranslator&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;.*?@.*?&#39;</span><span class="p">,</span> <span class="s1">&#39;hiv&#39;</span><span class="p">,</span> <span class="s1">&#39;proteins&#39;</span><span class="p">,</span> <span class="s1">&#39;imdb-binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bbbp&#39;</span><span class="p">,</span> <span class="s1">&#39;tox21&#39;</span><span class="p">,</span> <span class="s1">&#39;bace&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sider&#39;</span><span class="p">,</span> <span class="s1">&#39;clintox&#39;</span><span class="p">,</span> <span class="s1">&#39;esol&#39;</span><span class="p">,</span> <span class="s1">&#39;freesolv&#39;</span><span class="p">,</span> <span class="s1">&#39;lipo&#39;</span><span class="p">,</span> <span class="s1">&#39;cifar4cl&#39;</span><span class="p">,</span> <span class="s1">&#39;cifar4lp&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;DummyDataTranslator&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;toy&#39;</span><span class="p">,</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;femnist&#39;</span><span class="p">,</span> <span class="s1">&#39;celeba&#39;</span><span class="p">,</span> <span class="s1">&#39;shakespeare&#39;</span><span class="p">,</span> <span class="s1">&#39;twitter&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;subreddit&#39;</span><span class="p">,</span> <span class="s1">&#39;synthetic&#39;</span><span class="p">,</span> <span class="s1">&#39;ciao&#39;</span><span class="p">,</span> <span class="s1">&#39;epinions&#39;</span><span class="p">,</span> <span class="s1">&#39;.*?vertical_fl_data.*?&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;.*?movielens.*?&#39;</span><span class="p">,</span> <span class="s1">&#39;.*?netflix.*?&#39;</span><span class="p">,</span> <span class="s1">&#39;.*?cikmcup.*?&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;graph_multi_domain.*?&#39;</span><span class="p">,</span> <span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="s1">&#39;citeseer&#39;</span><span class="p">,</span> <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="s1">&#39;dblp_conf&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;dblp_org&#39;</span><span class="p">,</span> <span class="s1">&#39;csbm.*?&#39;</span><span class="p">,</span> <span class="s1">&#39;fb15k-237&#39;</span><span class="p">,</span> <span class="s1">&#39;wn18&#39;</span><span class="p">,</span> <span class="s1">&#39;adult&#39;</span><span class="p">,</span> <span class="s1">&#39;abalone&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;credit&#39;</span><span class="p">,</span> <span class="s1">&#39;blog&#39;</span>
+    <span class="p">],</span>  <span class="c1"># Dummy for FL dataset</span>
+    <span class="s1">&#39;RawDataTranslator&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;hetero_nlp_tasks&#39;</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="n">DATA_TRANS_MAP</span> <span class="o">=</span> <span class="n">RegexInverseMap</span><span class="p">(</span><span class="n">TRANS_DATA_MAP</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.auxiliaries.data_builder.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Instantiate the data and update the configuration accordingly if</span>
+<span class="sd">    necessary.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        config: a cfg node object</span>
+<span class="sd">        client_cfgs: dict of client-specific cfg node object</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The dataset object and the updated configuration.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      The available ``data.type`` is shown below:</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        Data type                           Domain</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">        FEMNIST	                            CV</span>
+<span class="sd">        Celeba	                            CV</span>
+<span class="sd">        ``${DNAME}@torchvision``	        CV</span>
+<span class="sd">        Shakespeare	                        NLP</span>
+<span class="sd">        SubReddit	                        NLP</span>
+<span class="sd">        Twitter (Sentiment140)	            NLP</span>
+<span class="sd">        ``${DNAME}@torchtext``	            NLP</span>
+<span class="sd">        ``${DNAME}@huggingface_datasets``  	NLP</span>
+<span class="sd">        Cora	                            Graph (node-level)</span>
+<span class="sd">        CiteSeer	                        Graph (node-level)</span>
+<span class="sd">        PubMed	                            Graph (node-level)</span>
+<span class="sd">        DBLP_conf	                        Graph (node-level)</span>
+<span class="sd">        DBLP_org	                        Graph (node-level)</span>
+<span class="sd">        csbm	                            Graph (node-level)</span>
+<span class="sd">        Epinions	                        Graph (link-level)</span>
+<span class="sd">        Ciao	                            Graph (link-level)</span>
+<span class="sd">        FB15k	                            Graph (link-level)</span>
+<span class="sd">        FB15k-237	                        Graph (link-level)</span>
+<span class="sd">        WN18	                            Graph (link-level)</span>
+<span class="sd">        MUTAG	                            Graph (graph-level)</span>
+<span class="sd">        BZR	                                Graph (graph-level)</span>
+<span class="sd">        COX2	                            Graph (graph-level)</span>
+<span class="sd">        DHFR	                            Graph (graph-level)</span>
+<span class="sd">        PTC_MR	                            Graph (graph-level)</span>
+<span class="sd">        AIDS	                            Graph (graph-level)</span>
+<span class="sd">        NCI1	                            Graph (graph-level)</span>
+<span class="sd">        ENZYMES	                            Graph (graph-level)</span>
+<span class="sd">        DD	                                Graph (graph-level)</span>
+<span class="sd">        PROTEINS	                        Graph (graph-level)</span>
+<span class="sd">        COLLAB	                            Graph (graph-level)</span>
+<span class="sd">        IMDB-BINARY	                        Graph (graph-level)</span>
+<span class="sd">        IMDB-MULTI	                        Graph (graph-level)</span>
+<span class="sd">        REDDIT-BINARY	                    Graph (graph-level)</span>
+<span class="sd">        HIV	                                Graph (graph-level)</span>
+<span class="sd">        ESOL	                            Graph (graph-level)</span>
+<span class="sd">        FREESOLV	                        Graph (graph-level)</span>
+<span class="sd">        LIPO	                            Graph (graph-level)</span>
+<span class="sd">        PCBA	                            Graph (graph-level)</span>
+<span class="sd">        MUV	                                Graph (graph-level)</span>
+<span class="sd">        BACE	                            Graph (graph-level)</span>
+<span class="sd">        BBBP	                            Graph (graph-level)</span>
+<span class="sd">        TOX21	                            Graph (graph-level)</span>
+<span class="sd">        TOXCAST	                            Graph (graph-level)</span>
+<span class="sd">        SIDER	                            Graph (graph-level)</span>
+<span class="sd">        CLINTOX	                            Graph (graph-level)</span>
+<span class="sd">        graph_multi_domain_mol	            Graph (graph-level)</span>
+<span class="sd">        graph_multi_domain_small	        Graph (graph-level)</span>
+<span class="sd">        graph_multi_domain_biochem	        Graph (graph-level)</span>
+<span class="sd">        cikmcup	                            Graph (graph-level)</span>
+<span class="sd">        toy	                                Tabular</span>
+<span class="sd">        synthetic	                        Tabular</span>
+<span class="sd">        quadratic	                        Tabular</span>
+<span class="sd">        ``${DNAME}openml``	                Tabular</span>
+<span class="sd">        vertical_fl_data	                Tabular(vertical)</span>
+<span class="sd">        VFLMovieLens1M	                    Recommendation</span>
+<span class="sd">        VFLMovieLens10M	                    Recommendation</span>
+<span class="sd">        HFLMovieLens1M	                    Recommendation</span>
+<span class="sd">        HFLMovieLens10M	                    Recommendation</span>
+<span class="sd">        VFLNetflix	                        Recommendation</span>
+<span class="sd">        HFLNetflix	                        Recommendation</span>
+<span class="sd">        ==================================  ===========================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Fix the seed for data generation</span>
+    <span class="n">setup_seed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">data_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">data_and_config</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_and_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data_and_config</span>
+
+    <span class="c1"># Load dataset from source files</span>
+    <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+
+    <span class="c1"># Apply translator to non-FL dataset to transform it into its federated</span>
+    <span class="c1"># counterpart</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">translator</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;federatedscope.core.data&#39;</span><span class="p">),</span>
+                             <span class="n">DATA_TRANS_MAP</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()])(</span>
+                                 <span class="n">modified_config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">translator</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="c1"># Convert `StandaloneDataDict` to `ClientData` when in distribute mode</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">convert_data_mode</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Restore the user-specified seed after the data generation</span>
+    <span class="n">setup_seed</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
