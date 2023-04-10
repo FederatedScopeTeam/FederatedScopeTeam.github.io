@@ -15,3 +15,17 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         target_branch: 'gh-pages'
+    - name: Copy
+      run: |
+        files=$(find _refs/_* -type f) # get the file list
+        git config --global user.name 'GitHub Action'
+        git config --global user.email 'action@github.com'
+        git stash
+        git fetch
+        git checkout gh-pages
+        git checkout master -- $files
+        git add $files
+        git mv _refs/_* refs/
+        git diff-index --quiet HEAD ||  git commit -am "deploy files"
+        git push origin gh-pages # push to remote branch
+         
