@@ -5,6 +5,17 @@ title: "News"
 author_profile: false
 classes: wide
 ---
+- 05/2023, Our paper FS-REAL has been accepted by KDD'2023, [pdf](https://arxiv.org/abs/2303.13363)!
+
+- 05/2023, Our benchmark paper for FL backdoor attacks has been accepted by KDD'2023, [pdf](https://arxiv.org/abs/2302.01677)!
+
+- 05/2023, Our paper Communication Efficient and Differentially Private Logistic Regression under the Distributed Setting has been accepted by KDD'2023!
+
+- 04/2023, Our paper pFedGate has been accepted by ICML'2023, [pdf]([https://arxiv.org/abs/2206.03966](https://arxiv.org/abs/2305.02776))!
+
+- 04/2023, Our benchmark paper for FedHPO FedHPO-Bench has been accepted by ICML'2023, [pdf](https://arxiv.org/abs/2206.03966)!
+
+- 04/2023, We release FederatedScope v0.3.0!
 
 - 02/2023, Our paper elaborating on FederatedScope is accepted at VLDB'23. [pdf](https://arxiv.org/pdf/2204.05011.pdf)
 
