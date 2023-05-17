@@ -11,7 +11,7 @@ classes: wide
 
 - 05/2023, Our paper Communication Efficient and Differentially Private Logistic Regression under the Distributed Setting has been accepted by KDD'2023!
 
-- 04/2023, Our paper pFedGate has been accepted by ICML'2023, [pdf]([https://arxiv.org/abs/2206.03966](https://arxiv.org/abs/2305.02776))!
+- 04/2023, Our paper pFedGate has been accepted by ICML'2023, [pdf](https://arxiv.org/abs/2305.02776)!
 
 - 04/2023, Our benchmark paper for FedHPO FedHPO-Bench has been accepted by ICML'2023, [pdf](https://arxiv.org/abs/2206.03966)!
 
