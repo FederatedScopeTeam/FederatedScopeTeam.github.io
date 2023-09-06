@@ -1,6 +1,6 @@
 ---
-title: "FS-LLM"
-permalink: /docs/FS-LLM/
+title: "LLM"
+permalink: /docs/llm/
 excerpt: "FS-LLM module."
 last_modified_at: 2023-09-06T10:40:42-04:00
 toc: true

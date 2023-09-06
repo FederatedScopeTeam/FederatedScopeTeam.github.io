@@ -63,7 +63,7 @@ Federated Learning (FL) [1,2,3] is a learning paradigm for collaboratively learn
 
   * [NLP and Speech]({{ "/docs/nlp-and-speech/" | relative_url }})
 
-  * [FS-LLM]({{ "/docs/FS-LLM/" | relative_url }})
+  * [LLM]({{ "/docs/llm/" | relative_url }})
 
 * Get involved
 

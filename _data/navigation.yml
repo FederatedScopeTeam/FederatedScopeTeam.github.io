@@ -88,8 +88,8 @@ docs:
         url: /docs/graph/
       - title: "NLP and Speech"
         url: /docs/nlp-and-speech/
-      - title: "FS-LLM"
-        url: /docs/FS-LLM/
+      - title: "LLM"
+        url: /docs/llm/
   - title: Get Involved
     children:
       - title: "Join Our Community"
