@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.data.utils &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.data.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.data.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RegexInverseMap</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_dic</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">n_dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__val</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">regex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">regex</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__val</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="load_dataset"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.load_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads the dataset for the given config from branches</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config: configurations for FL, see ``federatedscope.core.configs``</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        See https://federatedscope.io/docs/datazoo/ for all available data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;toy&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.tabular.dataloader.toy</span> <span class="kn">import</span> <span class="n">load_toy_data</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_toy_data</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.tabular.dataloader</span> <span class="kn">import</span> <span class="n">load_quadratic_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_quadratic_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;femnist&#39;</span><span class="p">,</span> <span class="s1">&#39;celeba&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.cv.dataloader</span> <span class="kn">import</span> <span class="n">load_cv_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_cv_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cifar4cl&#39;</span><span class="p">,</span> <span class="s1">&#39;cifar4lp&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.cl.dataloader</span> <span class="kn">import</span> <span class="n">load_cifar_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_cifar_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;shakespeare&#39;</span><span class="p">,</span> <span class="s1">&#39;twitter&#39;</span><span class="p">,</span> <span class="s1">&#39;subreddit&#39;</span><span class="p">,</span> <span class="s1">&#39;synthetic&#39;</span>
+    <span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.dataloader</span> <span class="kn">import</span> <span class="n">load_nlp_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_nlp_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;cora&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;citeseer&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dblp_conf&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dblp_org&#39;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;csbm&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.dataloader</span> <span class="kn">import</span> <span class="n">load_nodelevel_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_nodelevel_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ciao&#39;</span><span class="p">,</span> <span class="s1">&#39;epinions&#39;</span><span class="p">,</span> <span class="s1">&#39;fb15k-237&#39;</span><span class="p">,</span> <span class="s1">&#39;wn18&#39;</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.dataloader</span> <span class="kn">import</span> <span class="n">load_linklevel_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_linklevel_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;hiv&#39;</span><span class="p">,</span> <span class="s1">&#39;proteins&#39;</span><span class="p">,</span> <span class="s1">&#39;imdb-binary&#39;</span><span class="p">,</span> <span class="s1">&#39;bbbp&#39;</span><span class="p">,</span> <span class="s1">&#39;tox21&#39;</span><span class="p">,</span> <span class="s1">&#39;bace&#39;</span><span class="p">,</span> <span class="s1">&#39;sider&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;clintox&#39;</span><span class="p">,</span> <span class="s1">&#39;esol&#39;</span><span class="p">,</span> <span class="s1">&#39;freesolv&#39;</span><span class="p">,</span> <span class="s1">&#39;lipo&#39;</span><span class="p">,</span> <span class="s1">&#39;cikmcup&#39;</span>
+    <span class="p">]</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;graph_multi_domain&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.gfl.dataloader</span> <span class="kn">import</span> <span class="n">load_graphlevel_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_graphlevel_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s1">&#39;synthetic_vfl_data&#39;</span><span class="p">,</span> <span class="s1">&#39;adult&#39;</span><span class="p">,</span> <span class="s1">&#39;abalone&#39;</span><span class="p">,</span> <span class="s1">&#39;credit&#39;</span><span class="p">,</span> <span class="s1">&#39;blog&#39;</span>
+    <span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.vertical_fl.dataloader</span> <span class="kn">import</span> <span class="n">load_vertical_data</span>
+        <span class="n">generate</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;synthetic_vfl_data&#39;</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_vertical_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span>
+                                                      <span class="n">generate</span><span class="o">=</span><span class="n">generate</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s1">&#39;movielens&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>
+    <span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;netflix&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.mf.dataloader</span> <span class="kn">import</span> <span class="n">load_mf_dataset</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_mf_dataset</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s1">&#39;hetero_nlp_tasks&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.hetero_tasks.dataloader</span> <span class="kn">import</span> \
+            <span class="n">load_heteroNLP_data</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_heteroNLP_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.core.data.utils</span> <span class="kn">import</span> <span class="n">load_external_data</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_external_data</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="c1"># The participant (only for server in this version) does not own data</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">modified_config</span> <span class="o">=</span> <span class="n">config</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Dataset </span><span class="si">{}</span><span class="s1"> not found.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">modified_config</span></div>
+
+
+<div class="viewcode-block" id="load_external_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.load_external_data">[docs]</a><span class="k">def</span> <span class="nf">load_external_data</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Based on the configuration file, this function imports external \</span>
+<span class="sd">    datasets and applies train/valid/test.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config: `CN` from `federatedscope/core/configs/config.py`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (data, modified_config): tuple of ML split dataset, \</span>
+<span class="sd">        and `CN` from `federatedscope/core/configs/config.py`, \</span>
+<span class="sd">        which might be modified in the function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+    <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.transform_builder</span> <span class="kn">import</span> <span class="n">get_transform</span>
+
+    <span class="k">def</span> <span class="nf">load_torchvision_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Subset</span>
+
+        <span class="n">dataset_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;torchvision.datasets&#39;</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">transform_funcs</span><span class="p">,</span> <span class="n">val_transform_funcs</span><span class="p">,</span> <span class="n">test_transform_funcs</span> <span class="o">=</span> \
+            <span class="n">get_transform</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s1">&#39;torchvision&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="s1">&#39;download&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw_args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">raw_args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;download&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="n">filtered_args</span> <span class="o">=</span> <span class="n">filter_dict</span><span class="p">(</span><span class="n">dataset_func</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="n">raw_args</span><span class="p">)</span>
+        <span class="n">func_args</span> <span class="o">=</span> <span class="n">get_func_args</span><span class="p">(</span><span class="n">dataset_func</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+
+        <span class="c1"># Perform split on different dataset</span>
+        <span class="k">if</span> <span class="s1">&#39;train&#39;</span> <span class="ow">in</span> <span class="n">func_args</span><span class="p">:</span>
+            <span class="c1"># Split train to (train, val)</span>
+            <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                         <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_val</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">dataset_test</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                        <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">test_transform_funcs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">splits</span><span class="p">:</span>
+                <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                           <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                           <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                           <span class="o">**</span><span class="n">val_transform_funcs</span><span class="p">)</span>
+
+                <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">))]</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">))</span>
+                <span class="n">train_idx_slice</span><span class="p">,</span> <span class="n">val_idx_slice</span> <span class="o">=</span> <span class="n">index</span><span class="p">[:</span><span class="n">train_size</span><span class="p">],</span> \
+                    <span class="n">index</span><span class="p">[</span><span class="n">train_size</span><span class="p">:]</span>
+
+                <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">,</span> <span class="n">train_idx_slice</span><span class="p">)</span>
+                <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset_val</span><span class="p">,</span> <span class="n">val_idx_slice</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;split&#39;</span> <span class="ow">in</span> <span class="n">func_args</span><span class="p">:</span>
+            <span class="c1"># Use raw split</span>
+            <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                         <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                       <span class="n">split</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">,</span>
+                                       <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                       <span class="o">**</span><span class="n">val_transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_test</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                        <span class="n">split</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">test_transform_funcs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;classes&#39;</span> <span class="ow">in</span> <span class="n">func_args</span><span class="p">:</span>
+            <span class="c1"># Use raw split</span>
+            <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                         <span class="n">classes</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                       <span class="n">classes</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">,</span>
+                                       <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                       <span class="o">**</span><span class="n">val_transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_test</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                        <span class="n">classes</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">test_transform_funcs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use config.data.splits</span>
+            <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                       <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                       <span class="o">**</span><span class="n">val_transform_funcs</span><span class="p">)</span>
+            <span class="n">dataset_test</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">filtered_args</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">test_transform_funcs</span><span class="p">)</span>
+
+            <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">))]</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+            <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">))</span>
+            <span class="n">val_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">))</span>
+
+            <span class="n">train_idx_slice</span> <span class="o">=</span> <span class="n">index</span><span class="p">[:</span><span class="n">train_size</span><span class="p">]</span>
+            <span class="n">val_idx_slice</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">val_size</span><span class="p">]</span>
+            <span class="n">test_idx_slice</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">val_size</span><span class="p">:]</span>
+
+            <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset_train</span><span class="p">,</span> <span class="n">train_idx_slice</span><span class="p">)</span>
+            <span class="n">dataset_val</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset_val</span><span class="p">,</span> <span class="n">val_idx_slice</span><span class="p">)</span>
+            <span class="n">dataset_test</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="n">dataset_test</span><span class="p">,</span> <span class="n">test_idx_slice</span><span class="p">)</span>
+
+        <span class="n">data_split_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="n">dataset_train</span><span class="p">,</span>
+            <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="n">dataset_val</span><span class="p">,</span>
+            <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">dataset_test</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">data_split_dict</span>
+
+    <span class="k">def</span> <span class="nf">load_torchtext_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">torch.nn.utils.rnn</span> <span class="kn">import</span> <span class="n">pad_sequence</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.nlp.dataset.utils</span> <span class="kn">import</span> <span class="n">label_to_index</span>
+
+        <span class="n">dataset_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;torchtext.datasets&#39;</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">assert</span> <span class="s1">&#39;max_len&#39;</span> <span class="ow">in</span> <span class="n">raw_args</span><span class="p">,</span> <span class="s2">&quot;Miss key &#39;max_len&#39; in &quot;</span> \
+                                      <span class="s2">&quot;`config.data.args`.&quot;</span>
+        <span class="n">filtered_args</span> <span class="o">=</span> <span class="n">filter_dict</span><span class="p">(</span><span class="n">dataset_func</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="n">raw_args</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset_func</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="o">**</span><span class="n">filtered_args</span><span class="p">)</span>
+
+        <span class="c1"># torchtext.transforms requires &gt;= 0.12.0 and torch = 1.11.0,</span>
+        <span class="c1"># so we do not use `get_transform` in torchtext.</span>
+
+        <span class="c1"># Merge all data and tokenize</span>
+        <span class="n">x_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">data_iter</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_iter</span><span class="p">):</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">x_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">y_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+
+        <span class="n">x_all</span><span class="p">,</span> <span class="n">y_all</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_list</span><span class="p">)):</span>
+            <span class="n">x_all</span> <span class="o">+=</span> <span class="n">x_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">y_all</span> <span class="o">+=</span> <span class="n">y_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;transformers&#39;</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+            <span class="n">cache_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;huggingface&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">local_files_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;When loading cached file form &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cache_path</span><span class="si">}</span><span class="s2">, we faced the exception: </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">x_all</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">x_all</span><span class="p">,</span>
+                              <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">,</span>
+                              <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">max_length</span><span class="o">=</span><span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;max_len&#39;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">x_all</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">x_all</span><span class="o">.</span><span class="n">values</span><span class="p">()))))]</span>
+            <span class="k">if</span> <span class="s1">&#39;classification&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">label_to_index</span><span class="p">(</span><span class="n">y_all</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">y_all</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">y_all</span><span class="p">,</span>
+                                  <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">,</span>
+                                  <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">max_length</span><span class="o">=</span><span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;max_len&#39;</span><span class="p">])</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">y_all</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">y_all</span><span class="o">.</span><span class="n">values</span><span class="p">()))))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+            <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`transform` must be one pretrained Word Embeddings from </span><span class="se">\</span>
+<span class="s2">                    [&#39;GloVe&#39;, &#39;FastText&#39;, &#39;CharNGram&#39;]&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
+            <span class="n">vocab</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;torchtext.vocab&#39;</span><span class="p">),</span>
+                            <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">[</span><span class="mi">0</span><span class="p">])(</span>
+                                <span class="n">dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">in_channels</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">transform</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="s1">&#39;classification&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">vocab</span><span class="o">.</span><span class="n">get_vecs_by_tokens</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                                             <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_all</span>
+                <span class="p">]</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">label_to_index</span><span class="p">(</span><span class="n">y_all</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">vocab</span><span class="o">.</span><span class="n">get_vecs_by_tokens</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                                             <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_all</span>
+                <span class="p">]</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">vocab</span><span class="o">.</span><span class="n">get_vecs_by_tokens</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+                                             <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_all</span>
+                <span class="p">]</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">pad_sequence</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;max_len&#39;</span><span class="p">],</span> <span class="p">:]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pad_sequence</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span>
+                                                <span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;max_len&#39;</span><span class="p">],</span> <span class="p">:]</span>
+        <span class="c1"># Split data to raw</span>
+        <span class="n">num_items</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">x_list</span><span class="p">]</span>
+        <span class="n">data_list</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="p">[],</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">num_items</span><span class="p">:</span>
+            <span class="n">data_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">cnt</span><span class="p">:</span><span class="n">cnt</span> <span class="o">+</span> <span class="n">num</span><span class="p">],</span> <span class="n">targets</span><span class="p">[</span><span class="n">cnt</span><span class="p">:</span><span class="n">cnt</span> <span class="o">+</span> <span class="n">num</span><span class="p">])</span>
+            <span class="p">])</span>
+            <span class="n">cnt</span> <span class="o">+=</span> <span class="n">num</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># Use raw splits</span>
+            <span class="n">data_split_dict</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="n">data_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">data_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># Split train to (train, val)</span>
+            <span class="n">data_split_dict</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">data_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">splits</span><span class="p">:</span>
+                <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_split_dict</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]))</span>
+                <span class="n">val_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_split_dict</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="n">train_size</span>
+                <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">train_size</span><span class="p">,</span> <span class="n">val_size</span><span class="p">]</span>
+                <span class="n">data_split_dict</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span> <span class="n">data_split_dict</span><span class="p">[</span>
+                    <span class="s1">&#39;val&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">random_split</span><span class="p">(</span>
+                        <span class="n">data_split_dict</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span> <span class="n">lengths</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use config.data.splits</span>
+            <span class="n">data_split_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">val_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">test_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">train_size</span> <span class="o">-</span> <span class="n">val_size</span>
+            <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">train_size</span><span class="p">,</span> <span class="n">val_size</span><span class="p">,</span> <span class="n">test_size</span><span class="p">]</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span> <span class="n">data_split_dict</span><span class="p">[</span><span class="s1">&#39;val&#39;</span><span class="p">],</span> <span class="n">data_split_dict</span><span class="p">[</span>
+                <span class="s1">&#39;test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">random_split</span><span class="p">(</span>
+                    <span class="n">data_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lengths</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_split_dict</span>
+
+    <span class="k">def</span> <span class="nf">load_torchaudio_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># dataset_func = getattr(import_module(&#39;torchaudio.datasets&#39;), name)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">load_huggingface_datasets_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">datasets</span>
+        <span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_from_disk</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">assert</span> <span class="s1">&#39;max_len&#39;</span> <span class="ow">in</span> <span class="n">raw_args</span><span class="p">,</span> <span class="s2">&quot;Miss key &#39;max_len&#39; in &quot;</span> \
+                                      <span class="s2">&quot;`config.data.args`.&quot;</span>
+        <span class="n">filtered_args</span> <span class="o">=</span> <span class="n">filter_dict</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">,</span> <span class="n">raw_args</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Begin to load huggingface dataset&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;hg_cache_dir&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span><span class="p">:</span>
+            <span class="n">hugging_face_path</span> <span class="o">=</span> <span class="n">raw_args</span><span class="p">[</span><span class="s2">&quot;hg_cache_dir&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hugging_face_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;load_disk_dir&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span><span class="p">:</span>
+            <span class="n">load_path</span> <span class="o">=</span> <span class="n">raw_args</span><span class="p">[</span><span class="s2">&quot;load_disk_dir&quot;</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dataset</span> <span class="o">=</span> <span class="n">load_from_disk</span><span class="p">(</span><span class="n">load_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;When loading cached dataset form &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">load_path</span><span class="si">}</span><span class="s2">, we faced the exception: </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                                            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                            <span class="o">**</span><span class="n">filtered_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;transformers&#39;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TOKENIZERS_PARALLELISM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+            <span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;To load huggingface tokenizer&quot;</span><span class="p">)</span>
+            <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">local_files_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">cache_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hugging_face_path</span><span class="p">,</span> <span class="s2">&quot;transformers&quot;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">x_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;sentence&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[</span><span class="n">split</span><span class="p">]]</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[</span><span class="n">split</span><span class="p">]]</span>
+
+            <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span> <span class="ow">and</span> <span class="s2">&quot;used_train_ratio&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span> <span class="ow">and</span> \
+                    <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;used_train_ratio&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">selected_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">split</span><span class="p">]))]</span>
+                <span class="n">shuffle</span><span class="p">(</span><span class="n">selected_idx</span><span class="p">)</span>
+                <span class="n">selected_idx</span> <span class="o">=</span> <span class="n">selected_idx</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">selected_idx</span><span class="p">)</span> <span class="o">*</span> <span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;used_train_ratio&#39;</span><span class="p">])]</span>
+                <span class="n">x_all</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">element</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_all</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_idx</span>
+                <span class="p">]</span>
+                <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">element</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_idx</span>
+                <span class="p">]</span>
+
+            <span class="n">x_all</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">x_all</span><span class="p">,</span>
+                              <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">,</span>
+                              <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">max_length</span><span class="o">=</span><span class="n">raw_args</span><span class="p">[</span><span class="s1">&#39;max_len&#39;</span><span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">x_all</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">x_all</span><span class="o">.</span><span class="n">values</span><span class="p">()))))]</span>
+            <span class="n">dataset</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="n">data_split_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                      <span class="p">],</span>
+            <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                           <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])],</span>
+            <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">original_train_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;half_val_dummy_test&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span> <span class="ow">and</span> <span class="n">raw_args</span><span class="p">[</span>
+                <span class="s2">&quot;half_val_dummy_test&quot;</span><span class="p">]:</span>
+            <span class="c1"># since the &quot;test&quot; set from GLUE dataset may be masked, we need to</span>
+            <span class="c1"># submit to get the ground-truth, for fast FL experiments,</span>
+            <span class="c1"># we split the validation set into two parts with the same size as</span>
+            <span class="c1"># new test/val data</span>
+            <span class="n">original_val</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                                   <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])]</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">],</span> <span class="n">data_split_dict</span><span class="p">[</span>
+                <span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_val</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">original_val</span><span class="p">)</span> <span class="o">//</span>
+                                       <span class="mi">2</span><span class="p">],</span> <span class="n">original_val</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">original_val</span><span class="p">)</span> <span class="o">//</span>
+                                                        <span class="mi">2</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="s2">&quot;val_as_dummy_test&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span> <span class="ow">and</span> <span class="n">raw_args</span><span class="p">[</span><span class="s2">&quot;val_as_dummy_test&quot;</span><span class="p">]:</span>
+            <span class="c1"># use the validation set as tmp test set,</span>
+            <span class="c1"># and partial training set as validation set</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">&quot;part_train_dummy_val&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span> <span class="ow">and</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">raw_args</span><span class="p">[</span>
+                <span class="s2">&quot;part_train_dummy_val&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_val_part</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">original_train_size</span> <span class="o">*</span>
+                               <span class="n">raw_args</span><span class="p">[</span><span class="s2">&quot;part_train_dummy_val&quot;</span><span class="p">])</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][:</span><span class="n">new_val_part</span><span class="p">])</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][</span><span class="n">new_val_part</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="s2">&quot;part_train_dummy_test&quot;</span> <span class="ow">in</span> <span class="n">raw_args</span> <span class="ow">and</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">raw_args</span><span class="p">[</span>
+                <span class="s2">&quot;part_train_dummy_test&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_test_part</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">original_train_size</span> <span class="o">*</span>
+                                <span class="n">raw_args</span><span class="p">[</span><span class="s2">&quot;part_train_dummy_test&quot;</span><span class="p">])</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][:</span><span class="n">new_test_part</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][:</span><span class="n">new_test_part</span><span class="p">])</span>
+            <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_split_dict</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">][</span><span class="n">new_test_part</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">data_split_dict</span>
+
+    <span class="k">def</span> <span class="nf">load_openml_data</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">openml</span>
+        <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+        <span class="n">task</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tid</span><span class="p">))</span>
+        <span class="n">did</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">dataset_id</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="n">did</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
+            <span class="n">dataset_format</span><span class="o">=</span><span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">default_target_attribute</span><span class="p">)</span>
+
+        <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">train_targets</span><span class="p">,</span> <span class="n">test_targets</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">random_state</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">val_targets</span><span class="p">,</span> <span class="n">test_targets</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+            <span class="n">test_data</span><span class="p">,</span>
+            <span class="n">test_targets</span><span class="p">,</span>
+            <span class="n">train_size</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">data_split_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_targets</span><span class="p">)],</span>
+            <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">val_data</span><span class="p">,</span> <span class="n">val_targets</span><span class="p">)],</span>
+            <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">test_targets</span><span class="p">)]</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">data_split_dict</span>
+
+    <span class="n">DATA_LOAD_FUNCS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;torchvision&#39;</span><span class="p">:</span> <span class="n">load_torchvision_data</span><span class="p">,</span>
+        <span class="s1">&#39;torchtext&#39;</span><span class="p">:</span> <span class="n">load_torchtext_data</span><span class="p">,</span>
+        <span class="s1">&#39;torchaudio&#39;</span><span class="p">:</span> <span class="n">load_torchaudio_data</span><span class="p">,</span>
+        <span class="s1">&#39;huggingface_datasets&#39;</span><span class="p">:</span> <span class="n">load_huggingface_datasets_data</span><span class="p">,</span>
+        <span class="s1">&#39;openml&#39;</span><span class="p">:</span> <span class="n">load_openml_data</span>
+    <span class="p">}</span>
+
+    <span class="n">modified_config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+    <span class="c1"># Load dataset</span>
+    <span class="n">splits</span> <span class="o">=</span> <span class="n">modified_config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">splits</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">package</span> <span class="o">=</span> <span class="n">modified_config</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Comply with the original train/val/test</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">DATA_LOAD_FUNCS</span><span class="p">[</span><span class="n">package</span><span class="o">.</span><span class="n">lower</span><span class="p">()](</span><span class="n">name</span><span class="p">,</span> <span class="n">splits</span><span class="p">,</span> <span class="n">modified_config</span><span class="p">)</span>
+    <span class="n">data_split_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">),</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;val&#39;</span><span class="p">),</span>
+                        <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">data_split_tuple</span><span class="p">,</span> <span class="n">modified_config</span></div>
+
+
+<div class="viewcode-block" id="convert_data_mode"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.convert_data_mode">[docs]</a><span class="k">def</span> <span class="nf">convert_data_mode</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert ``StandaloneDataDict`` to ``ClientData`` in ``distributed`` mode.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: ``StandaloneDataDict``</span>
+<span class="sd">        config: configuration of FL course, see `federatedscope.core.configs`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``StandaloneDataDict`` in ``standalone`` mode, or ``ClientData`` in \</span>
+<span class="sd">        ``distributed`` mode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">federate</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;standalone&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Invalid data_idx</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">data_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">data_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">data_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The provided data_idx=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">data_idx</span><span class="si">}</span><span class="s2"> is &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;invalid, so that we randomly sample a data_idx as </span><span class="si">{</span><span class="n">data_idx</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_idx</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">distribute</span><span class="o">.</span><span class="n">data_idx</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">data_idx</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_func_args"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.get_func_args">[docs]</a><span class="k">def</span> <span class="nf">get_func_args</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the set of arguments that the function expects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func: function to be analysis</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Arguments  that the function expects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">val</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sign</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">sign</span></div>
+
+
+<div class="viewcode-block" id="filter_dict"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.filter_dict">[docs]</a><span class="k">def</span> <span class="nf">filter_dict</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filters out the common keys of kwarg that are not in kwarg.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func: function to be filtered</span>
+<span class="sd">        kwarg: dict to filter</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Filtered dict of arguments of the function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="n">get_func_args</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">common_args</span> <span class="o">=</span> <span class="n">sign</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">kwarg</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">filtered_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">kwarg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">common_args</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">filtered_dict</span></div>
+
+
+<div class="viewcode-block" id="merge_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.merge_data">[docs]</a><span class="k">def</span> <span class="nf">merge_data</span><span class="p">(</span><span class="n">all_data</span><span class="p">,</span> <span class="n">merged_max_data_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specified_dataset_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge data from client 1 to ``merged_max_data_id`` contained in given \</span>
+<span class="sd">    ``all_data``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        all_data: ``StandaloneDataDict``</span>
+<span class="sd">        merged_max_data_id: max merged data index</span>
+<span class="sd">        specified_dataset_name: split name to be merged</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Merged data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">torch.utils.data</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.data.wrap_dataset</span> <span class="kn">import</span> <span class="n">WrapDataset</span>
+
+    <span class="c1"># Assert</span>
+    <span class="k">if</span> <span class="n">merged_max_data_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">merged_max_data_id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">merged_max_data_id</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">specified_dataset_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dataset_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  <span class="c1"># e.g., train, test, val</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">specified_dataset_name</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">specified_dataset_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">specified_dataset_name</span><span class="p">]</span>
+        <span class="n">dataset_names</span> <span class="o">=</span> <span class="n">specified_dataset_name</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset_names</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> \
+        <span class="s2">&quot;At least one sub-dataset is required in client 1&quot;</span>
+
+    <span class="n">data_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span> <span class="k">if</span> <span class="s2">&quot;test&quot;</span> <span class="ow">in</span> <span class="n">dataset_names</span> <span class="k">else</span> <span class="n">dataset_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">id_contain_all_dataset_key</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="c1"># check the existence of the data to be merged</span>
+    <span class="k">for</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">merged_max_data_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">contain_all_dataset_key</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">dataset_name</span> <span class="ow">in</span> <span class="n">dataset_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">[</span><span class="n">client_id</span><span class="p">]:</span>
+                <span class="n">contain_all_dataset_key</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Client </span><span class="si">{</span><span class="n">client_id</span><span class="si">}</span><span class="s1"> does not contain &#39;</span>
+                               <span class="sa">f</span><span class="s1">&#39;dataset key </span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">id_contain_all_dataset_key</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">contain_all_dataset_key</span><span class="p">:</span>
+            <span class="n">id_contain_all_dataset_key</span> <span class="o">=</span> <span class="n">client_id</span>
+    <span class="k">assert</span> <span class="n">id_contain_all_dataset_key</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+        <span class="s2">&quot;At least one client within [1, merged_max_data_id] should contain &quot;</span> \
+        <span class="s2">&quot;all the key for expected dataset names.&quot;</span>
+
+    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="n">id_contain_all_dataset_key</span><span class="p">][</span><span class="n">data_name</span><span class="p">]),</span>
+                  <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="n">id_contain_all_dataset_key</span><span class="p">][</span><span class="n">data_name</span><span class="p">]</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+                      <span class="n">WrapDataset</span><span class="p">):</span>
+            <span class="c1"># e.g., x, y</span>
+            <span class="n">data_elem_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="n">id_contain_all_dataset_key</span><span class="p">]</span>
+                                   <span class="p">[</span><span class="n">data_name</span><span class="p">]</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dataset_names</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">data_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">merged_max_data_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">d_name</span> <span class="ow">in</span> <span class="n">dataset_names</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">d_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">[</span><span class="n">data_id</span><span class="p">]:</span>
+                        <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">elem_name</span> <span class="ow">in</span> <span class="n">data_elem_names</span><span class="p">:</span>
+                        <span class="n">merged_data</span><span class="p">[</span><span class="n">d_name</span><span class="p">][</span><span class="n">elem_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">all_data</span><span class="p">[</span><span class="n">data_id</span><span class="p">]</span>
+                            <span class="p">[</span><span class="n">d_name</span><span class="p">]</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">elem_name</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">d_name</span> <span class="ow">in</span> <span class="n">dataset_names</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">elem_name</span> <span class="ow">in</span> <span class="n">data_elem_names</span><span class="p">:</span>
+                    <span class="n">merged_data</span><span class="p">[</span><span class="n">d_name</span><span class="p">][</span><span class="n">elem_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                        <span class="n">merged_data</span><span class="p">[</span><span class="n">d_name</span><span class="p">][</span><span class="n">elem_name</span><span class="p">])</span>
+                <span class="n">merged_data</span><span class="p">[</span><span class="n">d_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">WrapDataset</span><span class="p">(</span><span class="n">merged_data</span><span class="p">[</span><span class="n">d_name</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">client_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">[</span><span class="n">id_contain_all_dataset_key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">data_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">merged_max_data_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">d_name</span> <span class="ow">in</span> <span class="n">dataset_names</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">d_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">[</span><span class="n">data_id</span><span class="p">]:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">client_data</span><span class="p">[</span><span class="n">d_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">all_data</span><span class="p">[</span><span class="n">data_id</span><span class="p">][</span><span class="n">d_name</span><span class="p">]</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ConcatDataset</span><span class="p">(</span><span class="n">client_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dataset_names</span>
+            <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Un-supported type when merging data across different clients.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Your data type is &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="n">id_contain_all_dataset_key</span><span class="p">][</span><span class="n">data_name</span><span class="p">])</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Currently we only support the following forms: &quot;</span>
+            <span class="s2">&quot; 1): {data_id: {train: {x:ndarray, y:ndarray}} }&quot;</span>
+            <span class="s2">&quot; 2): {data_id: {train: DataLoader }&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">merged_data</span></div>
+
+
+<div class="viewcode-block" id="save_local_data"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.save_local_data">[docs]</a><span class="k">def</span> <span class="nf">save_local_data</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span>
+                    <span class="n">train_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">train_targets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">test_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">test_targets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">val_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">val_targets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save data to disk. Source: \</span>
+<span class="sd">    https://github.com/omarfoq/FedEM/blob/main/data/femnist/generate_data.py</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        train_data: x of train data</span>
+<span class="sd">        train_targets: y of train data</span>
+<span class="sd">        test_data: x of test data</span>
+<span class="sd">        test_targets: y of test data</span>
+<span class="sd">        val_data: x of validation data</span>
+<span class="sd">        val_targets:y of validation data</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        save ``(`train_data`, `train_targets`)`` in ``{dir_path}/train.pt``, \</span>
+<span class="sd">        ``(`val_data`, `val_targets`)`` in ``{dir_path}/val.pt`` \</span>
+<span class="sd">        and ``(`test_data`, `test_targets`)`` in ``{dir_path}/test.pt``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">train_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">train_targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_targets</span><span class="p">),</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;train.pt&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">test_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">test_targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="n">test_data</span><span class="p">,</span> <span class="n">test_targets</span><span class="p">),</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;test.pt&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">val_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">val_targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="n">val_data</span><span class="p">,</span> <span class="n">val_targets</span><span class="p">),</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;val.pt&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="download_url"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.data.utils.download_url">[docs]</a><span class="k">def</span> <span class="nf">download_url</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;folder&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads the content of an url to a folder. Modified from \</span>
+<span class="sd">    https://github.com/pyg-team/pytorch_geometric/tree/master/torch_geometric</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (string): The url of target file.</span>
+<span class="sd">        folder (string): The target folder.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        string: File path of downloaded files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">file</span> <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;?&#39;</span> <span class="k">else</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">osp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s1"> exists, use existing file.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Downloading </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">path</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

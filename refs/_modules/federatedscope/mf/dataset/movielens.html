@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.mf.dataset.movielens &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.mf.dataset.movielens</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.mf.dataset.movielens</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">torchvision.datasets.utils</span> <span class="kn">import</span> <span class="n">check_integrity</span><span class="p">,</span> \
+    <span class="n">download_and_extract_archive</span><span class="p">,</span> <span class="n">calculate_md5</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csc_matrix</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="VMFDataset"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.VMFDataset">[docs]</a><span class="k">class</span> <span class="nc">VMFDataset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Dataset of matrix factorization task in vertical federated learning.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_split_n_clients_rating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratings</span><span class="p">:</span> <span class="n">csc_matrix</span><span class="p">,</span> <span class="n">num_client</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                <span class="n">test_portion</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">id_item</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_item</span><span class="p">)</span>
+        <span class="n">shuffle</span><span class="p">(</span><span class="n">id_item</span><span class="p">)</span>
+        <span class="n">items_per_client</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">id_item</span><span class="p">,</span> <span class="n">num_client</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">train_ratings_all</span><span class="p">,</span> <span class="n">test_ratings_all</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">clientId</span><span class="p">,</span> <span class="n">items</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">items_per_client</span><span class="p">)):</span>
+            <span class="n">client_ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="p">[:,</span> <span class="n">items</span><span class="p">]</span>
+            <span class="n">train_ratings</span><span class="p">,</span> <span class="n">test_ratings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_train_test_ratings</span><span class="p">(</span>
+                <span class="n">client_ratings</span><span class="p">,</span> <span class="n">test_portion</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">clientId</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">train_ratings</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">test_ratings</span><span class="p">}</span>
+            <span class="n">train_ratings_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_ratings</span><span class="p">)</span>
+            <span class="n">test_ratings_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_ratings</span><span class="p">)</span>
+        <span class="c1"># Server holds all</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">sp</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">train_ratings_all</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">(),</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">sp</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">test_ratings_all</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_data</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="HMFDataset"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.HMFDataset">[docs]</a><span class="k">class</span> <span class="nc">HMFDataset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Dataset of matrix factorization task in horizontal federated learning.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_split_n_clients_rating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratings</span><span class="p">:</span> <span class="n">csc_matrix</span><span class="p">,</span> <span class="n">num_client</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                <span class="n">test_portion</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">id_user</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_user</span><span class="p">)</span>
+        <span class="n">shuffle</span><span class="p">(</span><span class="n">id_user</span><span class="p">)</span>
+        <span class="n">users_per_client</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">id_user</span><span class="p">,</span> <span class="n">num_client</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">train_ratings_all</span><span class="p">,</span> <span class="n">test_ratings_all</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cliendId</span><span class="p">,</span> <span class="n">users</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">users_per_client</span><span class="p">)):</span>
+            <span class="n">client_ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="p">[</span><span class="n">users</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">train_ratings</span><span class="p">,</span> <span class="n">test_ratings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_train_test_ratings</span><span class="p">(</span>
+                <span class="n">client_ratings</span><span class="p">,</span> <span class="n">test_portion</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">cliendId</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">train_ratings</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">test_ratings</span><span class="p">}</span>
+            <span class="n">train_ratings_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_ratings</span><span class="p">)</span>
+            <span class="n">test_ratings_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_ratings</span><span class="p">)</span>
+        <span class="c1"># Server holds all</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">train_ratings_all</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">(),</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">test_ratings_all</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_data</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="MovieLensData"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.MovieLensData">[docs]</a><span class="k">class</span> <span class="nc">MovieLensData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download and split MF datasets</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root (string): the path of data</span>
+<span class="sd">        num_client (int): the number of clients</span>
+<span class="sd">        train_portion (float): the portion of training data</span>
+<span class="sd">        download (bool): indicator to download dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">num_client</span><span class="p">,</span> <span class="n">train_portion</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MovieLensData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_user</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_item</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_integrity</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Dataset not found or corrupted.&quot;</span> <span class="o">+</span>
+                               <span class="s2">&quot;You can use download=True to download it&quot;</span><span class="p">)</span>
+
+        <span class="n">ratings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_meta</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">processed_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_folder</span><span class="p">,</span>
+                                           <span class="s1">&#39;processed_data.pkl&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_data</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_data</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing data into </span><span class="si">{</span><span class="n">num_client</span><span class="si">}</span><span class="s2"> parties.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_n_clients_rating</span><span class="p">(</span><span class="n">ratings</span><span class="p">,</span> <span class="n">num_client</span><span class="p">,</span>
+                                                     <span class="mi">1</span> <span class="o">-</span> <span class="n">train_portion</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_split_train_test_ratings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ratings</span><span class="p">:</span> <span class="n">csc_matrix</span><span class="p">,</span>
+                                  <span class="n">test_portion</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">n_ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">()</span>
+        <span class="n">id_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_ratings</span><span class="p">,</span>
+                                   <span class="nb">int</span><span class="p">(</span><span class="n">n_ratings</span> <span class="o">*</span> <span class="n">test_portion</span><span class="p">),</span>
+                                   <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">id_train</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_ratings</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">id_test</span><span class="p">))</span>
+
+        <span class="n">ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">ratings</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">id_test</span><span class="p">],</span>
+                           <span class="p">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="n">id_test</span><span class="p">],</span> <span class="n">ratings</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">id_test</span><span class="p">])),</span>
+                          <span class="n">shape</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">ratings</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">id_train</span><span class="p">],</span>
+                            <span class="p">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="n">id_train</span><span class="p">],</span> <span class="n">ratings</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">id_train</span><span class="p">])),</span>
+                           <span class="n">shape</span><span class="o">=</span><span class="n">ratings</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">train_ratings</span><span class="p">,</span> <span class="n">test_ratings</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">tocsc</span><span class="p">(),</span> <span class="n">test</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">train_ratings</span><span class="p">,</span> <span class="n">test_ratings</span>
+
+    <span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">raw_file</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span>
+                           <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;::&quot;</span><span class="p">,</span>
+                           <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+                           <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                           <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="s2">&quot;movieId&quot;</span><span class="p">,</span> <span class="s2">&quot;rating&quot;</span><span class="p">],</span>
+                           <span class="n">dtype</span><span class="o">=</span><span class="p">{</span>
+                               <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                               <span class="s2">&quot;movieId&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                               <span class="s2">&quot;rating&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+                           <span class="p">})</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">_load_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">meta_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_folder</span><span class="p">,</span> <span class="s2">&quot;ratings.pkl&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">meta_path</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processing ratings.&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_raw</span><span class="p">()</span>
+            <span class="c1"># Map idx</span>
+            <span class="n">unique_id_item</span><span class="p">,</span> <span class="n">unique_id_user</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()),</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;userId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+            <span class="n">n_item</span><span class="p">,</span> <span class="n">n_user</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_id_item</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_id_user</span><span class="p">)</span>
+            <span class="n">mapping_item</span><span class="p">,</span> <span class="n">mapping_user</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">mid</span><span class="p">:</span> <span class="n">idx</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">mid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_id_item</span><span class="p">)</span>
+            <span class="p">},</span> <span class="p">{</span><span class="n">mid</span><span class="p">:</span> <span class="n">idx</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">mid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_id_user</span><span class="p">)}</span>
+
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">mapping_user</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;userId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()]</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="p">[</span><span class="n">mapping_item</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()]</span>
+
+            <span class="n">ratings</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rating&quot;</span><span class="p">],</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span>
+                                 <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_user</span><span class="p">,</span> <span class="n">n_item</span><span class="p">))</span>
+            <span class="n">ratings</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ratings</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">ratings</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_item</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">return</span> <span class="n">ratings</span>
+
+    <span class="k">def</span> <span class="nf">_check_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">raw_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">check_integrity</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_file_md5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_integrity</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Files already downloaded and verified&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">download_and_extract_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_folder</span><span class="p">),</span>
+                                     <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                     <span class="n">md5</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zip_md5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MovieLens1M"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.MovieLens1M">[docs]</a><span class="k">class</span> <span class="nc">MovieLens1M</span><span class="p">(</span><span class="n">MovieLensData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MoviesLens 1M Dataset</span>
+<span class="sd">    (https://grouplens.org/datasets/movielens)</span>
+
+<span class="sd">    Format:</span>
+<span class="sd">        UserID::MovieID::Rating::Timestamp</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root (str): Root directory of dataset where directory</span>
+<span class="sd">            ``MoviesLen1M`` exists or will be saved to if download is</span>
+<span class="sd">            set to True.</span>
+<span class="sd">        config (callable): Parameters related to matrix factorization.</span>
+<span class="sd">        train_size (float, optional): The proportion of training data.</span>
+<span class="sd">        test_size (float, optional): The proportion of test data.</span>
+<span class="sd">        download  (bool, optional): If true, downloads the dataset from the</span>
+<span class="sd">        internet and puts it in root directory. If dataset is already</span>
+<span class="sd">        downloaded, it is not downloaded again.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_folder</span> <span class="o">=</span> <span class="s1">&#39;MovieLens1M&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://files.grouplens.org/datasets/movielens/ml-1m.zip&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ml-1m&quot;</span>
+    <span class="n">zip_md5</span> <span class="o">=</span> <span class="s2">&quot;c4d9eecfca2ab87c1945afe126590906&quot;</span>
+    <span class="n">raw_file</span> <span class="o">=</span> <span class="s2">&quot;ratings.dat&quot;</span>
+    <span class="n">raw_file_md5</span> <span class="o">=</span> <span class="s2">&quot;a89aa3591bc97d6d4e0c89459ff39362&quot;</span></div>
+
+
+<div class="viewcode-block" id="MovieLens10M"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.MovieLens10M">[docs]</a><span class="k">class</span> <span class="nc">MovieLens10M</span><span class="p">(</span><span class="n">MovieLensData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MoviesLens 10M Dataset</span>
+<span class="sd">    (https://grouplens.org/datasets/movielens)</span>
+
+<span class="sd">    Format:</span>
+<span class="sd">        UserID::MovieID::Rating::Timestamp</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root (str): Root directory of dataset where directory</span>
+<span class="sd">            ``MoviesLen1M`` exists or will be saved to if download is</span>
+<span class="sd">            set to True.</span>
+<span class="sd">        config (callable): Parameters related to matrix factorization.</span>
+<span class="sd">        train_size (float, optional): The proportion of training data.</span>
+<span class="sd">        test_size (float, optional): The proportion of test data.</span>
+<span class="sd">        download  (bool, optional): If true, downloads the dataset from the</span>
+<span class="sd">        internet and</span>
+<span class="sd">            puts it in root directory. If dataset is already downloaded,</span>
+<span class="sd">            it is not</span>
+<span class="sd">            downloaded again.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_folder</span> <span class="o">=</span> <span class="s1">&#39;MovieLens10M&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://files.grouplens.org/datasets/movielens/ml-10m.zip&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;ml-10M100K&quot;</span>
+
+    <span class="n">zip_md5</span> <span class="o">=</span> <span class="s2">&quot;ce571fd55effeba0271552578f2648bd&quot;</span>
+    <span class="n">raw_file</span> <span class="o">=</span> <span class="s2">&quot;ratings.dat&quot;</span>
+    <span class="n">raw_file_md5</span> <span class="o">=</span> <span class="s2">&quot;3f317698625386f66177629fa5c6b2dc&quot;</span></div>
+
+
+<div class="viewcode-block" id="VFLMovieLens1M"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.VFLMovieLens1M">[docs]</a><span class="k">class</span> <span class="nc">VFLMovieLens1M</span><span class="p">(</span><span class="n">MovieLens1M</span><span class="p">,</span> <span class="n">VMFDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MovieLens1M dataset in VFL setting</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="HFLMovieLens1M"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.HFLMovieLens1M">[docs]</a><span class="k">class</span> <span class="nc">HFLMovieLens1M</span><span class="p">(</span><span class="n">MovieLens1M</span><span class="p">,</span> <span class="n">HMFDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MovieLens1M dataset in HFL setting</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="VFLMovieLens10M"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.VFLMovieLens10M">[docs]</a><span class="k">class</span> <span class="nc">VFLMovieLens10M</span><span class="p">(</span><span class="n">MovieLens10M</span><span class="p">,</span> <span class="n">VMFDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MovieLens10M dataset in VFL setting</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="HFLMovieLens10M"><a class="viewcode-back" href="../../../../mf.html#federatedscope.mf.dataset.HFLMovieLens10M">[docs]</a><span class="k">class</span> <span class="nc">HFLMovieLens10M</span><span class="p">(</span><span class="n">MovieLens10M</span><span class="p">,</span> <span class="n">HMFDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MovieLens10M dataset in HFL setting</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

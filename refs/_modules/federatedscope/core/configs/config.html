@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.configs.config &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.configs.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.configs.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">federatedscope.register</span> <span class="k">as</span> <span class="nn">register</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.configs.yacs_config</span> <span class="kn">import</span> <span class="n">CfgNode</span><span class="p">,</span> <span class="n">_merge_a_into_b</span><span class="p">,</span> \
+    <span class="n">Argument</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">set_help_info</span><span class="p">(</span><span class="n">cn_node</span><span class="p">,</span> <span class="n">help_info_dict</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cn_node</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Argument</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">help_info_dict</span><span class="p">:</span>
+            <span class="n">help_info_dict</span><span class="p">[</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">description</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CN</span><span class="p">):</span>
+            <span class="n">set_help_info</span><span class="p">(</span><span class="n">v</span><span class="p">,</span>
+                          <span class="n">help_info_dict</span><span class="p">,</span>
+                          <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CN"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN">[docs]</a><span class="k">class</span> <span class="nc">CN</span><span class="p">(</span><span class="n">CfgNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An extended configuration system based on [yacs]( \</span>
+<span class="sd">    https://github.com/rbgirshick/yacs). \</span>
+<span class="sd">    The two-level tree structure consists of several internal dict-like \</span>
+<span class="sd">    containers to allow simple key-value access and management.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">init_dict</span><span class="p">,</span> <span class="n">key_list</span><span class="p">,</span> <span class="n">new_allowed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># to check the config values</span>
+        <span class="c1"># validity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># build the help dict</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_for_run</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether this CfgNode has checked its</span>
+        <span class="c1"># validity, completeness and clean some un-useful info</span>
+
+        <span class="k">if</span> <span class="n">init_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Argument</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">description</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CN</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;help_info&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">des</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">__help_info__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">des</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CN.clear_aux_info"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.clear_aux_info">[docs]</a>    <span class="k">def</span> <span class="nf">clear_aux_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears all the auxiliary information of the CN object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__cfg_check_funcs__&quot;</span><span class="p">):</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__cfg_check_funcs__&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__help_info__&quot;</span><span class="p">):</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__help_info__&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;is_ready_for_run&quot;</span><span class="p">):</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;is_ready_for_run&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CN</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">clear_aux_info</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CN.print_help"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.print_help">[docs]</a>    <span class="k">def</span> <span class="nf">print_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        print help info for a specific given ``arg_name`` or \</span>
+<span class="sd">        for all arguments if not given ``arg_name``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arg_name: name of specific args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">arg_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">arg_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  --</span><span class="si">{</span><span class="n">arg_name</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  --</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.register_cfg_check_fun"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.register_cfg_check_fun">[docs]</a>    <span class="k">def</span> <span class="nf">register_cfg_check_fun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_check_fun</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a function that checks the configuration node.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cfg_check_fun: function for validation the correctness of cfg.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfg_check_fun</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.merge_from_file"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.merge_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">merge_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_filename</span><span class="p">,</span> <span class="n">check_cfg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        load configs from a yaml file, another cfg instance or a list \</span>
+<span class="sd">        stores the keys and values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cfg_filename: file name of yaml file</span>
+<span class="sd">            check_cfg: whether enable ``assert_cfg()``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cfg_check_funcs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_cfg</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg_check_funcs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_cfg</span><span class="p">(</span><span class="n">check_cfg</span><span class="p">)</span>
+        <span class="n">set_help_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.merge_from_other_cfg"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.merge_from_other_cfg">[docs]</a>    <span class="k">def</span> <span class="nf">merge_from_other_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_other</span><span class="p">,</span> <span class="n">check_cfg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        load configs from another cfg instance</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cfg_other: other cfg to be merged</span>
+<span class="sd">            check_cfg: whether enable ``assert_cfg()``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cfg_check_funcs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="p">)</span>
+        <span class="n">_merge_a_into_b</span><span class="p">(</span><span class="n">cfg_other</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg_check_funcs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_cfg</span><span class="p">(</span><span class="n">check_cfg</span><span class="p">)</span>
+        <span class="n">set_help_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.merge_from_list"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.merge_from_list">[docs]</a>    <span class="k">def</span> <span class="nf">merge_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_list</span><span class="p">,</span> <span class="n">check_cfg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        load configs from a list stores the keys and values. \</span>
+<span class="sd">        modified ``merge_from_list`` in ``yacs.config.py`` to allow adding \</span>
+<span class="sd">        new keys if ``is_new_allowed()`` returns True \</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cfg_list: list of pairs of cfg name and value</span>
+<span class="sd">            check_cfg: whether enable ``assert_cfg()``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cfg_check_funcs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">cfg_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg_check_funcs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_cfg</span><span class="p">(</span><span class="n">check_cfg</span><span class="p">)</span>
+        <span class="n">set_help_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.assert_cfg"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.assert_cfg">[docs]</a>    <span class="k">def</span> <span class="nf">assert_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_cfg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check the validness of the configuration instance</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            check_cfg: whether enable checks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">check_cfg</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">check_func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cfg_check_funcs__</span><span class="p">:</span>
+                <span class="n">check_func</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.clean_unused_sub_cfgs"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.clean_unused_sub_cfgs">[docs]</a>    <span class="k">def</span> <span class="nf">clean_unused_sub_cfgs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean the un-used secondary-level CfgNode, whose ``.use`` \</span>
+<span class="sd">        attribute is ``True``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CN</span><span class="p">):</span>
+                <span class="c1"># sub-config</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;use&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">use</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="c1"># delete the un-used attributes</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;use&quot;</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">del</span> <span class="n">v</span><span class="p">[</span><span class="n">k</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CN.check_required_args"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.check_required_args">[docs]</a>    <span class="k">def</span> <span class="nf">check_required_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check required arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CN</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">check_required_args</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Argument</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You have not set the required argument </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CN.de_arguments"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.de_arguments">[docs]</a>    <span class="k">def</span> <span class="nf">de_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        some config values are managed via ``Argument`` class, this function \</span>
+<span class="sd">        is used to make these values clean without the ``Argument`` class, \</span>
+<span class="sd">        such that the potential type-specific methods work correctly, \</span>
+<span class="sd">        e.g., ``len(cfg.federate.method)`` for a string config</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CN</span><span class="p">):</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">de_arguments</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Argument</span><span class="p">):</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="CN.ready_for_run"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.ready_for_run">[docs]</a>    <span class="k">def</span> <span class="nf">ready_for_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_cfg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check and cleans up the internal state of cfg and save cfg.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            check_cfg: whether enable ``assert_cfg()``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_cfg</span><span class="p">(</span><span class="n">check_cfg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_unused_sub_cfgs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_required_args</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de_arguments</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_for_run</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CN.freeze"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.CN.freeze">[docs]</a>    <span class="k">def</span> <span class="nf">freeze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inform</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check_cfg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        (1) make the cfg attributes immutable;</span>
+<span class="sd">        (2) if ``save==True``, save the frozen cfg_check_funcs into \</span>
+<span class="sd">            ``self.outdir/config.yaml`` for better reproducibility;</span>
+<span class="sd">        (3) if ``self.wandb.use==True``, update the frozen config</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ready_for_run</span><span class="p">(</span><span class="n">check_cfg</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>  <span class="c1"># save the final cfg</span>
+            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">),</span>
+                      <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
+                <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+                    <span class="n">tmp_cfg</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="n">tmp_cfg</span><span class="o">.</span><span class="n">clear_aux_info</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">tmp_cfg</span><span class="o">.</span><span class="n">dump</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span><span class="p">:</span>
+                    <span class="c1"># update the frozen config</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="kn">import</span> <span class="nn">wandb</span>
+                        <span class="kn">import</span> <span class="nn">yaml</span>
+                        <span class="n">cfg_yaml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">tmp_cfg</span><span class="o">.</span><span class="n">dump</span><span class="p">())</span>
+                        <span class="n">wandb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cfg_yaml</span><span class="p">,</span> <span class="n">allow_val_change</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="s2">&quot;cfg.wandb.use=True but not install the wandb &quot;</span>
+                            <span class="s2">&quot;package&quot;</span><span class="p">)</span>
+                        <span class="n">exit</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">inform</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;the used configs are: </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_cfg</span><span class="p">))</span></div></div>
+
+
+<span class="c1"># to ensure the sub-configs registered before set up the global config</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.configs</span> <span class="kn">import</span> <span class="n">all_sub_configs</span>
+
+<span class="k">for</span> <span class="n">sub_config</span> <span class="ow">in</span> <span class="n">all_sub_configs</span><span class="p">:</span>
+    <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;federatedscope.core.configs.&quot;</span> <span class="o">+</span> <span class="n">sub_config</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.contrib.configs</span> <span class="kn">import</span> <span class="n">all_sub_configs_contrib</span>
+
+<span class="k">for</span> <span class="n">sub_config</span> <span class="ow">in</span> <span class="n">all_sub_configs_contrib</span><span class="p">:</span>
+    <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;federatedscope.contrib.configs.&quot;</span> <span class="o">+</span> <span class="n">sub_config</span><span class="p">)</span>
+
+<span class="c1"># Global config object</span>
+<span class="n">global_cfg</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="init_global_cfg"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.configs.init_global_cfg">[docs]</a><span class="k">def</span> <span class="nf">init_global_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function sets the default config value.</span>
+
+<span class="sd">    (1) Note that for an experiment, only part of the arguments will be used \</span>
+<span class="sd">    The remaining unused arguments won&#39;t affect anything. \</span>
+<span class="sd">    So feel free to register any argument in graphgym.contrib.config</span>
+<span class="sd">    (2) We support more than one levels of configs, e.g., cfg.dataset.name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ---------------------------------------------------------------------- #</span>
+    <span class="c1"># Basic options, first level configs</span>
+    <span class="c1"># ---------------------------------------------------------------------- #</span>
+
+    <span class="n">cfg</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;torch&#39;</span>
+
+    <span class="c1"># Whether to use GPU</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">use_gpu</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Whether to check the completeness of msg_handler</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">check_completeness</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Whether to print verbose logging info</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># How many decimal places we print out using logger</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">print_decimal_digits</span> <span class="o">=</span> <span class="mi">6</span>
+
+    <span class="c1"># Specify the device</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># Random seed</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Path of configuration file</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">cfg_file</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># The dir used to save log, exp_config, models, etc,.</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="s1">&#39;exp&#39;</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">expname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># detailed exp name to distinguish different sub-exp</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">expname_tag</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># detailed exp tag to distinguish different</span>
+    <span class="c1"># sub-exp with the same expname</span>
+
+    <span class="c1"># extend user customized configs</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">register</span><span class="o">.</span><span class="n">config_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+    <span class="n">set_help_info</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">__help_info__</span><span class="p">)</span></div>
+
+
+<span class="n">init_global_cfg</span><span class="p">(</span><span class="n">global_cfg</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

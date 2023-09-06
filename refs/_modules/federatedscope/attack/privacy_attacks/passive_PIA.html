@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.attack.privacy_attacks.passive_PIA &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.attack.privacy_attacks.passive_PIA</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.attack.privacy_attacks.passive_PIA</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">federatedscope.attack.auxiliary.utils</span> <span class="kn">import</span> <span class="n">get_classifier</span><span class="p">,</span> \
+    <span class="n">get_passive_PIA_auxiliary_dataset</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.optimizer_builder</span> <span class="kn">import</span> <span class="n">get_optimizer</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PassivePropertyInference"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.PassivePropertyInference">[docs]</a><span class="k">class</span> <span class="nc">PassivePropertyInference</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This is an implementation of the passive property inference</span>
+<span class="sd">    （algorithm 3 in Exploiting Unintended Feature Leakage</span>
+<span class="sd">    in Collaborative Learning: https://arxiv.org/pdf/1805.04049.pdf</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">classier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">fl_model_criterion</span><span class="p">,</span>
+                 <span class="n">device</span><span class="p">,</span>
+                 <span class="n">grad_clip</span><span class="p">,</span>
+                 <span class="n">dataset_name</span><span class="p">,</span>
+                 <span class="n">fl_local_update_num</span><span class="p">,</span>
+                 <span class="n">fl_type_optimizer</span><span class="p">,</span>
+                 <span class="n">fl_lr</span><span class="p">,</span>
+                 <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="c1"># self.auxiliary_dataset[&#39;x&#39;]: n * d_feature; x is the parameter</span>
+        <span class="c1"># updates</span>
+        <span class="c1"># self.auxiliary_dataset[&#39;y&#39;]: n * 1; y is the</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;prop&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">get_classifier</span><span class="p">(</span><span class="n">classier</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_dataset</span> <span class="o">=</span> <span class="n">get_passive_PIA_auxiliary_dataset</span><span class="p">(</span>
+            <span class="n">dataset_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_model_criterion</span> <span class="o">=</span> <span class="n">fl_model_criterion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_local_update_num</span> <span class="o">=</span> <span class="n">fl_local_update_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_type_optimizer</span> <span class="o">=</span> <span class="n">fl_type_optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_lr</span> <span class="o">=</span> <span class="n">fl_lr</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span> <span class="o">=</span> <span class="n">grad_clip</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># def _get_batch_auxiliary(self):</span>
+    <span class="c1">#     train_data_batch = self._get_batch(self.auxiliary_dataset[&#39;train&#39;])</span>
+    <span class="c1">#     test_data_batch = self._get_batch(self.auxiliary_dataset[&#39;test&#39;])</span>
+    <span class="c1">#</span>
+    <span class="c1">#     return train_data_batch, test_data_batch</span>
+
+    <span class="k">def</span> <span class="nf">_get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">prop_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;prop&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">x_batch_prop</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">prop_ind</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">y_batch_prop</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">][</span><span class="n">prop_ind</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">nprop_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;prop&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                     <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">x_batch_nprop</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">nprop_ind</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">y_batch_nprop</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">][</span><span class="n">nprop_ind</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">x_batch_prop</span><span class="p">,</span> <span class="n">y_batch_prop</span><span class="p">,</span> <span class="n">x_batch_nprop</span><span class="p">,</span> <span class="n">y_batch_nprop</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_data_for_dataset_prop_classifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">local_runs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+
+        <span class="n">previous_para</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_model_para</span> <span class="o">=</span> <span class="n">previous_para</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">local_runs</span><span class="p">):</span>
+            <span class="n">x_batch_prop</span><span class="p">,</span> <span class="n">y_batch_prop</span><span class="p">,</span> <span class="n">x_batch_nprop</span><span class="p">,</span> <span class="n">y_batch_nprop</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_batch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auxiliary_dataset</span><span class="p">)</span>
+            <span class="n">para_update_prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_updates</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span> <span class="n">previous_para</span><span class="p">,</span> <span class="n">x_batch_prop</span><span class="p">,</span> <span class="n">y_batch_prop</span><span class="p">)</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter_updates</span><span class="p">(</span><span class="n">para_update_prop</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+
+            <span class="n">para_update_nprop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_updates</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span> <span class="n">previous_para</span><span class="p">,</span> <span class="n">x_batch_nprop</span><span class="p">,</span> <span class="n">y_batch_nprop</span><span class="p">)</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter_updates</span><span class="p">(</span><span class="n">para_update_nprop</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_parameter_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">previous_para</span><span class="p">,</span> <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span><span class="p">):</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="c1"># get last phase model parameters</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">previous_para</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">get_optimizer</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fl_type_optimizer</span><span class="p">,</span>
+                                  <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                  <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fl_lr</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fl_local_update_num</span><span class="p">):</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss_auxiliary_prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_model_criterion</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">x_batch</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))),</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">y_batch</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)))</span>
+            <span class="n">loss_auxiliary_prop</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">grad_clip</span><span class="p">)</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">para_prop</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+
+        <span class="n">updates_prop</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span>
+            <span class="p">(</span><span class="n">previous_para</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">-</span> <span class="n">para_prop</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">previous_para</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">])</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">previous_para</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">updates_prop</span>
+
+    <span class="k">def</span> <span class="nf">collect_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">previous_para</span><span class="p">,</span> <span class="n">updated_parameter</span><span class="p">,</span> <span class="nb">round</span><span class="p">,</span>
+                        <span class="n">client_id</span><span class="p">):</span>
+
+        <span class="n">updates_prop</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span>
+            <span class="p">(</span><span class="n">previous_para</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">-</span> <span class="n">updated_parameter</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">previous_para</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">])</span>
+        <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span><span class="p">[</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span><span class="p">[</span><span class="nb">round</span><span class="p">][</span><span class="n">client_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">updates_prop</span>
+
+<div class="viewcode-block" id="PassivePropertyInference.add_parameter_updates"><a class="viewcode-back" href="../../../../attack.html#federatedscope.attack.privacy_attacks.PassivePropertyInference.add_parameter_updates">[docs]</a>    <span class="k">def</span> <span class="nf">add_parameter_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_updates</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parameter_updates: Tensor with dimension n * d_feature</span>
+<span class="sd">            prop: Tensor with dimension  n * 1</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameter_updates</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">parameter_updates</span><span class="o">.</span><span class="n">cpu</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">prop</span><span class="o">.</span><span class="n">cpu</span><span class="p">()))</span></div>
+
+    <span class="k">def</span> <span class="nf">train_property_classifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+        <span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_prop_classifier</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
+            <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">property_inference</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;=============== PIA accuracy on auxiliary test dataset: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span>
+            <span class="nb">format</span><span class="p">(</span><span class="n">accuracy</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">property_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_updates</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">parameter_updates</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">infer_collected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pia_results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="nb">round</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span><span class="p">[</span><span class="nb">round</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pia_results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">pia_results</span><span class="p">[</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="n">pia_results</span><span class="p">[</span><span class="nb">round</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">property_inference</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">collect_updates_summary</span><span class="p">[</span><span class="nb">round</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pia_results</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

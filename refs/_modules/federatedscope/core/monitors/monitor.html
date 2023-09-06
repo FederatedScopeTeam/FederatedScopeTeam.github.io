@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>federatedscope.core.monitors.monitor &mdash; federatedscope 0.3.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> federatedscope
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cv.html">Federated Computer Vision  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../nlp.html">Federated Natural Language Processing  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gfl.html">Federated Graph Learning  Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autotune.html">Auto-tuning Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../attack.html">Attack Module References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mf.html">Federated Matrix Factorization Module References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">federatedscope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">federatedscope.core.monitors.monitor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for federatedscope.core.monitors.monitor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.logging</span> <span class="kn">import</span> <span class="n">logline_2_wandb_dict</span>
+<span class="kn">from</span> <span class="nn">federatedscope.core.monitors.metric_calculator</span> <span class="kn">import</span> <span class="n">MetricCalculator</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">torch</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="n">global_all_monitors</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">]</span>  <span class="c1"># used in standalone mode, to merge sys metric results for all workers</span>
+
+
+<div class="viewcode-block" id="Monitor"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor">[docs]</a><span class="k">class</span> <span class="nc">Monitor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide the monitoring functionalities such as formatting the \</span>
+<span class="sd">    evaluation results into diverse metrics. \</span>
+<span class="sd">    Besides the prediction related performance, the monitor also can \</span>
+<span class="sd">    track efficiency related metrics for a worker</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg: a cfg node object</span>
+<span class="sd">        monitored_object: object to be monitored</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        log_res_best: best ever seen results</span>
+<span class="sd">        outdir: output directory</span>
+<span class="sd">        use_wandb: whether use ``wandb``</span>
+<span class="sd">        wandb_online_track: whether use ``wandb`` to track online</span>
+<span class="sd">        monitored_object: object to be monitored</span>
+<span class="sd">        metric_calculator: metric calculator, /</span>
+<span class="sd">            see ``core.monitors.metric_calculator``</span>
+<span class="sd">        round_wise_update_key: key to decide which result of evaluation \</span>
+<span class="sd">            round is better</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SUPPORTED_FORMS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;weighted_avg&#39;</span><span class="p">,</span> <span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="s1">&#39;fairness&#39;</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">monitored_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_res_best</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">outdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_wandb</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wandb_online_track</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">online_track</span> <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">use</span> \
+            <span class="k">else</span> <span class="kc">False</span>
+        <span class="c1"># self.use_tensorboard = cfg.use_tensorboard</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitored_object</span> <span class="o">=</span> <span class="n">monitored_object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric_calculator</span> <span class="o">=</span> <span class="n">MetricCalculator</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+
+        <span class="c1"># Obtain the whether the larger the better</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_wise_update_key</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">best_res_update_round_wise_key</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_wise_update_key</span><span class="p">:</span>
+                <span class="n">update_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_wise_update_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">update_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_calculator</span><span class="o">.</span><span class="n">eval_metric</span><span class="p">,</span> \
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">update_key</span><span class="si">}</span><span class="s1"> not found in metrics.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">the_larger_the_better</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_calculator</span><span class="o">.</span><span class="n">eval_metric</span><span class="p">[</span>
+            <span class="n">update_key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># =======  efficiency indicators of the worker to be monitored =======</span>
+        <span class="c1"># leveraged the flops counter provided by [fvcore](</span>
+        <span class="c1"># https://github.com/facebookresearch/fvcore)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_model_size</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># model size used in the worker, in terms</span>
+        <span class="c1"># of number of parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flops_per_sample</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># average flops for forwarding each data</span>
+        <span class="c1"># sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flop_count</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># used to calculated the running mean for</span>
+        <span class="c1"># flops_per_sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_flops</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total computation flops to convergence until</span>
+        <span class="c1"># current fl round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_upload_bytes</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total upload space cost in bytes</span>
+        <span class="c1"># until current fl round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_download_bytes</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total download space cost in bytes</span>
+        <span class="c1"># until current fl round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_begin_wall_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_end_wall_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># for the metrics whose names includes &quot;convergence&quot;, 0 indicates</span>
+        <span class="c1"># the worker does not converge yet</span>
+        <span class="c1"># Note:</span>
+        <span class="c1"># 1) the convergence wall time is prone to fluctuations due to</span>
+        <span class="c1"># possible resource competition during FL courses</span>
+        <span class="c1"># 2) the global/local indicates whether the early stopping triggered</span>
+        <span class="c1"># with global-aggregation/local-training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_convergence_round</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total fl rounds to convergence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_convergence_wall_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_round</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total fl rounds to convergence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_wall_time</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_online_track</span><span class="p">:</span>
+            <span class="n">global_all_monitors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_wandb</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">wandb</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;cfg.wandb.use=True but not install the wandb package&quot;</span><span class="p">)</span>
+                <span class="n">exit</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Monitor.eval"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the given context with ``metric_calculator``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ctx: context of trainer, see ``core.trainers.context``</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Evaluation results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_calculator</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="Monitor.global_converged"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.global_converged">[docs]</a>    <span class="k">def</span> <span class="nf">global_converged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate wall time and round when global convergence has been reached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_convergence_wall_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_begin_wall_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_convergence_round</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitored_object</span><span class="o">.</span><span class="n">state</span></div>
+
+<div class="viewcode-block" id="Monitor.local_converged"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.local_converged">[docs]</a>    <span class="k">def</span> <span class="nf">local_converged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate wall time and round when local convergence has been reached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_wall_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_begin_wall_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_round</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitored_object</span><span class="o">.</span><span class="n">state</span></div>
+
+<div class="viewcode-block" id="Monitor.finish_fl"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.finish_fl">[docs]</a>    <span class="k">def</span> <span class="nf">finish_fl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When FL finished, write system metrics to file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fl_end_wall_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span>
+        <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_begin_wall_time</span>
+
+        <span class="n">system_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sys_metrics</span><span class="p">()</span>
+        <span class="n">sys_metric_f_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;system_metrics.log&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys_metric_f_name</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">system_metrics</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">get_sys_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">system_metrics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitored_object</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+            <span class="s2">&quot;fl_end_time_minutes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_end_wall_time</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span>
+            <span class="mi">60</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fl_end_wall_time</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;total_model_size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_model_size</span><span class="p">,</span>
+            <span class="s2">&quot;total_flops&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_flops</span><span class="p">,</span>
+            <span class="s2">&quot;total_upload_bytes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_upload_bytes</span><span class="p">,</span>
+            <span class="s2">&quot;total_download_bytes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_download_bytes</span><span class="p">,</span>
+            <span class="s2">&quot;global_convergence_round&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_convergence_round</span><span class="p">,</span>
+            <span class="s2">&quot;local_convergence_round&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_round</span><span class="p">,</span>
+            <span class="s2">&quot;global_convergence_time_minutes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span>
+            <span class="n">global_convergence_wall_time</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">60</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">global_convergence_wall_time</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;local_convergence_time_minutes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_wall_time</span><span class="o">.</span>
+            <span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">60</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">local_convergence_wall_time</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;In worker #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">monitored_object</span><span class="o">.</span><span class="n">ID</span><span class="si">}</span><span class="s2">, the system-related &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;metrics are: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">system_metrics</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">system_metrics</span>
+
+<div class="viewcode-block" id="Monitor.merge_system_metrics_simulation_mode"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.merge_system_metrics_simulation_mode">[docs]</a>    <span class="k">def</span> <span class="nf">merge_system_metrics_simulation_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                             <span class="n">file_io</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="n">from_global_monitors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Average the system metrics recorded in ``system_metrics.json`` by \</span>
+<span class="sd">        all workers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">all_sys_metrics</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">avg_sys_metrics</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+        <span class="n">std_sys_metrics</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">file_io</span><span class="p">:</span>
+            <span class="n">sys_metric_f_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;system_metrics.log&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sys_metric_f_name</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;You have not tracked the workers&#39; system metrics in &quot;</span>
+                    <span class="s2">&quot;$outdir$/system_metrics.log, &quot;</span>
+                    <span class="s2">&quot;we will skip the merging. Plz check whether you do not &quot;</span>
+                    <span class="s2">&quot;want to call monitor.finish_fl()&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys_metric_f_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">all_sys_metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">all_sys_metrics</span> <span class="o">=</span> <span class="n">res</span>
+                        <span class="n">all_sys_metrics</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">all_sys_metrics</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">id_to_be_merged</span> <span class="o">=</span> <span class="n">all_sys_metrics</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_to_be_merged</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">id_to_be_merged</span><span class="p">)):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The sys_metric_file (</span><span class="si">{</span><span class="n">sys_metric_f_name</span><span class="si">}</span><span class="s2">) contains &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;duplicated tracked sys-results with these ids: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;f</span><span class="si">{</span><span class="n">id_to_be_merged</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;We will skip the merging as the merge is invalid. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Plz check whether you specify the &#39;outdir&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;as the same as the one of another older experiment.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">from_global_monitors</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">monitor</span> <span class="ow">in</span> <span class="n">global_all_monitors</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">get_sys_metrics</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">all_sys_metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">all_sys_metrics</span> <span class="o">=</span> <span class="n">res</span>
+                    <span class="n">all_sys_metrics</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">all_sys_metrics</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;file_io or from_monitors should be True: &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;but got file_io=</span><span class="si">{</span><span class="n">file_io</span><span class="si">}</span><span class="s2">, from_monitors&quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;=</span><span class="si">{</span><span class="n">from_global_monitors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">all_sys_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span>
+                <span class="n">avg_sys_metrics</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sys_avg&quot;</span>
+                <span class="n">std_sys_metrics</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sys_std&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+                <span class="n">mean_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">std_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;flops&quot;</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">or</span> <span class="s2">&quot;bytes&quot;</span> <span class="ow">in</span> <span class="n">k</span> <span class="ow">or</span> <span class="s2">&quot;size&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+                    <span class="n">mean_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_size</span><span class="p">(</span><span class="n">mean_res</span><span class="p">)</span>
+                    <span class="n">std_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_size</span><span class="p">(</span><span class="n">std_res</span><span class="p">)</span>
+                <span class="n">avg_sys_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sys_avg/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_res</span>
+                <span class="n">std_sys_metrics</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sys_std/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">std_res</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;After merging the system metrics from all works, we got avg:&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">avg_sys_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;After merging the system metrics from all works, we got std:&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">std_sys_metrics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_io</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys_metric_f_name</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">avg_sys_metrics</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">std_sys_metrics</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_wandb</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_online_track</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">wandb</span>
+                <span class="c1"># wandb.log(avg_sys_metrics)</span>
+                <span class="c1"># wandb.log(std_sys_metrics)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">avg_sys_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">wandb</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">std_sys_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">wandb</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;cfg.wandb.use=True but not install the wandb package&quot;</span><span class="p">)</span>
+                <span class="n">exit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Monitor.save_formatted_results"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.save_formatted_results">[docs]</a>    <span class="k">def</span> <span class="nf">save_formatted_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                               <span class="n">formatted_res</span><span class="p">,</span>
+                               <span class="n">save_file_name</span><span class="o">=</span><span class="s2">&quot;eval_results.log&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save formatted results to a file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">formatted_res</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">save_file_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">),</span>
+                      <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_wandb</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_online_track</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">wandb</span>
+                <span class="n">exp_stop_normal</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">exp_stop_normal</span><span class="p">,</span> <span class="n">log_res</span> <span class="o">=</span> <span class="n">logline_2_wandb_dict</span><span class="p">(</span>
+                    <span class="n">exp_stop_normal</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_res_best</span><span class="p">,</span> <span class="n">raw_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_res</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;cfg.wandb.use=True but not install the wandb package&quot;</span><span class="p">)</span>
+                <span class="n">exit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Monitor.finish_fed_runner"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.finish_fed_runner">[docs]</a>    <span class="k">def</span> <span class="nf">finish_fed_runner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fl_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finish the Fed runner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compress_raw_res_file</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fl_mode</span> <span class="o">==</span> <span class="s2">&quot;standalone&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merge_system_metrics_simulation_mode</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_wandb</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_online_track</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">wandb</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;cfg.wandb.use=True but not install the wandb package&quot;</span><span class="p">)</span>
+                <span class="n">exit</span><span class="p">()</span>
+
+            <span class="kn">from</span> <span class="nn">federatedscope.core.auxiliaries.logging</span> <span class="kn">import</span> \
+                <span class="n">logfile_2_wandb_dict</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;eval_results.log&quot;</span><span class="p">),</span>
+                      <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">exp_log_f</span><span class="p">:</span>
+                <span class="c1"># track the prediction related performance</span>
+                <span class="n">all_log_res</span><span class="p">,</span> <span class="n">exp_stop_normal</span><span class="p">,</span> <span class="n">last_line</span><span class="p">,</span> <span class="n">log_res_best</span> <span class="o">=</span> \
+                    <span class="n">logfile_2_wandb_dict</span><span class="p">(</span><span class="n">exp_log_f</span><span class="p">,</span> <span class="n">raw_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">log_res</span> <span class="ow">in</span> <span class="n">all_log_res</span><span class="p">:</span>
+                    <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_res</span><span class="p">)</span>
+                <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_res_best</span><span class="p">)</span>
+
+                <span class="c1"># track the system related performance</span>
+                <span class="n">sys_metric_f_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span>
+                                                 <span class="s2">&quot;system_metrics.log&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys_metric_f_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sys_avg&quot;</span><span class="p">,</span> <span class="s2">&quot;sys_std&quot;</span><span class="p">]:</span>
+                            <span class="c1"># wandb.log(res)</span>
+                            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                <span class="n">wandb</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></div>
+
+<div class="viewcode-block" id="Monitor.compress_raw_res_file"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.compress_raw_res_file">[docs]</a>    <span class="k">def</span> <span class="nf">compress_raw_res_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compress the raw res file to be written to disk.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_f_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;eval_results.raw&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">old_f_name</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;We will compress the file eval_results.raw into a .gz file, &quot;</span>
+                <span class="s2">&quot;and delete the old one&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">old_f_name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_in</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">old_f_name</span> <span class="o">+</span> <span class="s2">&quot;.gz&quot;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_out</span><span class="p">:</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">f_in</span><span class="p">,</span> <span class="n">f_out</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_f_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Monitor.format_eval_res"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.format_eval_res">[docs]</a>    <span class="k">def</span> <span class="nf">format_eval_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">results</span><span class="p">,</span>
+                        <span class="n">rnd</span><span class="p">,</span>
+                        <span class="n">role</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">forms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">return_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format the evaluation results from ``trainer.ctx.eval_results``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            results (dict): a dict to store the evaluation results {metric:</span>
+<span class="sd">            value}</span>
+<span class="sd">            rnd (int|string): FL round</span>
+<span class="sd">            role (int|string): the output role</span>
+<span class="sd">            forms (list): format type</span>
+<span class="sd">            return_raw (bool): return either raw results, or other results</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: round_formatted_results, a formatted results with \</span>
+<span class="sd">            different forms and roles</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">          Example of return value:</span>
+<span class="sd">            ```</span>
+<span class="sd">            {                                                                 \</span>
+<span class="sd">            &#39;Role&#39;: &#39;Server #&#39;,                                               \</span>
+<span class="sd">            &#39;Round&#39;: 200,                                                     \</span>
+<span class="sd">            &#39;Results_weighted_avg&#39;: {                                         \</span>
+<span class="sd">                &#39;test_avg_loss&#39;: 0.58, &#39;test_acc&#39;: 0.67, &#39;test_correct&#39;:      \</span>
+<span class="sd">                3356, &#39;test_loss&#39;: 2892, &#39;test_total&#39;: 5000                   \</span>
+<span class="sd">                },                                                            \</span>
+<span class="sd">            &#39;Results_avg&#39;: {                                                  \</span>
+<span class="sd">                &#39;test_avg_loss&#39;: 0.57, &#39;test_acc&#39;: 0.67, &#39;test_correct&#39;:      \</span>
+<span class="sd">                3356, &#39;test_loss&#39;: 2892, &#39;test_total&#39;: 5000                   \</span>
+<span class="sd">                },                                                            \</span>
+<span class="sd">            &#39;Results_fairness&#39;: {                                             \</span>
+<span class="sd">             &#39;test_total&#39;: 33.99, &#39;test_correct&#39;: 27.185,                     \</span>
+<span class="sd">             &#39;test_avg_loss_std&#39;: 0.433551,                                   \</span>
+<span class="sd">             &#39;test_avg_loss_bottom_decile&#39;: 0.356503,                         \</span>
+<span class="sd">             &#39;test_avg_loss_top_decile&#39;: 1.212492,                            \</span>
+<span class="sd">             &#39;test_avg_loss_min&#39;: 0.198317, &#39;test_avg_loss_max&#39;: 3.603567,    \</span>
+<span class="sd">             &#39;test_avg_loss_bottom10%&#39;: 0.276681, &#39;test_avg_loss_top10%&#39;:     \</span>
+<span class="sd">             1.686649,                                                        \</span>
+<span class="sd">             &#39;test_avg_loss_cos1&#39;: 0.8679, &#39;test_avg_loss_entropy&#39;: 5.1641,   \</span>
+<span class="sd">             &#39;test_loss_std&#39;: 13.686828, &#39;test_loss_bottom_decile&#39;: 11.8220,  \</span>
+<span class="sd">             &#39;test_loss_top_decile&#39;: 39.727236, &#39;test_loss_min&#39;: 7.337724,    \</span>
+<span class="sd">             &#39;test_loss_max&#39;: 100.899873, &#39;test_loss_bottom10%&#39;: 9.618685,    \</span>
+<span class="sd">             &#39;test_loss_top10%&#39;: 54.96769, &#39;test_loss_cos1&#39;: 0.880356,        \</span>
+<span class="sd">             &#39;test_loss_entropy&#39;: 5.175803, &#39;test_acc_std&#39;: 0.123823,         \</span>
+<span class="sd">             &#39;test_acc_bottom_decile&#39;: 0.676471, &#39;test_acc_top_decile&#39;:       \</span>
+<span class="sd">             0.916667,                                                        \</span>
+<span class="sd">             &#39;test_acc_min&#39;: 0.071429, &#39;test_acc_max&#39;: 0.972973,              \</span>
+<span class="sd">             &#39;test_acc_bottom10%&#39;: 0.527482, &#39;test_acc_top10%&#39;: 0.94486,      \</span>
+<span class="sd">             &#39;test_acc_cos1&#39;: 0.988134, &#39;test_acc_entropy&#39;: 5.283755          \</span>
+<span class="sd">                },                                                            \</span>
+<span class="sd">            }</span>
+<span class="sd">            ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">forms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">forms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;weighted_avg&#39;</span><span class="p">,</span> <span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="s1">&#39;fairness&#39;</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+        <span class="n">round_formatted_results</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Role&#39;</span><span class="p">:</span> <span class="n">role</span><span class="p">,</span> <span class="s1">&#39;Round&#39;</span><span class="p">:</span> <span class="n">rnd</span><span class="p">}</span>
+        <span class="n">round_formatted_results_raw</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Role&#39;</span><span class="p">:</span> <span class="n">role</span><span class="p">,</span> <span class="s1">&#39;Round&#39;</span><span class="p">:</span> <span class="n">rnd</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;group_avg&#39;</span> <span class="ow">in</span> <span class="n">forms</span><span class="p">:</span>  <span class="c1"># have different format</span>
+            <span class="c1"># ({client_id: metrics})</span>
+            <span class="n">new_results</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">num_of_client_for_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">num_of_client_for_data</span>
+            <span class="n">client_start_id</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">num_clients</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">num_of_client_for_data</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">client_start_id</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="n">group_res</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">client_start_id</span><span class="p">])</span>
+                <span class="n">num_div</span> <span class="o">=</span> <span class="n">num_clients</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span> <span class="n">client_start_id</span> <span class="o">+</span> <span class="n">num_clients</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">client_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">client_start_id</span><span class="p">,</span>
+                                       <span class="n">client_start_id</span> <span class="o">+</span> <span class="n">num_clients</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">client_id</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">group_res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">client_id</span> <span class="o">==</span> <span class="n">client_start_id</span><span class="p">:</span>
+                                    <span class="n">group_res</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">]</span> <span class="o">/=</span> <span class="n">num_div</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">group_res</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">]</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">client_id</span><span class="p">][</span><span class="n">k</span><span class="p">][</span>
+                                        <span class="n">kk</span><span class="p">]</span> <span class="o">/</span> <span class="n">num_div</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">client_id</span> <span class="o">==</span> <span class="n">client_start_id</span><span class="p">:</span>
+                                <span class="n">group_res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/=</span> <span class="n">num_div</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">group_res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">client_id</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">num_div</span>
+                <span class="n">new_results</span><span class="p">[</span><span class="n">group_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_res</span>
+                <span class="n">client_start_id</span> <span class="o">+=</span> <span class="n">num_clients</span>
+                <span class="n">round_formatted_results</span><span class="p">[</span><span class="s1">&#39;Results_group_avg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_results</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="n">forms</span><span class="p">:</span>
+                <span class="n">new_results</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">role</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;server&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;raw&#39;</span><span class="p">:</span>
+                    <span class="n">round_formatted_results_raw</span><span class="p">[</span><span class="s1">&#39;Results_raw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_results</span>
+                <span class="k">elif</span> <span class="n">form</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Monitor</span><span class="o">.</span><span class="n">SUPPORTED_FORMS</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">_total&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="s2">&quot;Results to be formatted should be include &quot;</span>
+                                <span class="s2">&quot;the dataset_num in the dict,&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;with key = </span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s2">_total&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">dataset_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                                <span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">_total&#39;</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span>
+                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">_total&#39;</span><span class="p">,</span>
+                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">_correct&#39;</span>
+                            <span class="p">]:</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">_total&#39;</span><span class="p">,</span>
+                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">_correct&#39;</span>
+                        <span class="p">]:</span>
+                            <span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">all_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+                            <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;weighted_avg&#39;</span><span class="p">:</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">*</span>
+                                    <span class="n">dataset_num</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dataset_num</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;avg&quot;</span><span class="p">:</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;fairness&quot;</span> <span class="ow">and</span> <span class="n">all_res</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="c1"># by default, log the std and decile</span>
+                                <span class="n">new_results</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                                    <span class="n">key</span><span class="p">,</span>
+                                    <span class="kc">None</span><span class="p">)</span>  <span class="c1"># delete the redundant original one</span>
+                                <span class="n">all_res</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_std&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_res</span><span class="p">))</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_bottom_decile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_res</span><span class="p">[</span>
+                                    <span class="n">all_res</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">10</span><span class="p">]</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_top_decile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_res</span><span class="p">[</span>
+                                    <span class="n">all_res</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">//</span> <span class="mi">10</span><span class="p">]</span>
+                                <span class="c1"># log more fairness metrics</span>
+                                <span class="c1"># min and max</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                                <span class="c1"># bottom and top 10%</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_bottom10%&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                                    <span class="n">all_res</span><span class="p">[:</span><span class="n">all_res</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">10</span><span class="p">])</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_top10%&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                                    <span class="n">all_res</span><span class="p">[</span><span class="n">all_res</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">//</span> <span class="mi">10</span><span class="p">:])</span>
+                                <span class="c1"># cosine similarity between the performance</span>
+                                <span class="c1"># distribution and 1</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_cos1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                                    <span class="n">all_res</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_res</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+                                <span class="c1"># entropy of performance distribution</span>
+                                <span class="n">all_res_preprocessed</span> <span class="o">=</span> <span class="n">all_res</span> <span class="o">+</span> <span class="mf">1e-9</span>
+                                <span class="n">new_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_entropy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                                    <span class="o">-</span><span class="n">all_res_preprocessed</span> <span class="o">/</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">all_res_preprocessed</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                                        <span class="p">(</span><span class="n">all_res_preprocessed</span><span class="p">)</span> <span class="o">/</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">all_res_preprocessed</span><span class="p">))))</span>
+                    <span class="n">round_formatted_results</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Results_</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_results</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;eval_results.raw&quot;</span><span class="p">),</span>
+                  <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">round_formatted_results_raw</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">round_formatted_results_raw</span> <span class="k">if</span> <span class="n">return_raw</span> <span class="k">else</span> \
+            <span class="n">round_formatted_results</span></div>
+
+<div class="viewcode-block" id="Monitor.calc_model_metric"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.calc_model_metric">[docs]</a>    <span class="k">def</span> <span class="nf">calc_model_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_model</span><span class="p">,</span> <span class="n">local_updated_models</span><span class="p">,</span> <span class="n">rnd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            last_model (dict): the state of last round.</span>
+<span class="sd">            local_updated_models (list): each element is (data_size, model).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: model_metric_dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_metric_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">eval</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
+            <span class="n">func_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;calc_</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">calc_metric</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="n">import_module</span><span class="p">(</span>
+                    <span class="s1">&#39;federatedscope.core.monitors.metric_calculator&#39;</span><span class="p">),</span>
+                <span class="n">func_name</span><span class="p">)</span>
+            <span class="n">metric_value</span> <span class="o">=</span> <span class="n">calc_metric</span><span class="p">(</span><span class="n">last_model</span><span class="p">,</span> <span class="n">local_updated_models</span><span class="p">)</span>
+            <span class="n">model_metric_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;train_</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric_value</span>
+        <span class="n">formatted_log</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Role&#39;</span><span class="p">:</span> <span class="s1">&#39;Server #&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Round&#39;</span><span class="p">:</span> <span class="n">rnd</span><span class="p">,</span>
+            <span class="s1">&#39;Results_model_metric&#39;</span><span class="p">:</span> <span class="n">model_metric_dict</span>
+        <span class="p">}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">formatted_log</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model_metric_dict</span></div>
+
+<div class="viewcode-block" id="Monitor.convert_size"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.convert_size">[docs]</a>    <span class="k">def</span> <span class="nf">convert_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert bytes to human-readable size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">math</span>
+        <span class="k">if</span> <span class="n">size_bytes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">size_bytes</span><span class="p">)</span>
+        <span class="n">size_name</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">size_bytes</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)))</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">size_bytes</span> <span class="o">/</span> <span class="n">p</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">s</span><span class="si">}{</span><span class="n">size_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="Monitor.track_model_size"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.track_model_size">[docs]</a>    <span class="k">def</span> <span class="nf">track_model_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculate the total model size given the models hold by the \</span>
+<span class="sd">        worker/trainer</span>
+
+<span class="sd">        Args</span>
+<span class="sd">            models: torch.nn.Module or list of torch.nn.Module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_model_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;the total_model_size is not zero. You may have been &quot;</span>
+                <span class="s2">&quot;calculated the total_model_size before&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">models</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">),</span> \
+                <span class="sa">f</span><span class="s2">&quot;the `model` should be type torch.nn.Module when &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;calculating its size, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">para</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">total_model_size</span> <span class="o">+=</span> <span class="n">para</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Monitor.track_avg_flops"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.track_avg_flops">[docs]</a>    <span class="k">def</span> <span class="nf">track_avg_flops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flops</span><span class="p">,</span> <span class="n">sample_num</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        update the average flops for forwarding each data sample, \</span>
+<span class="sd">        for most models and tasks, \</span>
+<span class="sd">        the averaging is not needed as the input shape is fixed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">flops_per_sample</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flops_per_sample</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flop_count</span> <span class="o">+</span>
+                                 <span class="n">flops</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flop_count</span> <span class="o">+</span> <span class="n">sample_num</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flop_count</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Monitor.track_upload_bytes"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.track_upload_bytes">[docs]</a>    <span class="k">def</span> <span class="nf">track_upload_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Track the number of bytes uploaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_upload_bytes</span> <span class="o">+=</span> <span class="nb">bytes</span></div>
+
+<div class="viewcode-block" id="Monitor.track_download_bytes"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.track_download_bytes">[docs]</a>    <span class="k">def</span> <span class="nf">track_download_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Track the number of bytes downloaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_download_bytes</span> <span class="o">+=</span> <span class="nb">bytes</span></div>
+
+<div class="viewcode-block" id="Monitor.update_best_result"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.update_best_result">[docs]</a>    <span class="k">def</span> <span class="nf">update_best_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_results</span><span class="p">,</span> <span class="n">new_results</span><span class="p">,</span> <span class="n">results_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update best evaluation results. \</span>
+<span class="sd">        by default, the update is based on validation loss with \</span>
+<span class="sd">        ``round_wise_update_key=&quot;val_loss&quot; ``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">update_best_this_round</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_results</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;update best results require `results` a dict, but got&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">new_results</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">results_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_results</span><span class="p">:</span>
+                <span class="n">best_results</span><span class="p">[</span><span class="n">results_type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">best_result</span> <span class="o">=</span> <span class="n">best_results</span><span class="p">[</span><span class="n">results_type</span><span class="p">]</span>
+            <span class="c1"># update different keys separately: the best values can be in</span>
+            <span class="c1"># different rounds</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_wise_update_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_results</span><span class="p">:</span>
+                    <span class="n">cur_result</span> <span class="o">=</span> <span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s1">&#39;loss&#39;</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">or</span> <span class="s1">&#39;std&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>  <span class="c1"># the smaller,</span>
+                        <span class="c1"># the better</span>
+                        <span class="k">if</span> <span class="n">results_type</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="s2">&quot;client_best_individual&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;unseen_client_best_individual&quot;</span>
+                        <span class="p">]:</span>
+                            <span class="n">cur_result</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cur_result</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_result</span> <span class="ow">or</span> <span class="n">cur_result</span> <span class="o">&lt;</span> <span class="n">best_result</span><span class="p">[</span>
+                                <span class="n">key</span><span class="p">]:</span>
+                            <span class="n">best_result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_result</span>
+                            <span class="n">update_best_this_round</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="k">elif</span> <span class="s1">&#39;acc&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>  <span class="c1"># the larger, the better</span>
+                        <span class="k">if</span> <span class="n">results_type</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="s2">&quot;client_best_individual&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;unseen_client_best_individual&quot;</span>
+                        <span class="p">]:</span>
+                            <span class="n">cur_result</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cur_result</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_result</span> <span class="ow">or</span> <span class="n">cur_result</span> <span class="o">&gt;</span> <span class="n">best_result</span><span class="p">[</span>
+                                <span class="n">key</span><span class="p">]:</span>
+                            <span class="n">best_result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_result</span>
+                            <span class="n">update_best_this_round</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># unconcerned metric</span>
+                        <span class="k">pass</span>
+            <span class="c1"># update different keys round-wise: if find better</span>
+            <span class="c1"># round_wise_update_key, update others at the same time</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">found_round_wise_update_key</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">sorted_keys</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_results</span><span class="p">:</span>
+                    <span class="c1"># TODO: fix `in` condition</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_wise_update_key</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="n">sorted_keys</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                        <span class="n">found_round_wise_update_key</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sorted_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">found_round_wise_update_key</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Your specified eval.best_res_update_round_wise_key &quot;</span>
+                        <span class="s2">&quot;is not in target results, &quot;</span>
+                        <span class="s2">&quot;use another key or check the name. </span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Got eval.best_res_update_round_wise_key&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">round_wise_update_key</span><span class="si">}</span><span class="s2">, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;the keys of results are </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">new_results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># the first key must be the `round_wise_update_key`,</span>
+                <span class="c1"># `update_best_this_round` should be set while evaluating the</span>
+                <span class="c1"># first key, so we can check whether `update_best_this_round`</span>
+                <span class="c1"># firstly</span>
+                <span class="n">cur_result</span> <span class="o">=</span> <span class="n">new_results</span><span class="p">[</span><span class="n">found_round_wise_update_key</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">the_larger_the_better</span><span class="p">:</span>
+                    <span class="c1"># The larger, the better</span>
+                    <span class="k">if</span> <span class="n">results_type</span> <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s2">&quot;client_best_individual&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;unseen_client_best_individual&quot;</span>
+                    <span class="p">]:</span>
+                        <span class="n">cur_result</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cur_result</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">found_round_wise_update_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_result</span> <span class="ow">or</span>\
+                            <span class="n">cur_result</span> <span class="o">&gt;</span> <span class="n">best_result</span><span class="p">[</span>
+                            <span class="n">found_round_wise_update_key</span><span class="p">]:</span>
+                        <span class="n">best_result</span><span class="p">[</span><span class="n">found_round_wise_update_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_result</span>
+                        <span class="n">update_best_this_round</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># The smaller, the better</span>
+                    <span class="k">if</span> <span class="n">results_type</span> <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s2">&quot;client_best_individual&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;unseen_client_best_individual&quot;</span>
+                    <span class="p">]:</span>
+                        <span class="n">cur_result</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cur_result</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">found_round_wise_update_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">best_result</span> <span class="ow">or</span> \
+                            <span class="n">cur_result</span> <span class="o">&lt;</span> <span class="n">best_result</span><span class="p">[</span>
+                            <span class="n">found_round_wise_update_key</span><span class="p">]:</span>
+                        <span class="n">best_result</span><span class="p">[</span><span class="n">found_round_wise_update_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_result</span>
+                        <span class="n">update_best_this_round</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="c1"># update other metrics only if update_best_this_round is True</span>
+                <span class="k">if</span> <span class="n">update_best_this_round</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                        <span class="n">cur_result</span> <span class="o">=</span> <span class="n">new_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">results_type</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="s2">&quot;client_best_individual&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;unseen_client_best_individual&quot;</span>
+                        <span class="p">]:</span>
+                            <span class="c1"># Obtain the whether the larger the better</span>
+                            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]:</span>
+                                <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                                    <span class="n">_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric_calculator</span><span class="o">.</span><span class="n">eval_metric</span><span class="p">[</span>
+                                            <span class="n">_key</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                                        <span class="n">cur_result</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cur_result</span><span class="p">)</span>
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="n">cur_result</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cur_result</span><span class="p">)</span>
+                        <span class="n">best_result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_result</span>
+
+        <span class="k">if</span> <span class="n">update_best_this_round</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Find new best result: </span><span class="si">{</span><span class="n">best_results</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_wandb</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_online_track</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">import</span> <span class="nn">wandb</span>
+                    <span class="n">exp_stop_normal</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">exp_stop_normal</span><span class="p">,</span> <span class="n">log_res</span> <span class="o">=</span> <span class="n">logline_2_wandb_dict</span><span class="p">(</span>
+                        <span class="n">exp_stop_normal</span><span class="p">,</span>
+                        <span class="n">line</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_res_best</span><span class="p">,</span>
+                        <span class="n">raw_out</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="c1"># wandb.log(self.log_res_best)</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_res_best</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">wandb</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;cfg.wandb.use=True but not install the wandb package&quot;</span><span class="p">)</span>
+                    <span class="n">exit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Monitor.add_items_to_best_result"><a class="viewcode-back" href="../../../../core.html#federatedscope.core.monitors.Monitor.add_items_to_best_result">[docs]</a>    <span class="k">def</span> <span class="nf">add_items_to_best_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_results</span><span class="p">,</span> <span class="n">new_results</span><span class="p">,</span>
+                                 <span class="n">results_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new key: value item (results-type: new_results) to best_result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">best_results</span><span class="p">[</span><span class="n">results_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_results</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The DAIL Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
