@@ -7,10 +7,6 @@ toc: true
 layout: tuto
 ---
 
-<h1 align="center">
-<img src="https://img.alicdn.com/imgextra/i4/O1CN01dc2sno1jj42lxvq6A_!!6000000004583-2-tps-521-321.png"width="400" alt="federatedscope-logo">
-</h1>
-
 <img src="https://img.alicdn.com/imgextra/i2/O1CN01y9mcld26RsLKK9Q98_!!6000000007659-2-tps-3710-2735.png" alt="img" style="zoom: 100%;" />
 
 ## Introduction
