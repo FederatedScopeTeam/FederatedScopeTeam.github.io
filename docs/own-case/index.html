@@ -1,0 +1,847 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Start Your Own Case - FederatedScope</title>
+<meta name="description" content="Start your own cases.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Start Your Own Case">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/own-case/">
+
+
+  <meta property="og:description" content="Start your own cases.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Start Your Own Case">
+  <meta name="twitter:description" content="Start your own cases.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/own-case/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-09-06T05:40:29-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-03-29T15:19:22-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/own-case/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/" class="active">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+            <li><a href="/docs/llm/">LLM</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Start Your Own Case">
+    <meta itemprop="description" content="Start your own cases.">
+    <meta itemprop="datePublished" content="2023-09-06T05:40:29-04:00">
+    <meta itemprop="dateModified" content="2022-03-29T15:19:22-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Start Your Own Case
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#load-a-dataset">Load a dataset</a></li><li><a href="#build-a-model">Build a model</a></li><li><a href="#create-a-trainer">Create a trainer</a></li><li><a href="#introduce-more-evaluation-metrics">Introduce more evaluation metrics</a></li><li><a href="#specify-your-own-configuration">Specify your own configuration</a><ul><li><a href="#basic-usage">Basic usage</a></li><li><a href="#built-in-configurations">Built-in configurations</a></li><li><a href="#customized-configuration">Customized configuration</a></li></ul></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>In addition to the rich collcetion of datasets, models and evaluation metrics, FederatedScope also allows to create your own or introduce more to our package.</p>
+
+<p>We provide <code class="language-plaintext highlighter-rouge">register</code> function to help build your own federated learning workflow.  This introduction will help you to start with your own case:</p>
+
+<ol>
+  <li><a href="#data">Load a dataset</a></li>
+  <li><a href="#model">Build a model</a></li>
+  <li><a href="#trainer">Create a trainer</a></li>
+  <li><a href="#metric">Introduce more evaluation metrics</a></li>
+  <li><a href="#config">Specify your own configuration</a></li>
+</ol>
+
+<h2 id="load-a-dataset"><span id="data">Load a dataset</span></h2>
+
+<p>We provide a function <code class="language-plaintext highlighter-rouge">federatedscope.register.register_data</code> to make your dataset available with three steps:</p>
+
+<ul>
+  <li>
+    <p>Step1: set up your data with <strong>Data Translator</strong> (standalone), which 
+translates your <a href="https://pytorch.org/docs/stable/data.html?highlight=dataset#torch.utils.data.Dataset">torch.utils.data.Dataset</a> to FS data format (for more details about FS data module, see <a href="{&quot;/docs/fs-data/&quot; | relative_url }">FS Data</a>): <br /></p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">load_my_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">federatedscope.core.data</span> <span class="kn">import</span> <span class="n">BaseDataTranslator</span>
+    <span class="c1"># Load a dataset, whose class is `torch.utils.data.Dataset`
+</span>    <span class="n">dataset</span> <span class="o">=</span> <span class="p">...</span>
+		<span class="c1"># Instantiate a translator according to config
+</span>    <span class="n">translator</span> <span class="o">=</span> <span class="n">BaseDataTranslator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+    <span class="c1"># Translate torch dataset to FS data
+</span>    <span class="n">fs_data</span> <span class="o">=</span> <span class="n">translator</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fs_data</span><span class="p">,</span> <span class="n">config</span>	
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>We take <code class="language-plaintext highlighter-rouge">torchvision.datasets.MNIST</code>, which is split and assigned to two clients, as an example:</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">def</span> <span class="nf">load_my_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+      <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+            <span class="n">transforms</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="n">transforms</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1307</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3081</span><span class="p">])</span>
+        <span class="p">])</span>  
+      <span class="n">data_train</span> <span class="o">=</span> <span class="n">MNIST</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s">'data'</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+      <span class="n">data_test</span> <span class="o">=</span> <span class="n">MNIST</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s">'data'</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+      <span class="n">translator</span> <span class="o">=</span> <span class="n">BaseDataTranslator</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">client_cfgs</span><span class="p">)</span>
+      <span class="n">fs_data</span> <span class="o">=</span> <span class="n">translator</span><span class="p">([</span><span class="n">data_train</span><span class="p">,</span> <span class="p">[],</span> <span class="n">data_test</span><span class="p">])</span>
+      <span class="k">return</span> <span class="n">fs_data</span><span class="p">,</span> <span class="n">config</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step2: register your data with a keyword, such as <code class="language-plaintext highlighter-rouge">"mydata"</code>.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_data</span>
+    
+ <span class="k">def</span> <span class="nf">call_my_data</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+     <span class="k">if</span> <span class="n">config</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="nb">type</span> <span class="o">==</span> <span class="s">"mydata"</span><span class="p">:</span>
+         <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span> <span class="o">=</span> <span class="n">load_my_data</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+         <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">modified_config</span>
+    
+ <span class="n">register_data</span><span class="p">(</span><span class="s">"mydata"</span><span class="p">,</span> <span class="n">call_my_data</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step3: put this <code class="language-plaintext highlighter-rouge">.py</code> file in the <code class="language-plaintext highlighter-rouge">federatedscope/contrib/data/</code> folder, and set <code class="language-plaintext highlighter-rouge">cfg.data.type = "mydata"</code> to use it.</p>
+  </li>
+</ul>
+
+<p>Also,  you can modify the source code to make the FederatedScope support your dataset. Please see <code class="language-plaintext highlighter-rouge">federatedscope.core.auxiliaries.data_builder</code> , and you can add an <code class="language-plaintext highlighter-rouge">elif</code> to skip <code class="language-plaintext highlighter-rouge">Step2</code> and <code class="language-plaintext highlighter-rouge">Step3</code> above.</p>
+
+<h2 id="build-a-model"><span id="model">Build a model</span></h2>
+
+<p>We provide a function <code class="language-plaintext highlighter-rouge">federatedscope.register.register_model</code> to make your model available with three steps: (we take <code class="language-plaintext highlighter-rouge">ConvNet2</code> as an example)</p>
+
+<ul>
+  <li>
+    <p>Step1: build your model with Pytorch or Tensorflow and instantiate your model class with config and data.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kn">import</span> <span class="nn">torch</span>
+    
+    
+ <span class="k">class</span> <span class="nc">MyNet</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">in_channels</span><span class="p">,</span>
+                  <span class="n">h</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                  <span class="n">w</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                  <span class="n">hidden</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+                  <span class="n">class_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                  <span class="n">use_bn</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+         <span class="nb">super</span><span class="p">(</span><span class="n">MyNet</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+         <span class="bp">self</span><span class="p">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+         <span class="bp">self</span><span class="p">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+         <span class="bp">self</span><span class="p">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">((</span><span class="n">h</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">64</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+         <span class="bp">self</span><span class="p">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">class_num</span><span class="p">)</span>
+         <span class="bp">self</span><span class="p">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+         <span class="bp">self</span><span class="p">.</span><span class="n">maxpool</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">maxpool</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">maxpool</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+         <span class="k">return</span> <span class="n">x</span>
+    
+    
+ <span class="k">def</span> <span class="nf">load_my_net</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">local_data</span><span class="p">):</span>
+     <span class="c1"># You can also build models without local_data
+</span>     <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">local_data</span><span class="p">[</span><span class="s">'train'</span><span class="p">]))</span>
+     <span class="n">model</span> <span class="o">=</span> <span class="n">MyNet</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="n">h</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                   <span class="n">w</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                   <span class="n">hidden</span><span class="o">=</span><span class="n">model_config</span><span class="p">.</span><span class="n">hidden</span><span class="p">,</span>
+                   <span class="n">class_num</span><span class="o">=</span><span class="n">model_config</span><span class="p">.</span><span class="n">out_channels</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">model</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step2: register your model with a keyword, such as <code class="language-plaintext highlighter-rouge">"mynet"</code>.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_model</span>
+    
+ <span class="k">def</span> <span class="nf">call_my_net</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">local_data</span><span class="p">):</span>
+     <span class="k">if</span> <span class="n">model_config</span><span class="p">.</span><span class="nb">type</span> <span class="o">==</span> <span class="s">"mynet"</span><span class="p">:</span>
+         <span class="n">model</span> <span class="o">=</span> <span class="n">load_my_net</span><span class="p">(</span><span class="n">model_config</span><span class="p">,</span> <span class="n">local_data</span><span class="p">)</span>
+         <span class="k">return</span> <span class="n">model</span>
+    
+ <span class="n">register_model</span><span class="p">(</span><span class="s">"mynet"</span><span class="p">,</span> <span class="n">call_my_net</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step3: put this <code class="language-plaintext highlighter-rouge">.py</code> file in the <code class="language-plaintext highlighter-rouge">federatedscope/contrib/model/</code> folder, and set <code class="language-plaintext highlighter-rouge">cfg.model.type = "mynet"</code> to use it.</p>
+  </li>
+</ul>
+
+<p>Also,  you can modify the source code to make the FederatedScope support your model. Please see <code class="language-plaintext highlighter-rouge">federatedscope.core.auxiliaries.model_builder</code> , and you can add an <code class="language-plaintext highlighter-rouge">elif</code> to skip <code class="language-plaintext highlighter-rouge">Step2</code> and <code class="language-plaintext highlighter-rouge">Step3</code> above.</p>
+
+<h2 id="create-a-trainer"><span id="trainer">Create a trainer</span></h2>
+
+<p>FederatedScope decouples the local learning process and details of FL communication and schedule, allowing users to freely customize the local learning algorithms via the <code class="language-plaintext highlighter-rouge">Trainer</code>. We recommend user build trainer by inheriting <code class="language-plaintext highlighter-rouge">federatedscope.core.trainers.trainer.GeneralTrainer</code>, for more details, please see <a href="https://federatedscope.io/docs/trainer/">Trainer</a>. Similarly, we provide <code class="language-plaintext highlighter-rouge">federatedscope.register.register_trainer</code> to make your customized trainer available:</p>
+
+<ul>
+  <li>
+    <p>Step1: build your trainer by inheriting <code class="language-plaintext highlighter-rouge">GeneralTrainer</code>. Our <code class="language-plaintext highlighter-rouge">GeneralTrainer</code> already supports many different usages, for the advanced user, please see federatedscope.core.trainers.trainer.GeneralTrainer for more details.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kn">from</span> <span class="nn">federatedscope.core.trainers.trainer</span> <span class="kn">import</span> <span class="n">GeneralTrainer</span>
+    
+ <span class="k">class</span> <span class="nc">MyTrainer</span><span class="p">(</span><span class="n">GeneralTrainer</span><span class="p">):</span>
+     <span class="k">pass</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step2: register your trainer with a keyword, such as <code class="language-plaintext highlighter-rouge">"mytrainer"</code>.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_trainer</span>
+    
+ <span class="k">def</span> <span class="nf">call_my_trainer</span><span class="p">(</span><span class="n">trainer_type</span><span class="p">):</span>
+     <span class="k">if</span> <span class="n">trainer_type</span> <span class="o">==</span> <span class="s">'mytrainer'</span><span class="p">:</span>
+         <span class="n">trainer_builder</span> <span class="o">=</span> <span class="n">MyTrainer</span>
+         <span class="k">return</span> <span class="n">trainer_builder</span>
+    
+ <span class="n">register_trainer</span><span class="p">(</span><span class="s">'mytrainer'</span><span class="p">,</span> <span class="n">call_my_trainer</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step3: put this <code class="language-plaintext highlighter-rouge">.py</code> file in the <code class="language-plaintext highlighter-rouge">federatedscope/contrib/trainer/</code> folder, and set <code class="language-plaintext highlighter-rouge">cfg.trainer.type = "mytrainer"</code> to use it.</p>
+  </li>
+</ul>
+
+<p>Also,  you can modify the source code to make the FederatedScope support your model. Please see <code class="language-plaintext highlighter-rouge">federatedscope/core/auxiliaries/trainer_builder.py</code> , and you can add an <code class="language-plaintext highlighter-rouge">elif</code> to skip <code class="language-plaintext highlighter-rouge">Step2</code> and <code class="language-plaintext highlighter-rouge">Step3</code> above.</p>
+
+<h2 id="introduce-more-evaluation-metrics"><span id="metric">Introduce more evaluation metrics</span></h2>
+
+<p>We provide a number of metrics to monitor the entire federal learning process. You just need to list the name of the metric you want in <code class="language-plaintext highlighter-rouge">cfg.eval.metrics</code>. We currently support metrics such as loss, accuracy, etc. (See <code class="language-plaintext highlighter-rouge">federatedscope.core.monitors.metric_calculator</code> for more details).</p>
+
+<p>We also provide a function <code class="language-plaintext highlighter-rouge">federatedscope.register.register_metric</code> to make your evaluation metrics available with three steps:</p>
+
+<ul>
+  <li>
+    <p>Step1: build your metric (see <code class="language-plaintext highlighter-rouge">federatedscope.core.trainers.context</code> for more about <code class="language-plaintext highlighter-rouge">ctx</code>)</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">def</span> <span class="nf">cal_my_metric</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+     <span class="p">...</span>
+     <span class="k">return</span> <span class="n">MY_METRIC_VALUE</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step2: register your metric with a keyword, such as <code class="language-plaintext highlighter-rouge">"mymetric"</code>.</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_metric</span>
+    
+ <span class="k">def</span> <span class="nf">call_my_metric</span><span class="p">(</span><span class="n">types</span><span class="p">):</span>
+     <span class="k">if</span> <span class="s">"mymetric"</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+         <span class="n">metric_builder</span> <span class="o">=</span> <span class="n">cal_my_metric</span>
+         <span class="k">return</span> <span class="s">"mymetric"</span><span class="p">,</span> <span class="n">metric_builder</span>
+    
+ <span class="n">register_metric</span><span class="p">(</span><span class="s">"mymetric"</span><span class="p">,</span> <span class="n">call_my_metric</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Step3: put this <code class="language-plaintext highlighter-rouge">.py</code> file in the <code class="language-plaintext highlighter-rouge">federatedscope/contrib/metircs/</code> folder, and add <code class="language-plaintext highlighter-rouge">"mymetric"</code> to <code class="language-plaintext highlighter-rouge">cfg.eval.metric</code> activate it.</p>
+  </li>
+</ul>
+
+<h2 id="specify-your-own-configuration"><span id="config">Specify your own configuration</span></h2>
+
+<h3 id="basic-usage">Basic usage</h3>
+<p>FederatedScope provides an extended configuration system based on <a href="https://github.com/rbgirshick/yacs">yacs</a>. We leverage a two-level tree structure that consists of several internal dict-like containers to allow simple key-value access and management. For example,</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cfg</span><span class="p">.</span><span class="n">backend</span> <span class="o">=</span> <span class="s">'torch'</span>  <span class="c1"># level-1 configuration
+</span>
+<span class="n">cfg</span><span class="p">.</span><span class="n">federate</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>  <span class="c1"># level-2 configuration
+</span><span class="n">cfg</span><span class="p">.</span><span class="n">federate</span><span class="p">.</span><span class="n">client_num</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></div>
+
+<p>The frequently-used APIs include</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">merge_from_file</code>, <code class="language-plaintext highlighter-rouge">merge_from_other_cfg</code> and <code class="language-plaintext highlighter-rouge">merge_from_list</code> that load configs from a yaml file, another <code class="language-plaintext highlighter-rouge">cfg</code> instance or a list stores the keys and values.</li>
+  <li>Besides, we can use <code class="language-plaintext highlighter-rouge">freeze</code> to make the configs immutable and save the configs in a yaml file under the specified <code class="language-plaintext highlighter-rouge">cfg.outdir</code>.</li>
+  <li>Both these functions will trigger the configuration validness checking.</li>
+  <li>To modify a config node after calling <code class="language-plaintext highlighter-rouge">freeze</code>, we can call <code class="language-plaintext highlighter-rouge">defrost</code>.</li>
+</ul>
+
+<p>As a start, our package will initialize a <code class="language-plaintext highlighter-rouge">global_cfg</code> instance by default, i.e.,</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">global_cfg</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+<span class="n">init_global_cfg</span><span class="p">(</span><span class="n">global_cfg</span><span class="p">)</span>
+</code></pre></div></div>
+<p>see more details in the file <code class="language-plaintext highlighter-rouge">federatedscope/core/configs/config.py</code>. 
+Users can clone and use their own configuration object as follows:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">federatedscope.core.configs.config</span> <span class="kn">import</span> <span class="n">global_cfg</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+
+    <span class="n">init_cfg</span> <span class="o">=</span> <span class="n">global_cfg</span><span class="p">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">init_cfg</span><span class="p">.</span><span class="n">merge_from_file</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">cfg_file</span><span class="p">)</span>
+    <span class="n">init_cfg</span><span class="p">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">opts</span><span class="p">)</span>
+
+    <span class="n">setup_logger</span><span class="p">(</span><span class="n">init_cfg</span><span class="p">)</span>
+    <span class="n">setup_seed</span><span class="p">(</span><span class="n">init_cfg</span><span class="p">.</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># federated dataset might change the number of clients
+</span>    <span class="c1"># thus, we allow the creation procedure of dataset to modify the global cfg object
+</span>    <span class="n">data</span><span class="p">,</span> <span class="n">modified_cfg</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">init_cfg</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span>
+    <span class="n">init_cfg</span><span class="p">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span><span class="n">modified_cfg</span><span class="p">)</span>
+
+    <span class="n">init_cfg</span><span class="p">.</span><span class="n">freeze</span><span class="p">()</span>
+    
+    <span class="c1"># do sth. further
+</span></code></pre></div></div>
+
+<h3 id="built-in-configurations">Built-in configurations</h3>
+<p>We divide the configuration could be used in the FL process into several sub files such as <code class="language-plaintext highlighter-rouge">cfg_fl_setting</code>, <code class="language-plaintext highlighter-rouge">cfg_fl_algo</code>, <code class="language-plaintext highlighter-rouge">cfg_model</code>, <code class="language-plaintext highlighter-rouge">cfg_training</code>, <code class="language-plaintext highlighter-rouge">cfg_evaluation</code>, see more details in <code class="language-plaintext highlighter-rouge">federatedscope/core/configs</code> directory.</p>
+
+<h3 id="customized-configuration">Customized configuration</h3>
+<p>To add new configuration, you need</p>
+<ol>
+  <li>
+    <p>implement your own extend function <code class="language-plaintext highlighter-rouge">extend_my_cfg(cfg):</code>, e.g.,</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">extend_training_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="c1"># ------------------------------------------------------------------------ #
+</span>    <span class="c1"># Trainer related options
+</span>    <span class="c1"># ------------------------------------------------------------------------ #
+</span>    <span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+   
+    <span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="nb">type</span> <span class="o">=</span> <span class="s">'general'</span>
+    <span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="n">finetune</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="n">finetune</span><span class="p">.</span><span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="n">finetune</span><span class="p">.</span><span class="n">only_psn</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">cfg</span><span class="p">.</span><span class="n">trainer</span><span class="p">.</span><span class="n">finetune</span><span class="p">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="mf">0.01</span>
+        
+    <span class="c1"># --------------- register corresponding check function ----------
+</span>    <span class="n">cfg</span><span class="p">.</span><span class="n">register_cfg_check_fun</span><span class="p">(</span><span class="n">assert_training_cfg</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>and implement your own config validation check function <code class="language-plaintext highlighter-rouge">assert_my_cfg</code>, e.g.,</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">assert_training_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="p">.</span><span class="n">backend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'torch'</span><span class="p">,</span> <span class="s">'tensorflow'</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span>
+             <span class="s">"Value of 'cfg.backend' must be chosen from ['torch', 'tensorflow']."</span>
+        <span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>finally, register your own extended function, e.g.,</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">federatedscope.register</span> <span class="kn">import</span> <span class="n">register_config</span>
+<span class="n">register_config</span><span class="p">(</span><span class="s">"fl_training"</span><span class="p">,</span> <span class="n">extend_training_cfg</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>We recommend users put the new customized configuration in <code class="language-plaintext highlighter-rouge">federatedscope/contrib/configs</code> directory</p>
+
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-03-29">March 29, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/examples/" class="pagination--pager" title="Start With Examples
+">Previous</a>
+    
+    
+      <a href="/docs/datazoo/" class="pagination--pager" title="DataZoo
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

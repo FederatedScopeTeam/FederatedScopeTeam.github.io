@@ -1,0 +1,995 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Privacy Attacks - FederatedScope</title>
+<meta name="description" content="We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="Privacy Attacks">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/privacy-attacks/">
+
+
+  <meta property="og:description" content="We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="Privacy Attacks">
+  <meta name="twitter:description" content="We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/privacy-attacks/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-09-06T05:40:29-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-04-13T16:00:02-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/privacy-attacks/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/" class="active">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+            <li><a href="/docs/llm/">LLM</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Privacy Attacks">
+    <meta itemprop="description" content="We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.">
+    <meta itemprop="datePublished" content="2023-09-06T05:40:29-04:00">
+    <meta itemprop="dateModified" content="2022-04-13T16:00:02-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Privacy Attacks
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#1-background-of-privacy-attack-in-fl">1. Background of Privacy Attack in FL</a><ul><li><a href="#11-different-attack-targets">1.1 Different Attack Targets</a></li><li><a href="#12-active-attack-vs-passive-attack">1.2 Active Attack v.s. Passive Attack</a></li></ul></li><li><a href="#2-usage-of-attack-module">2. Usage of Attack Module</a><ul><li><a href="#21-preliminary">2.1 Preliminary</a></li><li><a href="#22-example-of-optimization-based-training-datalabel-inference-attack">2.2 Example of Optimization based Training Data/Label Inference Attack.</a><ul><li><a href="#221-running-the-attack-on-femnist-example">2.2.1 Running the attack on Femnist Example</a></li><li><a href="#221--running-the-attack-on-customized-dataset">2.2.1  Running the attack on customized dataset</a></li></ul></li><li><a href="#23-example-of-class-representative-attack">2.3 Example of Class Representative Attack</a><ul><li><a href="#231-example-attack-on-femnist-dataset">2.3.1 Example attack on Femnist dataset</a></li><li><a href="#232--running-the-attack-on-the-customized-dataset">2.3.2  Running the attack on the customized dataset</a></li></ul></li><li><a href="#24-example-of-membership-inference-attack">2.4 Example of Membership Inference Attack</a><ul><li><a href="#241-example-of-mia-on-femnist-dataset">2.4.1 Example of MIA on Femnist dataset</a></li><li><a href="#242-running-the-attack-on-a-customized-dataset">2.4.2 Running the attack on a customized dataset</a></li></ul></li><li><a href="#25-example-of-property-inference-attack">2.5 Example of Property Inference Attack</a><ul><li><a href="#251-running-the-attack-on-the-synthetic-dataset">2.5.1 Running the attack on the synthetic dataset</a></li></ul></li></ul></li><li><a href="#3-develop-your-own-attack">3. Develop Your Own Attack</a><ul><li><a href="#31-add-new-configuration">3.1 Add New Configuration</a></li><li><a href="#32-server-as-the-attacker">3.2 Server as the attacker</a><ul><li><a href="#321-example-of-developing-property-inference-attack">3.2.1 Example of developing property inference attack</a></li></ul></li><li><a href="#33-client-as-the-attacker">3.3 Client as the attacker</a><ul><li><a href="#331-example-of-developing-class-representative-attack">3.3.1 Example of developing class representative attack</a></li></ul></li></ul></li><li><a href="#4-contribute-your-attacker-to-federatedscope">4. Contribute Your Attacker to FederatedScope</a></li><li><a href="#reference">Reference</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>We provide the implementation of privacy attacker in FederateScope for developers to conveniently demonstrate the privacy-preserving strength of the design systems and algorithms, since applying privacy attacks directly on the algorithm is an effective way to detect the vulnerability of FL.</p>
+
+<p>In this part, we will introduce:</p>
+<ol>
+  <li><a href="##1.-Background-of-Privacy-Attack-in-FL">Types of Privacy attacks.</a></li>
+  <li>Usages of attack module in FederatedScope
+    <ul>
+      <li><a href="#2.2-Example-of-Optimization-based-Training-Data/Label-Inference-Attack">Example of Optimization based Training Data/Label Inference Attack</a></li>
+      <li><a href="#2.3-Example-of-Class-Representative-Attack">Example of Class Representative Attack</a></li>
+      <li><a href="#2.4-Example-of-Membership-Inference-Attack">Example of Membership Inference Attack</a></li>
+      <li><a href="#2.5-Example-of-Property-Inference-Attack">Example of Property Inference Attack</a></li>
+    </ul>
+  </li>
+  <li><a href="#3.-Develop-Your-Own-Attack">Develop your own attacker.</a></li>
+  <li><a href="#4.-Contribute-Your-Attacker-to-FederatedScope">Contribute your attackers.</a></li>
+</ol>
+
+<h2 id="1-background-of-privacy-attack-in-fl">1. Background of Privacy Attack in FL</h2>
+<p>This part briefly introduces the types of privacy attacks in FL. For more detailed information about the privacy attacks in FL, please refer <a href="#7">[7]</a>.</p>
+
+<h3 id="11-different-attack-targets">1.1 Different Attack Targets</h3>
+<p>According to the types of attacker’s target, typical attacks include membership inference attack, property inference attack, class representative attack, and training data/label inference attack.</p>
+
+<ol>
+  <li>
+    <p><strong>Membership Inference Attack (MIA)</strong>: In membership inference attack, an attacker can be a server or a client, and the objective is to infer whether the specific given data exists in another client’s private dataset.</p>
+  </li>
+  <li>
+    <p><strong>Property Inference Attack (PIA)</strong>: Property inference attack aims to infer the dataset property (may be the sensitive property) other than the class label. For example, in the facial image dataset, the original task is to infer whether wearing glass, an attacker may also be curious about the gender and age unrelated to the original task.</p>
+  </li>
+  <li>
+    <p><strong>Class Representative Attack (CRA)</strong>: Class representative attack aims to infer the representative sample of a specific class. This type of attack often exists in the case where a client only owns a part of the class label, and is curious about the information related to other classes.</p>
+  </li>
+  <li>
+    <p><strong>Training Data/Label Inference Attack (TIA)</strong>: Training data/label inference attack aims to reconstruct the privately owned training samples through the intermediate information transmitted during the FL.</p>
+  </li>
+</ol>
+
+<h3 id="12-active-attack-vs-passive-attack">1.2 Active Attack v.s. Passive Attack</h3>
+<p>According to the attacker’s actions, the privacy attacks can be divided into passive and active attacks.</p>
+
+<ol>
+  <li>
+    <p><strong>Passive Attack</strong>: In a passive attack, the attacker follows the FL protocols, and only saves the intermediate results or the received information for local attack computation. Due to the characteristics of a passive attack, it is very hard to be detected by the FL monitor.</p>
+  </li>
+  <li>
+    <p><strong>Active Attack</strong>: Different from the passive attack, in the active attack, the attacker often injects malicious information into FL to induce other clients to reveal more private information into the global model. The attacker performing active attacks are also named malicious. Compared with the passive attack, due to the malicious information injection, this type of attack is easier to be detected with additional information checking.</p>
+  </li>
+</ol>
+
+<h2 id="2-usage-of-attack-module">2. Usage of Attack Module</h2>
+<h3 id="21-preliminary">2.1 Preliminary</h3>
+<p>Before calling the attack module, the user should make sure that the FL has been set up. For more details of setting up FL, please refer <a href="/docs/quick-start/">quick start</a> and <a href="/docs/own-case/">start your own case</a>.</p>
+
+<p>The attack module provides several attack methods for directly using. The users only need to set the corresponding hyper-parameters in the configuration to call the corresponding method and add the prior knowledge to the attacker.</p>
+
+<p>In order to make it easier for users to check the privacy protection strength of FL, FederatedScope provides implementations of SOTA privacy attack algorithms. The users only need to add the configuration of the attack module into FL’s configuration, and provide the additional information required by the attack method.</p>
+
+<p>The implemented privacy algorithms include:
+(1) Membership inference attack: Gradient Ascent (Active attack) <a href="#5">[5]</a> .
+(2) property inference attack: BPC (Passive attack) <a href="#6">[6]</a>.
+(3) Class representative attack: DCGAN (Passive attack) <a href="#2">[2]</a> .
+(4) training data/label inference attack: DLG <a href="#3">[3]</a>, iDLG <a href="#1">[1]</a>, InvertGradient <a href="#4">[4]</a>.</p>
+
+<p>In the next, we will use the example of attacking fedAvg to show the four kinds of attacks.</p>
+
+<h3 id="22-example-of-optimization-based-training-datalabel-inference-attack">2.2 Example of Optimization based Training Data/Label Inference Attack.</h3>
+<p>In this attack, the server is set as the attacker performing the passive attack, i.e., when the server receives the model parameter updating information from the target client, it will perform the reconstruction procedure to find the data that generates the same parameter updating as received. Specifically, DLG method optimizes the Eqn. (4) in <a href="#1">[1]</a> and InvertingGradient (IG) method optimize the Eqn. (4) in <a href="#4">[4]</a></p>
+
+<p>The knowledge that the attacker needs to obtain includes the prior knowledge provided by the users, and the knowledge (e.g., model parameter updates/gradients) obtained from FL training procedure.</p>
+
+<p><strong>attacker’s prior knowledge:</strong></p>
+<ol>
+  <li>The feature dimension of the dataset.</li>
+</ol>
+
+<p><strong>Attcker’s knowledge obtained from FL:</strong></p>
+<ol>
+  <li>The parameter updates;</li>
+  <li>The number of samples corresponding the received parameter updates.</li>
+</ol>
+
+<h4 id="221-running-the-attack-on-femnist-example">2.2.1 Running the attack on Femnist Example</h4>
+
+<p>Step 1: Set the configuration of fedavg;</p>
+
+<p>Step 2:  Add the configurations of attack to the configuration in step 1;</p>
+
+<p><strong>configuration:</strong></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attack</span><span class="p">:</span>
+  <span class="n">attack_method</span><span class="p">:</span> <span class="n">DLG</span>
+  <span class="n">max_ite</span><span class="p">:</span> <span class="mi">500</span>
+  <span class="n">reconstruct_lr</span><span class="p">:</span> <span class="mf">0.1</span>
+</code></pre></div></div>
+
+<p>The alternatives of <em>attack_method</em> are: “DLG”, “IG” which correspond to method DLG and InvertingGradient (IG) respectively. <code class="language-plaintext highlighter-rouge">max_ite</code>, <code class="language-plaintext highlighter-rouge">reconstruct_lr</code> denote the maximum iteration and the learning rate of the optimization for reconstruction, separately.</p>
+
+<p>Step 3: Run the FL with the modified configuration;</p>
+
+<p>The command to run the example attack:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/reconstruct_fedavg_opt_on_femnist.yaml
+</span></code></pre></div></div>
+
+<p><strong>Results on FedAvg on Femnist example:</strong>
+The recovered training images are plotted in the directory of <code class="language-plaintext highlighter-rouge">cfg.outdir</code>.</p>
+
+<p>The reconstructed results at round 31 &amp; 32 is:
+<img src="https://img.alicdn.com/imgextra/i2/O1CN01LU3XM51aIeXHdssZg_!!6000000003307-2-tps-1820-462.png" alt="" /></p>
+
+<h4 id="221--running-the-attack-on-customized-dataset">2.2.1  Running the attack on customized dataset</h4>
+
+<p>Step 1: The users should make sure the FL is set up correctly on the customized dataset.</p>
+
+<p>Step 2: Add the prior knowledge about the dataset to function  <code class="language-plaintext highlighter-rouge">get_data_info</code> in <code class="language-plaintext highlighter-rouge">federatedscope/attack/auxiliary/utils.py</code>. An example of femnist dataset is:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_data_info</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dataset_name</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">'femnist'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">],</span> <span class="mi">36</span><span class="p">,</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">ValueError</span><span class="p">(</span>
+            <span class="s">'Please provide the data info of {}: data_feature_dim, num_class'</span><span class="p">.</span>
+            <span class="nb">format</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">))</span>
+</code></pre></div></div>
+<p>The function takes the <code class="language-plaintext highlighter-rouge">dataset_name</code> as the input, and it should return <code class="language-plaintext highlighter-rouge">data_feature_dim</code>, <code class="language-plaintext highlighter-rouge">num_class</code>, <code class="language-plaintext highlighter-rouge">is_one_hot_label</code>, denoting: feature dimension, number of total classes, whether the label is represented in one-hot version, separately.</p>
+
+<p>Step 3: Run the FL with the modified configuration.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python</span> <span class="n">federatedscope</span><span class="o">/</span><span class="n">main</span><span class="p">.</span><span class="n">py</span> <span class="o">--</span><span class="n">cfg</span> <span class="n">your_own_config</span><span class="p">.</span><span class="n">yaml</span> 
+</code></pre></div></div>
+
+<h3 id="23-example-of-class-representative-attack">2.3 Example of Class Representative Attack</h3>
+
+<p>The attack module provides the class representative attack with GAN, which is the implementation of the method in <a href="#2">[2]</a>.</p>
+
+<h4 id="231-example-attack-on-femnist-dataset">2.3.1 Example attack on Femnist dataset</h4>
+
+<p><strong>Configuration:</strong> The configuration that is added to the existing fedAve configurationn is:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attack</span><span class="p">:</span>
+  <span class="n">attack_method</span><span class="p">:</span> <span class="n">gan_attack</span>
+  <span class="n">attacker_id</span><span class="p">:</span> <span class="mi">5</span>
+  <span class="n">target_label_ind</span><span class="p">:</span> <span class="mi">3</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">attack_method</code> is the method’s name, <code class="language-plaintext highlighter-rouge">attacker_id</code> is the id the client performs the class representative attack. <code class="language-plaintext highlighter-rouge">target_label_ind</code> is the index of the target class that the attacker wants to infer its representative samples.</p>
+
+<p>The command to run the example attack:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/CRA_fedavg_convnet2_on_femnist.yaml
+</span></code></pre></div></div>
+
+<p><strong>Results:</strong>
+The results of the recovered class representatives are plotted in the directory of <code class="language-plaintext highlighter-rouge">cfg.outdir</code>.</p>
+
+<p>Results on Femnist dataset with target label class “3”: 
+The representative samples is: 
+<img src="https://img.alicdn.com/imgextra/i2/O1CN01OXyyFT1xbBj0sOfRw_!!6000000006461-2-tps-91-85.png" alt="" /></p>
+
+<h4 id="232--running-the-attack-on-the-customized-dataset">2.3.2  Running the attack on the customized dataset</h4>
+<p>To run the customized dataset, the users should define the dataset’s corresponding generator function, and add it to function ‘get_generator’ in ‘federatedscope/attack/auxiliary/utils.py’.</p>
+
+<p>In the example of Femnist, the generator is defined in ‘federatedscope/attack/models/gan_based_model.py’, and the <code class="language-plaintext highlighter-rouge">get_generator</code> is:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_generator</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s">'femnist'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.models.gan_based_model</span> <span class="kn">import</span> <span class="n">GeneratorFemnist</span>
+        <span class="k">return</span> <span class="n">GeneratorFemnist</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">ValueError</span><span class="p">(</span><span class="s">"The generator to generate data like {} is not defined!"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">))</span>
+</code></pre></div></div>
+<p>It takes the <code class="language-plaintext highlighter-rouge">dataset_name</code> as the input and returns the dataset’s corresponding generator.</p>
+
+<h3 id="24-example-of-membership-inference-attack">2.4 Example of Membership Inference Attack</h3>
+<p>In the Membership Inference Attack, the attacker’s object is to infer whether the given target data exists in another client’s private datasets. FederatedScope provides the method GradAscent, which is an active attack proposed in <a href="#5">[5]</a>. Specifically, GradAscent runs the gradient ascent to the gradient corresponding to the target data: 
+\(W  \leftarrow W + \gamma \frac{\partial L_x}{\partial W},\) 
+where $W$ is the model parameter, $L_x$ is the loss of the target data.</p>
+
+<p>If the target data $x$ in another client’s training dataset, it would have a large update on the model updates, since its optimizer will abruptly reduce the gradient of $L_x$.</p>
+
+<h4 id="241-example-of-mia-on-femnist-dataset">2.4.1 Example of MIA on Femnist dataset</h4>
+<p>The configuration of GradAscent is:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attack</span><span class="p">:</span>
+  <span class="n">attack_method</span><span class="p">:</span> <span class="n">GradAscent</span>
+  <span class="n">attacker_id</span><span class="p">:</span> <span class="mi">5</span>
+  <span class="n">inject_round</span><span class="p">:</span> <span class="mi">0</span>
+</code></pre></div></div>
+<p>Where <code class="language-plaintext highlighter-rouge">attack_method</code> is the attack method name, <code class="language-plaintext highlighter-rouge">attacker_id</code> is the id of the client that performs the membership inference attack, <code class="language-plaintext highlighter-rouge">inject_round</code> is the round to run the gradient ascent on the target dataset.</p>
+
+<p>The command to run the example attack:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">python federatedscope/main.py --cfg federatedscope/attack/example_attack_config/gradient_ascent_MIA_on_femnist.yaml
+</span></code></pre></div></div>
+
+<p>The results of loss changes on the target data are plotted in the directory of <code class="language-plaintext highlighter-rouge">cfg.outdir</code>.</p>
+
+<h4 id="242-running-the-attack-on-a-customized-dataset">2.4.2 Running the attack on a customized dataset</h4>
+<p>The users should add the way to get the target data in function <code class="language-plaintext highlighter-rouge">get_target_data</code> in <code class="language-plaintext highlighter-rouge">federatedscope/attack/auxiliary/MIA_get_target_data.py</code></p>
+
+<h3 id="25-example-of-property-inference-attack">2.5 Example of Property Inference Attack</h3>
+<p>In the property inference attack, the attacker aims to infer the property of the sample that is irrelevant to the classification task. In the server-client FL settings, the attacker is usually the server, and based on the received parameter updates, and it wants to infer whether the property exists in the batch based on which the batch owner client sends the parameter updates to the server.</p>
+
+<h4 id="251-running-the-attack-on-the-synthetic-dataset">2.5.1 Running the attack on the synthetic dataset</h4>
+<p>Since the Femnist dataset doesn’t have the additional property information, we use the synthetic dataset as the example dataset and implement the BPC, which is algorithm 3 in <a href="#6">[6]</a>.</p>
+
+<p>The synthetic dataset:</p>
+<ul>
+  <li>The feature x with 5 dimension is generation by $N(0,0.5)$;</li>
+  <li>Label related:  $w_x\sim N(0, 1)$ and $b_x\sim N(0, 1)$ ;</li>
+  <li>Property related:  $w_p\sim N(0, 1)$ and $b_p\sim N(0, 1)$;</li>
+  <li>Label: $y = w_xx + b_x$</li>
+  <li>Property: $\text{prop} = \text{sigmoid}(w_px + b_p)$</li>
+</ul>
+
+<p>The configureation of PIA:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attack</span><span class="p">:</span>
+  <span class="n">attack_method</span><span class="p">:</span> <span class="n">PassivePIA</span>
+  <span class="n">classifier_PIA</span><span class="p">:</span> <span class="n">svm</span>
+</code></pre></div></div>
+<p>where <code class="language-plaintext highlighter-rouge">attack_method</code> is the attack method name; <code class="language-plaintext highlighter-rouge">classifier_PIA</code> is the method name of the classifer that infer the property.</p>
+
+<p>The command to run the example attack:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/attack/example_attack_config/PIA_toy.yaml
+</code></pre></div></div>
+
+<h2 id="3-develop-your-own-attack">3. Develop Your Own Attack</h2>
+<p>When developing your own attack method, it only needs to overload the class of server, client, or trainer according to the role of the attacker and the actions the attacker made in FL. Before developing your own attack, please make sure that your target FL algorithm is already set up.</p>
+
+<h3 id="31-add-new-configuration">3.1 Add New Configuration</h3>
+
+<p>If your own attack method requires new hyper-parameters, they should be registered in the configuration. The details of registering your own hyper-parameter can be found in <a href="/docs/own-case/">this post</a>.</p>
+
+<h3 id="32-server-as-the-attacker">3.2 Server as the attacker</h3>
+<p>When the attacker is the server, it requires an overload of the Server class of the target FL algorithm.</p>
+<ul>
+  <li>If the attack happens in the FL training process, the users should rewrite the <code class="language-plaintext highlighter-rouge">callback_funcs_model_para</code>, which is the function that called when the server receives the model parameter updates.</li>
+  <li>If the attack happens at the end of the FL training, the users should check whether it is the last round, and if yes, it will execute the attack actions.</li>
+</ul>
+
+<p>After overloading the server class, you should add it the function <code class="language-plaintext highlighter-rouge">get_server_cls</code> in <code class="language-plaintext highlighter-rouge">federatedscope/core/auxiliaries/worker_builder.py</code> .</p>
+
+<h4 id="321-example-of-developing-property-inference-attack">3.2.1 Example of developing property inference attack</h4>
+<p>The following is an example in a property inference attack where the attacker (server) performs attack actions both during and after the FL training. The attacker collects the received parameter updates during the FL training and generates the training data for PIA classifier based on the current model. After the FL training, the attacker trains the PIA classifier, and then infers the property based on the collected parameter updates.</p>
+
+<p>In the following code, the original Server’s <code class="language-plaintext highlighter-rouge">callback_funcs_model_para</code> function is rewritten to perform the above attack actions.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">PassivePIAServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
+    <span class="s">'''
+    The implementation of the batch property classifier, the algorithm 3 in paper: Exploiting Unintended Feature Leakage in Collaborative Learning
+
+    References:
+    Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706
+    '''</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">ID</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">client_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">total_round_num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">device</span><span class="o">=</span><span class="s">'cpu'</span><span class="p">,</span>
+                 <span class="n">strategy</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PassivePIAServer</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">ID</span><span class="p">,</span>
+                                               <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+                                               <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                               <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                                               <span class="n">client_num</span><span class="o">=</span><span class="n">client_num</span><span class="p">,</span>
+                                               <span class="n">total_round_num</span><span class="o">=</span><span class="n">total_round_num</span><span class="p">,</span>
+                                               <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                               <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">atk_method</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">attack_method</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pia_attacker</span> <span class="o">=</span> <span class="n">PassivePropertyInference</span><span class="p">(</span>
+            <span class="n">classier</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">classifier_PIA</span><span class="p">,</span>
+            <span class="n">fl_model_criterion</span><span class="o">=</span><span class="n">get_criterion</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">criterion</span><span class="p">.</span><span class="nb">type</span><span class="p">,</span>
+                                             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">grad_clip</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">grad_clip</span><span class="p">,</span>
+            <span class="n">dataset_name</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="nb">type</span><span class="p">,</span>
+            <span class="n">fl_local_update_num</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">federate</span><span class="p">.</span><span class="n">local_update_steps</span><span class="p">,</span>
+            <span class="n">fl_type_optimizer</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">fedopt</span><span class="p">.</span><span class="n">type_optimizer</span><span class="p">,</span>
+            <span class="n">fl_lr</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">callback_funcs_model_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="nb">round</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">message</span><span class="p">.</span><span class="n">state</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="n">content</span>
+        <span class="c1"># For a new round
+</span>        <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s">'train'</span><span class="p">].</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s">'train'</span><span class="p">][</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">msg_buffer</span><span class="p">[</span><span class="s">'train'</span><span class="p">][</span><span class="nb">round</span><span class="p">][</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span>
+
+        <span class="c1"># PIA: collect the parameter updates 
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">pia_attacker</span><span class="p">.</span><span class="n">collect_updates</span><span class="p">(</span>
+            <span class="n">previous_para</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span>
+            <span class="n">updated_parameter</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="nb">round</span><span class="o">=</span><span class="nb">round</span><span class="p">,</span>
+            <span class="n">client_id</span><span class="o">=</span><span class="n">sender</span><span class="p">)</span>
+        <span class="c1"># PIA: generate the training data for inference classifier training based on the auxiliary dataset 
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">pia_attacker</span><span class="p">.</span><span class="n">get_data_for_dataset_prop_classifier</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">_cfg</span><span class="p">.</span><span class="n">federate</span><span class="p">.</span><span class="n">online_aggr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">aggregator</span><span class="p">.</span><span class="n">inc</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">check_and_move_on</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">total_round_num</span><span class="p">:</span>
+            <span class="c1"># PIA: Property inference classifier training
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">pia_attacker</span><span class="p">.</span><span class="n">train_property_classifier</span><span class="p">()</span>
+            <span class="c1"># PIA: Property inference classifier infer the property based on the colloected parameter updates 
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">pia_results</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">pia_attacker</span><span class="p">.</span><span class="n">infer_collected</span><span class="p">()</span>
+            <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">pia_results</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The final step is to add the class <code class="language-plaintext highlighter-rouge">PassivePIAServer</code> into <code class="language-plaintext highlighter-rouge">get_server_cls</code> in <code class="language-plaintext highlighter-rouge">federatedscope/core/auxiliaries/worker_builder.py</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_server_cls</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">attack_method</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'dlg'</span><span class="p">,</span> <span class="s">'ig'</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.worker_as_attacker.server_attacker</span> <span class="kn">import</span> <span class="n">PassiveServer</span>
+        <span class="k">return</span> <span class="n">PassiveServer</span>
+    <span class="k">elif</span> <span class="n">cfg</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">attack_method</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'passivepia'</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.worker_as_attacker.server_attacker</span> <span class="kn">import</span> <span class="n">PassivePIAServer</span>
+        <span class="k">return</span> <span class="n">PassivePIAServer</span>
+</code></pre></div></div>
+
+<h3 id="33-client-as-the-attacker">3.3 Client as the attacker</h3>
+<p>When the attacker is one of the clients:</p>
+<ul>
+  <li>If the attack actions only happen in the local training procedure, users only need to define the wrapping function to wrap the trainer and add the attack actions.</li>
+  <li>If the attack actions also happen at the end of the FL training, users need to overload the client class and modify its <code class="language-plaintext highlighter-rouge">callback_funcs_for_finish</code> function.</li>
+</ul>
+
+<p>After setting the trainer wrapping function, it should be added to the function <code class="language-plaintext highlighter-rouge">wrap_attacker_trainer</code> in <code class="language-plaintext highlighter-rouge">federatedscope/attack/auxiliary/attack_trainer_builder.py</code>. Similarly, after overloading the client class, it should be added to function <code class="language-plaintext highlighter-rouge">get_client_cls</code> in <code class="language-plaintext highlighter-rouge">federatedscope/core/auxiliaries/worker_builder.py</code>.</p>
+
+<h4 id="331-example-of-developing-class-representative-attack">3.3.1 Example of developing class representative attack</h4>
+<p>The following is an example of wrapping the trainer in the implementation of the class representative attack in <a href="#2">[2]</a>. In this method, the attacker holds a local GAN, and at each FL training round, it will first update the GAN’s discriminator with the received paramters, and then local trains GAN’s generator so that its generated data can be classified as the target class. After that, the client labels the generated data as the class other than the target class and injects them into the training batch to perform the regular local training.</p>
+
+<p>The following code shows the wrapping function that adds the above procedures to the trainer. The wrapping function takes the trainer instance as the input. 
+It first adds an instance of <code class="language-plaintext highlighter-rouge">GANCRA</code> class which is the GAN attack class defined in <code class="language-plaintext highlighter-rouge">federatedscope/attack/models/gan_based_model.py</code> to the context of the trainer, i.e., <code class="language-plaintext highlighter-rouge">base_trainer.ctx</code> . Then it registers different hooks into its corresponding phase:</p>
+<ul>
+  <li>Register the hook <code class="language-plaintext highlighter-rouge">hood_on_fit_start_generator</code> to the phase’on_fit_start`, so that the trainer will update the round number at the beginning of local training in each round.</li>
+  <li>Register the hook <code class="language-plaintext highlighter-rouge">hook_on_gan_cra_train</code> and <code class="language-plaintext highlighter-rouge">hook_on_batch_injected_data_generation</code> to the phase <code class="language-plaintext highlighter-rouge">on_batch_start</code>, so that the trainer will train the GAN and inject the generated data to the training batch when preparing the train batch for local training.</li>
+  <li>Register the hook <code class="language-plaintext highlighter-rouge">hook_on_data_injection_sav_data</code> to the phase <code class="language-plaintext highlighter-rouge">on_fit_end</code> , so that at the end of local training, it will save the data generated by GAN.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wrap_GANTrainer</span><span class="p">(</span>
+        <span class="n">base_trainer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTrainer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">GeneralTrainer</span><span class="p">]:</span>
+
+    <span class="c1"># ---------------- attribute-level plug-in -----------------------
+</span>
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">target_label_ind</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">target_label_ind</span>
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span> <span class="o">=</span> <span class="n">GANCRA</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">target_label_ind</span><span class="p">,</span>
+                                      <span class="n">base_trainer</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">,</span>
+                                      <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">base_trainer</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="nb">type</span><span class="p">,</span>
+                                      <span class="n">device</span><span class="o">=</span><span class="n">base_trainer</span><span class="p">.</span><span class="n">ctx</span><span class="p">.</span><span class="n">device</span><span class="p">,</span>
+                                      <span class="n">sav_pth</span><span class="o">=</span><span class="n">base_trainer</span><span class="p">.</span><span class="n">cfg</span><span class="p">.</span><span class="n">outdir</span>
+                                      <span class="p">)</span>
+
+    <span class="c1"># ---- action-level plug-in -------
+</span>
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">hood_on_fit_start_generator</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_fit_start'</span><span class="p">,</span>
+                                        <span class="n">insert_mode</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span><span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_gan_cra_train</span><span class="p">,</span>
+                                        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_batch_start'</span><span class="p">,</span>
+                                        <span class="n">insert_mode</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_batch_injected_data_generation</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_batch_start'</span><span class="p">,</span>
+        <span class="n">insert_mode</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_batch_forward_injected_data</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_batch_forward'</span><span class="p">,</span>
+        <span class="n">insert_mode</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">base_trainer</span><span class="p">.</span><span class="n">register_hook_in_train</span><span class="p">(</span>
+        <span class="n">new_hook</span><span class="o">=</span><span class="n">hook_on_data_injection_sav_data</span><span class="p">,</span>
+        <span class="n">trigger</span><span class="o">=</span><span class="s">'on_fit_end'</span><span class="p">,</span>
+        <span class="n">insert_mode</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base_trainer</span>
+
+
+<span class="k">def</span> <span class="nf">hood_on_fit_start_generator</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+  <span class="c1"># update the round number
+</span>    <span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span><span class="p">.</span><span class="n">round_num</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'----- Round {}: GAN training ............'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span><span class="p">.</span><span class="n">round_num</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_batch_forward_injected_data</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># inject the generated data into training batch loss
+</span>    <span class="n">x</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">.</span><span class="n">injected_data</span><span class="p">]</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">.</span><span class="n">size</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">loss_task</span> <span class="o">+=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">y_true_injected</span> <span class="o">=</span> <span class="n">label</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">y_prob_injected</span> <span class="o">=</span> <span class="n">pred</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_batch_injected_data_generation</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># generate the injected data
+</span>    <span class="n">ctx</span><span class="p">.</span><span class="n">injected_data</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span><span class="p">.</span><span class="n">generate_fake_data</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_gan_cra_train</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+   <span class="c1"># update the GAN's discriminator with the broadcasted parameter
+</span>    <span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span><span class="p">.</span><span class="n">update_discriminator</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">model</span><span class="p">)</span>
+   <span class="c1"># train the GAN's generator
+</span>    <span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span><span class="p">.</span><span class="n">generator_train</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">hook_on_data_injection_sav_data</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">gan_cra</span><span class="p">.</span><span class="n">generate_and_save_images</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>After defining the trainer wrapping function, the following code adds the <code class="language-plaintext highlighter-rouge">wrap_GANTrainer</code> into <code class="language-plaintext highlighter-rouge">wrap_attacker_trainer</code> in <code class="language-plaintext highlighter-rouge">federatedscope/attack/auxiliary/attack_trainer_builder.py</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">wrap_attacker_trainer</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">attack_method</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">'gan_attack'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.trainer.GAN_trainer</span> <span class="kn">import</span> <span class="n">wrap_GANTrainer</span>
+        <span class="k">return</span> <span class="n">wrap_GANTrainer</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">attack_method</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">'gradascent'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">federatedscope.attack.trainer.MIA_invert_gradient_trainer</span> <span class="kn">import</span> <span class="n">wrap_GradientAscentTrainer</span>
+        <span class="k">return</span> <span class="n">wrap_GradientAscentTrainer</span><span class="p">(</span><span class="n">base_trainer</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">'Trainer {} is not provided'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">.</span><span class="n">attack</span><span class="p">.</span><span class="n">attack_method</span><span class="p">))</span>
+</code></pre></div></div>
+
+<h2 id="4-contribute-your-attacker-to-federatedscope">4. Contribute Your Attacker to FederatedScope</h2>
+<p>Users are welcome to contribute their own attack methods to FederatedScope. Please refer <a href="/docs/contributor/">Contributing to FederatedScope</a> for more details.</p>
+
+<hr />
+<h2 id="reference">Reference</h2>
+<p><a id="1">[1]</a>  Zhao B, Mopuri K R, Bilen H. idlg: Improved deep leakage from gradients[J]. arXiv preprint arXiv:2001.02610, 2020.</p>
+
+<p><a id="2">[2]</a>  Hitaj, Briland, Giuseppe Ateniese, and Fernando Perez-Cruz. “Deep models under the GAN: information leakage from collaborative deep learning.” Proceedings of the 2017 ACM SIGSAC conference on computer and communications security. 2017.</p>
+
+<p><a id="3">[3]</a> Zhu, Ligeng, Zhijian Liu, and Song Han. “Deep leakage from gradients.” Advances in Neural Information Processing Systems 32 (2019).</p>
+
+<p><a id="4">[4]</a> Geiping, Jonas, et al. “Inverting gradients-how easy is it to break privacy in federated learning?.” Advances in Neural Information Processing Systems 33 (2020): 16937-16947.</p>
+
+<p><a id="5">[5]</a> Nasr, Milad, R. Shokri and Amir Houmansadr. “Comprehensive Privacy Analysis of Deep Learning: Stand-alone and Federated Learning under Passive and Active White-box Inference Attacks.” ArXiv abs/1812.00910 (2018): n. pag.</p>
+
+<p><a id="6">[6]</a> Melis, Luca, Congzheng Song, Emiliano De Cristofaro and Vitaly Shmatikov. “Exploiting Unintended Feature Leakage in Collaborative Learning.” 2019 IEEE Symposium on Security and Privacy (SP) (2019): 691-706.</p>
+
+<p><a id="7">[7]</a> Lyu, Lingjuan, Han Yu and Qiang Yang. “Threats to Federated Learning: A Survey.” ArXiv abs/2003.02133 (2020): n. pag.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-04-13">April 13, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/dp/" class="pagination--pager" title="Differential Privacy
+">Previous</a>
+    
+    
+      <a href="/docs/graph/" class="pagination--pager" title="Graph
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

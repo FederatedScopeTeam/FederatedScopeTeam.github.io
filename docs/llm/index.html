@@ -1,0 +1,1012 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>LLM - FederatedScope</title>
+<meta name="description" content="FS-LLM module.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="LLM">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/llm/">
+
+
+  <meta property="og:description" content="FS-LLM module.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="LLM">
+  <meta name="twitter:description" content="FS-LLM module.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/llm/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-09-06T05:40:29-04:00">
+
+
+
+  <meta property="article:modified_time" content="2023-09-06T10:40:42-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/llm/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+            <li><a href="/docs/llm/" class="active">LLM</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="LLM">
+    <meta itemprop="description" content="FS-LLM module.">
+    <meta itemprop="datePublished" content="2023-09-06T05:40:29-04:00">
+    <meta itemprop="dateModified" content="2023-09-06T10:40:42-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">LLM
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#introduction">Introduction</a></li><li><a href="#code-structure">Code Structure</a></li><li><a href="#quick-start">Quick Start</a><ul><li><a href="#step-1-installation">Step 1. Installation</a></li><li><a href="#step-2-run-with-exmaple-config">Step 2. Run with exmaple config</a></li></ul></li><li><a href="#start-with-built-in-functions-">Start with Built-in Functions </a></li><li><a href="#-fine-tuning-dataset-"> Fine-tuning Dataset </a><ul><li><a href="#built-in-data">Built-in Data</a></li><li><a href="#self-maintained-data">Self-maintained Data</a></li></ul></li></ul></li><li><a href="#-evaluation-tools"> Evaluation Tools</a></li><li><a href="#-algorithms"> Algorithms</a><ul><li><a href="#parameter-efficient-fine-tuning">Parameter-Efficient Fine-Tuning</a></li><li><a href="#federate-fine-tune-closed-source-llms">Federate fine-tune closed-source LLMs</a></li><li><a href="#evaluation-of-fine-tuned-closed-source-llms">Evaluation of fine-tuned closed-source LLMs</a></li></ul></li><li><a href="#-federate-fine-tune-with-efficiency-"> Federate Fine-tune with Efficiency </a></li><li><a href="#-faq-"> FAQ </a></li><li><a href="#citation">Citation</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p><img src="https://img.alicdn.com/imgextra/i2/O1CN01y9mcld26RsLKK9Q98_!!6000000007659-2-tps-3710-2735.png" alt="img" style="zoom: 100%;" /></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>FederatedScope-LLM (FS-LLM) is a comprehensive package for federated fine-tuning large language models, which provide:</p>
+
+<ul>
+  <li>A complete <strong>end-to-end benchmarking pipeline</strong>, automizing the processes of dataset preprocessing, federated fine-tuning execution or simulation, and performance evaluation on federated LLM fine-tuning with different capability demonstration purposes;</li>
+  <li>Comprehensive and off-the-shelf <strong>federated fine-tuning algorithm</strong> implementations and versatile programming interfaces for future extension to enhance the capabilities of LLMs in FL scenarios with low communication and computation costs, even without accessing the full model (e.g., closed-source LLMs);</li>
+  <li>Several <strong>accelerating operators and resource-efficient operators</strong> for fine-tuning LLMs with limited resources and the flexible pluggable sub-routines for interdisciplinary study (e.g., LLMs in personalized FL).</li>
+</ul>
+
+<p>For more details, please refer to our paper: <a href="https://arxiv.org/abs/2309.00363">FederatedScope-LLM: A Comprehensive Package for Fine-tuning Large Language Models in Federated Learning</a>.</p>
+
+<p>To facilitate further research and adoption, we release FS-LLM at <a href="https://github.com/alibaba/FederatedScope/tree/llm">this https URL</a>.</p>
+
+<p>In the tutorial, you will learn:</p>
+
+<ul>
+  <li>The structure of FS-LLM <a href="#structure">[click]</a></li>
+  <li>How to start fine-tuning LLMs with FederatedScope <a href="#start">[click]</a></li>
+  <li>How to use build-in functions <a href="#functions">[click]</a></li>
+  <li>How to use built-in or create new fine-tuning datasets <a href="#dataset">[click]</a></li>
+  <li>How to use built-in evaluation tools <a href="#evaluation">[click]</a></li>
+  <li>How to adopt different federated fine-tuning PEFT algorithms <a href="#algorithm">[click]</a></li>
+  <li>How to enable different resource-efficiency operations <a href="#efficiency">[click]</a></li>
+  <li>FAQ <a href="#faq">[click]</a></li>
+  <li>Citation <a href="#citation">[click]</a></li>
+</ul>
+
+<h2 id="code-structure"><span id="structure">Code Structure</span></h2>
+
+<p><a href="https://github.com/alibaba/FederatedScope/tree/llm/federatedscope/llm">LLM-related directory</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FederatedScope
+├── federatedscope
+│   ├── core                     # Federated learning backend modules
+│   ├── llm                      # Federated fine-tuning LLMs modules 
+│   │   ├── baseline             # Scripts for LLMs
+│   │   ├── dataloader           # Federated fine-tuning dataloader
+│   │   ├── dataset              # Federated fine-tuning dataset
+│   │   ├── eval                 # Evaluation for fine-tuned LLMs
+│   │   ├── misc                 # Miscellaneous
+│   │   ├── model                # LLMs and Adapter
+│   │   ├── trainer              # Fine-tuning with accerating operators
+│   │   ├── ...
+│   ├── main.py                  # Running interface
+│   ├── ... ...          
+├── tests                        # Unittest modules for continuous integration
+├── LICENSE
+└── setup.py 
+</code></pre></div></div>
+
+<h2 id="quick-start"><span id="start">Quick Start</span></h2>
+
+<p>Let’s start with fine-tuning GPT-2 on <a href="https://github.com/tatsu-lab/stanford_alpaca">Alpaca</a> to familiarize you with FS-LLM.</p>
+
+<h3 id="step-1-installation">Step 1. Installation</h3>
+
+<p>The installation of FS-LLM is similar to minimal FS (see <a href="https://github.com/alibaba/FederatedScope/tree/master">here</a> for details), except that it requires <strong>Pytorch&gt;=1.13.0</strong> (we recommend version 2.0.X) because of the <a href="https://github.com/huggingface/peft">PEFT</a> dependency:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create virtual environments with conda</span>
+conda create <span class="nt">-n</span> fs-llm <span class="nv">python</span><span class="o">=</span>3.9
+conda activate fs-llm
+
+<span class="c"># Install Pytorch&gt;=1.13.0 (e.g., Pytorch==2.0.0)</span>
+conda <span class="nb">install </span><span class="nv">pytorch</span><span class="o">==</span>2.0.0 <span class="nv">torchvision</span><span class="o">==</span>0.15.0 <span class="nv">torchaudio</span><span class="o">==</span>2.0.0 pytorch-cuda<span class="o">=</span>11.7 <span class="nt">-c</span> pytorch <span class="nt">-c</span> nvidia
+
+<span class="c"># Install FS-LLM with editable mode</span>
+pip <span class="nb">install</span> <span class="nt">-e</span> .[llm]
+</code></pre></div></div>
+
+<p>Now, you have successfully installed the FS-LLM.</p>
+
+<h3 id="step-2-run-with-exmaple-config">Step 2. Run with exmaple config</h3>
+
+<p>Before running, you should change your git branch to <code class="language-plaintext highlighter-rouge">llm</code>.</p>
+
+<p>Now, you can fine-tune a GPT2 on Alpaca with FedAvg.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python federatedscope/main.py <span class="nt">--cfg</span> federatedscope/llm/baseline/testcase.yaml
+</code></pre></div></div>
+
+<h2 id="start-with-built-in-functions-"><span id="functions">Start with Built-in Functions </span></h2>
+
+<p>You can easily run through a customized <code class="language-plaintext highlighter-rouge">yaml</code> file. Here we only introduce the configuration related to FS-LLM, other configurations please refer to <a href="https://github.com/alibaba/FederatedScope/blob/master/federatedscope/core/configs/README.md">Configurations</a>. For more examples, please refer to <code class="language-plaintext highlighter-rouge">federatedscope/llm/baseline</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># For this configuration, you might need a GPU with at least 32GB of video memory to run.</span>
+
+<span class="c1"># Whether to use GPU</span>
+<span class="na">use_gpu</span><span class="pi">:</span> <span class="s">True</span>
+
+<span class="c1"># Deciding which GPU to use</span>
+<span class="na">device</span><span class="pi">:</span> <span class="m">0</span>
+
+<span class="c1"># Early stop steps, set `0` to disable</span>
+<span class="na">early_stop</span><span class="pi">:</span>
+  <span class="na">patience</span><span class="pi">:</span> <span class="m">0</span>
+
+<span class="c1"># Federate learning related options</span>
+<span class="na">federate</span><span class="pi">:</span>
+  <span class="c1"># `standalone` or `distributed`</span>
+  <span class="na">mode</span><span class="pi">:</span> <span class="s">standalone</span>
+  <span class="c1"># Number of communication round</span>
+  <span class="na">total_round_num</span><span class="pi">:</span> <span class="m">500</span>
+  <span class="c1"># Saving path for ckpt</span>
+  <span class="na">save_to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">llama_rosetta_9_fed.ckpt"</span>
+  <span class="c1"># Number of dataset being split</span>
+  <span class="na">client_num</span><span class="pi">:</span> <span class="m">9</span>
+  <span class="c1"># Enable for saving memory, all workers share the same model instance</span>
+  <span class="na">share_local_model</span><span class="pi">:</span> <span class="s">True</span>
+
+<span class="c1"># Dataset related options</span>
+<span class="na">data</span><span class="pi">:</span>
+  <span class="c1"># Root directory where the data stored</span>
+  <span class="na">root</span><span class="pi">:</span> <span class="s">data/</span>
+  <span class="c1"># Dataset name</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s1">'</span><span class="s">rosetta_alpaca@llm'</span>
+  <span class="c1"># Train/val/test splits</span>
+  <span class="na">splits</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">0.89</span><span class="pi">,</span><span class="nv">0.1</span><span class="pi">,</span><span class="nv">0.01</span><span class="pi">]</span>
+  <span class="c1"># Use meta inforamtion to split `rosetta_alpaca`</span>
+  <span class="na">splitter</span><span class="pi">:</span> <span class="s1">'</span><span class="s">meta'</span>
+
+<span class="c1"># LLM related options</span>
+<span class="na">llm</span><span class="pi">:</span>
+  <span class="c1"># Max token length for model input (training)</span>
+  <span class="na">tok_len</span><span class="pi">:</span> <span class="m">650</span>
+  <span class="c1"># ChatBot related options</span>
+  <span class="na">chat</span><span class="pi">:</span>
+    <span class="c1"># Max token length for model input (inference)</span>
+    <span class="na">max_len</span><span class="pi">:</span> <span class="m">1000</span>
+    <span class="c1"># Max number of history texts</span>
+    <span class="na">max_history_len</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="c1"># Path for store model cache, default in `~/.cache/`</span>
+  <span class="na">cache</span><span class="pi">:</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span>
+  <span class="c1"># PEFT related options</span>
+  <span class="na">adapter</span><span class="pi">:</span>
+    <span class="c1"># Set ture to enable PEFT fine-tuning</span>
+    <span class="na">use</span><span class="pi">:</span> <span class="s">True</span>
+    <span class="c1"># Args for PEFT fine-tuning</span>
+    <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span> <span class="pi">{</span> <span class="s1">'</span><span class="s">adapter_package'</span><span class="pi">:</span> <span class="s1">'</span><span class="s">peft'</span><span class="pi">,</span> <span class="s1">'</span><span class="s">adapter_method'</span><span class="pi">:</span> <span class="s1">'</span><span class="s">lora'</span><span class="pi">,</span> <span class="s1">'</span><span class="s">r'</span><span class="pi">:</span> <span class="nv">8</span><span class="pi">,</span> <span class="s1">'</span><span class="s">lora_alpha'</span><span class="pi">:</span> <span class="nv">32</span><span class="pi">,</span> <span class="s1">'</span><span class="s">lora_dropout'</span><span class="pi">:</span> <span class="nv">0.1</span> <span class="pi">}</span> <span class="pi">]</span>
+
+<span class="c1"># DataLoader related options</span>
+<span class="na">dataloader</span><span class="pi">:</span>
+  <span class="c1"># Batch size for iter loader</span>
+  <span class="na">batch_size</span><span class="pi">:</span> <span class="m">1</span>
+
+<span class="c1"># Model related options</span>
+<span class="na">model</span><span class="pi">:</span>
+  <span class="c1"># Model type (format: {MODEL_REPO}@huggingface_llm)</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s1">'</span><span class="s">decapoda-research/llama-7b-hf@huggingface_llm'</span>
+
+<span class="c1"># Train related options</span>
+<span class="na">train</span><span class="pi">:</span>
+  <span class="c1"># Number of local update steps</span>
+  <span class="na">local_update_steps</span><span class="pi">:</span> <span class="m">30</span>
+  <span class="c1"># `batch` or `epoch` for local_update_steps</span>
+  <span class="na">batch_or_epoch</span><span class="pi">:</span> <span class="s">batch</span>
+  <span class="c1"># Optimizer related options</span>
+  <span class="na">optimizer</span><span class="pi">:</span>
+    <span class="c1"># Learning rate</span>
+    <span class="na">lr</span><span class="pi">:</span> <span class="m">0.003</span>
+    <span class="c1"># Weight decay</span>
+    <span class="na">weight_decay</span><span class="pi">:</span> <span class="m">0.0</span>
+  <span class="c1"># Set ture to enable `model.half()`</span>
+  <span class="na">is_enable_half</span><span class="pi">:</span> <span class="s">True</span>
+
+<span class="c1"># Trainer related options</span>
+<span class="na">trainer</span><span class="pi">:</span>
+  <span class="c1"># Trainer type</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">llmtrainer</span>
+
+<span class="c1"># Evaluation related options</span>
+<span class="na">eval</span><span class="pi">:</span>
+  <span class="c1"># Frequency of evaluation</span>
+  <span class="na">freq</span><span class="pi">:</span> <span class="m">50</span>
+  <span class="c1"># Evaluation metrics</span>
+  <span class="na">metrics</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">loss'</span><span class="pi">]</span>
+  <span class="c1"># Set key to track best model</span>
+  <span class="na">best_res_update_round_wise_key</span><span class="pi">:</span> <span class="s">val_loss</span>
+</code></pre></div></div>
+
+<h2 id="-fine-tuning-dataset-"><span id="dataset"> Fine-tuning Dataset </span></h2>
+
+<p>In general, we use instruction SFT following <a href="https://github.com/tatsu-lab/stanford_alpaca">Alpaca</a> team. And in standalone mode, all dataset can be split into several clients with spesific <code class="language-plaintext highlighter-rouge">splitter</code> (i.e., <code class="language-plaintext highlighter-rouge">lda</code>, <code class="language-plaintext highlighter-rouge">meta</code>, <code class="language-plaintext highlighter-rouge">iid</code>) and <code class="language-plaintext highlighter-rouge">federate.num_client</code>.</p>
+
+<h4 id="built-in-data">Built-in Data</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>data.type</th>
+      <th>Source</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">alpaca@llm</code></td>
+      <td><a href="https://github.com/tatsu-lab/stanford_alpaca">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">IIDSplitter</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">alpaca_cleaned@llm</code></td>
+      <td><a href="https://github.com/gururise/AlpacaDataCleaned">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">IIDSplitter</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">dolly-15k@llm</code></td>
+      <td><a href="https://github.com/databrickslabs/dolly">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">LDASplitter</code> or <code class="language-plaintext highlighter-rouge">MetaSplitter</code> split to 8 clients.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">gsm8k@llm</code></td>
+      <td><a href="https://github.com/openai/grade-school-math">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">IIDSplitter</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rosetta_alpaca@llm</code></td>
+      <td><a href="https://github.com/sahil280114/codealpaca">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">LDASplitter</code> or <code class="language-plaintext highlighter-rouge">MetaSplitter</code> split to 9 clients.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">code_search_net@llm</code></td>
+      <td><a href="https://github.com/github/CodeSearchNet">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">LDASplitter</code> or <code class="language-plaintext highlighter-rouge">MetaSplitter</code> split to 6 clients.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="self-maintained-data">Self-maintained Data</h4>
+
+<p>FS-LLM also supports using your own dataset in the following format.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>data.type</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">YOU_DATA_NAME.json@llm</code></td>
+      <td>Format: <code class="language-plaintext highlighter-rouge">[{'instruction': ..., 'input': ..., 'output':...}]</code>, default key: <code class="language-plaintext highlighter-rouge">instruction</code>, <code class="language-plaintext highlighter-rouge">input</code>, <code class="language-plaintext highlighter-rouge">output</code>, <code class="language-plaintext highlighter-rouge">category</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">YOU_DATA_NAME.jsonl@llm</code></td>
+      <td>Format of each line: <code class="language-plaintext highlighter-rouge">{'instruction': ..., 'input': ..., 'output':...}</code>, default key: <code class="language-plaintext highlighter-rouge">instruction</code>, <code class="language-plaintext highlighter-rouge">input</code>, <code class="language-plaintext highlighter-rouge">output</code>, <code class="language-plaintext highlighter-rouge">category</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="-evaluation-tools"><span id="evaluation"> Evaluation Tools</span></h2>
+
+<p>You can evaluate model domain capability of fine-tuned models with easy-to-use evaluation tools.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FederatedScope
+├── federatedscope
+│   ├── llm
+│   │   ├── <span class="nb">eval</span>
+│   │   │   ├── eval_for_code
+│   │   │   ├── eval_for_gsm8k
+│   │   │   ├── eval_for_helm
+│   │   │   ├── eval_for_mmlu
+...
+</code></pre></div></div>
+
+<p>How to use:</p>
+
+<p>For example, to evaluate the model fine-tuned with <code class="language-plaintext highlighter-rouge">python federatedscope/main.py --cfg sft_gsm8k.yaml</code>, you can run <code class="language-plaintext highlighter-rouge">python federatedscope/llm/eval/eval_for_gsm8k/eval.py --cfg sft_gsm8k.yaml</code> in the <code class="language-plaintext highlighter-rouge">eval_for_gsm8k</code> directory. For other usages, please refer to the <code class="language-plaintext highlighter-rouge">README.md</code> file in each subdirectory.</p>
+
+<h2 id="-algorithms"><span id="algorithm"> Algorithms</span></h2>
+
+<h3 id="parameter-efficient-fine-tuning">Parameter-Efficient Fine-Tuning</h3>
+
+<p>With the help of parameter-efficient fine-tuning methods, federated fine-tuning a large model requires passing only a very small percentage of model parameters (adapters), making it possible for the client to enable efficient adaptation of pre-trained language models to various downstream applications. We adopt <a href="https://github.com/huggingface/peft">PEFT</a> for fine-tuning LLMs, and more methods are coming soon!</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Methods</th>
+      <th>Source</th>
+      <th>Example for <code class="language-plaintext highlighter-rouge">llm.adapter.args</code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>LoRA</td>
+      <td><a href="https://arxiv.org/abs/2106.09685">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">[ { 'adapter_package': 'peft', 'adapter_method': 'lora', 'r': 8, 'lora_alpha': 32, 'lora_dropout': 0.1 } ]</code></td>
+    </tr>
+    <tr>
+      <td>Prefix Tuning</td>
+      <td><a href="https://aclanthology.org/2021.acl-long.353/">Link</a>, <a href="https://arxiv.org/pdf/2110.07602.pdf">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">[{'adapter_package': 'peft', 'adapter_method': 'prefix', 'prefix_projection': False, 'num_virtual_tokens': 20}]</code></td>
+    </tr>
+    <tr>
+      <td>P-Tuning</td>
+      <td><a href="https://arxiv.org/abs/2103.10385">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">[{'adapter_package': 'peft', 'adapter_method': 'p-tuning', 'encoder_reparameterization_type': 'MLP', 'encoder_dropout': 0.1, 'num_virtual_tokens': 20}]</code></td>
+    </tr>
+    <tr>
+      <td>Prompt Tuning</td>
+      <td><a href="https://arxiv.org/abs/2104.08691">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">[{'adapter_package': 'peft', 'adapter_method': 'prompt', 'prompt_tuning_init': 'RANDOM', 'num_virtual_tokens': 20}]</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="federate-fine-tune-closed-source-llms">Federate fine-tune closed-source LLMs</h3>
+
+<p>We support federated fine-tuning not only for open-source LLMs, but also for closed-source LLMs. In this scenario, clients can fine-tune LLMs without fully accessing the model, where models and data are both considered as privacy.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Methods</th>
+      <th>Source</th>
+      <th>How to enable</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Offsite-Tuning</td>
+      <td><a href="https://arxiv.org/abs/2302.04870">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">llm.offsite_tuning.use=True</code></td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For example, the following methods are supported:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Methods</th>
+      <th>Source</th>
+      <th>How to use</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Drop layers</td>
+      <td><a href="https://arxiv.org/abs/2302.04870">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">llm.offsite_tuning.emu_l=2</code><br /><code class="language-plaintext highlighter-rouge">llm.offsite_tuning.emu_r=30</code><br /> <code class="language-plaintext highlighter-rouge">llm.offsite_tuning.kwargs={"drop_ratio":0.2}}</code></td>
+      <td>The server fixes the first two layers and the layers after 30th layer as the adapter, and uniformly drops 20% of the remaining layers, denoted as the emulator</td>
+    </tr>
+    <tr>
+      <td>Model distill</td>
+      <td><a href="https://arxiv.org/abs/2302.04870">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">llm.offsite_tuning.emu_align.use=True</code><br /><code class="language-plaintext highlighter-rouge">llm.offsite_tuning.emu_l=2</code><br /><code class="language-plaintext highlighter-rouge">llm.offsite_tuning.emu_r=30</code><br /></td>
+      <td>The server fixes the first two layers and the layers after 30th layer as the adapter, and regards the remaining as the teacher model, and distills a student model as the emulator</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>More methods will be supported ASAP.</p>
+
+<h3 id="evaluation-of-fine-tuned-closed-source-llms">Evaluation of fine-tuned closed-source LLMs</h3>
+
+<p>To evaluate fine-tuned closed-source LLMs, one should decide whether to evaluate the original model with fine-tuned adapters or the emulator with fine-tuned adapters.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Methods</th>
+      <th>Source</th>
+      <th>How to use</th>
+      <th>note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Evaluation of fine-tuned closed-source LLMs</td>
+      <td><a href="https://arxiv.org/abs/2302.04870">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">cfg.llm.offsite_tuning.eval_type='full'</code> (or <code class="language-plaintext highlighter-rouge">'emu'</code>)</td>
+      <td>‘full’ means evaluating the original model with fine-tuned adapters; ‘emu’ means evaluating the emulator with fine-tuned adapters</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="-federate-fine-tune-with-efficiency-"><span id="efficiency"> Federate Fine-tune with Efficiency </span></h2>
+
+<p>To make the federated fine-tuning efficient, we adopt a series of acceleration operators.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Methods</th>
+      <th>Source</th>
+      <th>How to use</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>torch.nn.DataParallel</td>
+      <td><a href="https://pytorch.org/docs/stable/generated/torch.nn.DataParallel.html">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">cfg.train.data_para_dids=[0,1]</code></td>
+      <td>It splits the input across the specified devices by chunking in the batch dimension.</td>
+    </tr>
+    <tr>
+      <td>DeepSpeed</td>
+      <td><a href="https://github.com/microsoft/DeepSpeed">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">cfg.llm.accelation.use=True</code></td>
+      <td>Use <code class="language-plaintext highlighter-rouge">nvcc - V</code> to make sure <code class="language-plaintext highlighter-rouge">CUDA</code> installed. <br />When set it to <code class="language-plaintext highlighter-rouge">True</code>, we can full-parameter fine-tune a <code class="language-plaintext highlighter-rouge">llama-7b</code> on a machine with 4 V100-32G gpus.</td>
+    </tr>
+    <tr>
+      <td>FP16</td>
+      <td><a href="https://arxiv.org/abs/1710.03740">Link</a></td>
+      <td><code class="language-plaintext highlighter-rouge">train.is_enable_half=True</code></td>
+      <td>Converting float types to half-precision to save memory usage</td>
+    </tr>
+    <tr>
+      <td>Share local model</td>
+      <td>-</td>
+      <td><code class="language-plaintext highlighter-rouge">federate.share_local_model=True</code></td>
+      <td>The clients will share the base model, which reduces a lot of cpu memory consumption.</td>
+    </tr>
+    <tr>
+      <td>Move to cpu</td>
+      <td>-</td>
+      <td><code class="language-plaintext highlighter-rouge">llm.adapter.mv_to_cpu=True</code></td>
+      <td>Move adapter to <code class="language-plaintext highlighter-rouge">cpu</code> after training, which can save memory but cost more time.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="-faq-"><span id="faq"> FAQ </span></h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">WARNING: Skip the batch due to the loss is NaN, it may be caused by exceeding the precision or invalid labels.</code>
+    <ul>
+      <li>Possible reason 1: This is because <code class="language-plaintext highlighter-rouge">llm.tok_len</code> limits the input length, causing the label to be empty, which automatically skips that data. Setting a larger <code class="language-plaintext highlighter-rouge">llm.tok_len</code> can avoid this.</li>
+      <li>Possible reason 2: Due to the enabling of <code class="language-plaintext highlighter-rouge">train.is_enable_half</code>, numerical overflow may occur. This usually happens when setting the <code class="language-plaintext highlighter-rouge">optimizer.type</code> to <code class="language-plaintext highlighter-rouge">Adam</code>, since the default <code class="language-plaintext highlighter-rouge">eps</code> is <code class="language-plaintext highlighter-rouge">1e-8</code> but <code class="language-plaintext highlighter-rouge">fp16</code> requires at least <code class="language-plaintext highlighter-rouge">1e-5</code>.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">ValueError: Tokenizer class LLaMATokenizer does not exist or is not currently imported. </code>
+    <ul>
+      <li>This is a problem with <code class="language-plaintext highlighter-rouge">transformers</code>, you can fix it in your local file. Replace <code class="language-plaintext highlighter-rouge">LLaMATokenizer</code> with <code class="language-plaintext highlighter-rouge">LlamaTokenizer</code> in <code class="language-plaintext highlighter-rouge">PATH_TO_DATA_ROOT/MODEL_REPO/snapshots/..../tokenizer_config.json</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">OutOfMemoryError: CUDA out of memory.</code>
+    <ul>
+      <li>Torch’s garbage collection mechanism may not be timely resulting in OOM, please set <code class="language-plaintext highlighter-rouge">cfg.eval.count_flops</code> to <code class="language-plaintext highlighter-rouge">False</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="citation"><span id="citation">Citation</span></h2>
+
+<p>If you find FederatedScope-LLM useful for your research or development, please cite the following paper:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@article{kuang2023federatedscopellm,
+  title={FederatedScope-LLM: A Comprehensive Package for Fine-tuning Large Language Models in Federated Learning},
+  author={Weirui Kuang and Bingchen Qian and Zitao Li and Daoyuan Chen and Dawei Gao and Xuchen Pan and Yuexiang Xie and Yaliang Li and Bolin Ding and Jingren Zhou},
+  journal={arXiv preprint arXiv:2309.00363},
+  year={2023}
+}
+</code></pre></div></div>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-09-06">September 6, 2023</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/fs-data/" class="pagination--pager" title="FS Data
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>

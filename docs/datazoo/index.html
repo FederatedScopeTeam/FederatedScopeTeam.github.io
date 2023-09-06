@@ -1,0 +1,720 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>DataZoo - FederatedScope</title>
+<meta name="description" content="About DataZoo.">
+
+
+  <meta name="author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+  <meta property="article:author" content="Data Analytics and Intelligence Lab (DAIL) of DAMO Academy">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FederatedScope">
+<meta property="og:title" content="DataZoo">
+<meta property="og:url" content="https://federatedscopeteam.github.io/docs/datazoo/">
+
+
+  <meta property="og:description" content="About DataZoo.">
+
+
+
+  <meta property="og:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+
+
+
+  <meta name="twitter:site" content="@mmistakes">
+  <meta name="twitter:title" content="DataZoo">
+  <meta name="twitter:description" content="About DataZoo.">
+  <meta name="twitter:url" content="https://federatedscopeteam.github.io/docs/datazoo/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://federatedscopeteam.github.io/assets/images/site-logo.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2023-09-06T05:40:29-04:00">
+
+
+
+  <meta property="article:modified_time" content="2022-03-30T21:36:18-04:00">
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://federatedscopeteam.github.io/docs/datazoo/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Data Analytics and Intelligence Lab (DAIL) of DAMO Academy",
+      "url": "https://federatedscopeteam.github.io/",
+      "sameAs": ["https://twitter.com/mmistakes","https://www.facebook.com/michaelrose"]
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="UQj93ERU9zgECodaaXgVpkjrFn9UrDMEzVamacSoQ8Y" />
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="FederatedScope Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="shortcut icon" type="image/png" href="https://img.alicdn.com/imgextra/i1/O1CN018QJmTK1vLxKVTFziU_!!6000000006157-2-tps-436-436.png">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--tuto">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          <img src=https://img.alicdn.com/imgextra/i2/O1CN01cCDBCY1a354ojQtsJ_!!6000000003273-2-tps-2536-383.png alt="Logo" height="30" width="210">
+          <span class="site-subtitle"></span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/docs/documentation/" target="">Tutorials</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://colab.research.google.com/github/alibaba/FederatedScope" target="_blank">Playground</a>
+            </li><li class="masthead__menu-item">
+              <a href="/refs/index" target="_blank">API References</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/" target="">News</a>
+            </li><li class="masthead__menu-item">
+              <a href="/pub/" target="">Publications</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">Beginner</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/installation/">Installation</a></li>
+          
+            <li><a href="/docs/examples/">Start With Examples</a></li>
+          
+            <li><a href="/docs/own-case/">Start Your Own Case</a></li>
+          
+            <li><a href="/docs/datazoo/" class="active">DataZoo</a></li>
+          
+            <li><a href="/docs/modelzoo/">ModelZoo</a></li>
+          
+            <li><a href="/docs/algozoo/">AlgoZoo</a></li>
+          
+            <li><a href="/docs/use-hpo/">Tuning Federated Learning</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Advanced</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/fs-data/">FS data module</a></li>
+          
+            <li><a href="/docs/event-driven-architecture/">Event-driven Architecture</a></li>
+          
+            <li><a href="/docs/workers/">Workers</a></li>
+          
+            <li><a href="/docs/new-type/">New Types of Messages and Handlers</a></li>
+          
+            <li><a href="/docs/protected-msg/">Privacy Protection for Message</a></li>
+          
+            <li><a href="/docs/trainer/">Local Learning Abstraction: Trainer</a></li>
+          
+            <li><a href="/docs/pfl/">Personalized FL</a></li>
+          
+            <li><a href="/docs/cross-device/">Cross-Device FL</a></li>
+          
+            <li><a href="/docs/cross-silo/">Cross-Silo FL</a></li>
+          
+            <li><a href="/docs/improve-hpo/">Accelerating Federated HPO</a></li>
+          
+            <li><a href="/docs/simulation-and-deployment/">Simulation and Deployment</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Applications</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/recommendation/">Recommendation</a></li>
+          
+            <li><a href="/docs/dp/">Differential Privacy</a></li>
+          
+            <li><a href="/docs/privacy-attacks/">Privacy Attacks</a></li>
+          
+            <li><a href="/docs/graph/">Graph</a></li>
+          
+            <li><a href="/docs/nlp-and-speech/">NLP and Speech</a></li>
+          
+            <li><a href="/docs/llm/">LLM</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Get Involved</span>
+        
+
+        
+        <ul>
+          
+            <li><a href="/docs/community/">Join Our Community</a></li>
+          
+            <li><a href="/docs/contributor/">Contributing to FederatedScope</a></li>
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+
+    
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="DataZoo">
+    <meta itemprop="description" content="About DataZoo.">
+    <meta itemprop="datePublished" content="2023-09-06T05:40:29-04:00">
+    <meta itemprop="dateModified" content="2022-03-30T21:36:18-04:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">DataZoo
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#dataset">Dataset</a><ul><li><a href="#computer-vision">Computer Vision</a></li><li><a href="#natural-language-processing">Natural Language Processing</a></li><li><a href="#graph">Graph</a><ul><li><a href="#node-level-dataset">Node-level dataset</a></li><li><a href="#link-level-dataset">Link-level dataset</a></li><li><a href="#graph-level-dataset">Graph-level dataset</a></li></ul></li><li><a href="#recommendation-system">Recommendation System</a></li><li><a href="#audio-and-speech">Audio and Speech</a></li><li><a href="#synthetic">Synthetic</a></li></ul></li><li><a href="#tools">Tools</a><ul><li><a href="#splitter">Splitter</a></li></ul></li><li><a href="#how-to-use">How to use</a></li><li><a href="#references">References</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <div class="eqtextwidth-content">
+        <p>FederatedScope provides a rich collection of datasets for researchers, including images, texts, graphs, recommendation systems and speeches. Our <code class="language-plaintext highlighter-rouge">DataZoo</code> contains real federation datasets as well as simulated federation datasets with a different <code class="language-plaintext highlighter-rouge">splitter</code>. And more datasets are coming soon!</p>
+
+<p>To use our <code class="language-plaintext highlighter-rouge">DataZoo</code>, set <code class="language-plaintext highlighter-rouge">cfg.data.type = DATASET_NAME</code>. Downloading and pre-processing of our datasets is automatic, and you do not need to perform additional operations. Please feel free to use it! For more dataset-related settings, please refer to each dataset.</p>
+
+<p><a name="rn0zN"></a></p>
+<h2 id="dataset">Dataset</h2>
+
+<p><a name="K2VER"></a></p>
+<h3 id="computer-vision">Computer Vision</h3>
+
+<ul>
+  <li><strong>FMNIST</strong><br />FEMNIST is a federation image dataset from <a href="https://leaf.cmu.edu/">LEAF</a> [1], and the task is image classification. The images are split by writers into clients. Moreover, you can set the sampling rate to sample from the clients via <code class="language-plaintext highlighter-rouge">cfg.data.subsample</code>.<br />Statistics: 62 classes, 805263 images, about 3500 clients.</li>
+  <li><strong>Celeba</strong><br />Celeba is a federation image dataset from <a href="https://leaf.cmu.edu/">LEAF</a> [1], and the task is image classification.  The images are split by humans into clients. Moreover, you can set the sampling rate to sample from the clients via <code class="language-plaintext highlighter-rouge">cfg.data.subsample</code>.<br />Statistics: 2 classes (smiling or not), 200288 images, about 9300 clients.</li>
+</ul>
+
+<p><a name="wv41Y"></a></p>
+<h3 id="natural-language-processing">Natural Language Processing</h3>
+
+<ul>
+  <li><strong>Shakespeare</strong><br />Shakespeare is a federation text dataset of Shakespeare Dialogues from <a href="https://leaf.cmu.edu/">LEAF</a> [1], and the task is next-character prediction. Moreover, you can set the sampling rate to sample from the clients via <code class="language-plaintext highlighter-rouge">cfg.data.subsample</code>.<br />Statistics: 422615 sentences, about 1100 clients.</li>
+  <li><strong>SubReddit</strong><br />SubReddit is a federation text dataset and subsampled of Reddit from <a href="https://leaf.cmu.edu/">LEAF</a> [1], and the task is next-word prediction. Moreover, you can set the sampling rate to sample from the clients via <code class="language-plaintext highlighter-rouge">cfg.data.subsample</code>.<br />Statistics: 216858 sentences, about 800 clients.</li>
+  <li><strong>Sentiment140</strong><br />Sentiment140 is a federation text dataset of Twitter from <a href="https://leaf.cmu.edu/">LEAF</a> [1], and the task is Sentiment Analysis. Moreover, you can set the sampling rate to sample from the clients via <code class="language-plaintext highlighter-rouge">cfg.data.subsample</code>.<br />Statistics: 1600498 sentences, about 660000  clients.</li>
+</ul>
+
+<p><a name="jhPKC"></a></p>
+<h3 id="graph">Graph</h3>
+
+<p>For details of statistics, see FedGraph.</p>
+
+<p><a name="GmP1e"></a></p>
+<h4 id="node-level-dataset">Node-level dataset</h4>
+
+<ul>
+  <li><strong>FedDBLP</strong> (including <em>dblp_conf</em> and <em>dblp_org</em>)<br />FedDBLP is a federation citation network from the latest <a href="https://originalstatic.aminer.cn/misc/dblp.v13.7z">DBLP</a> [2] dump, where each node corresponds to a published paper, and each edge corresponds to a citation. We use the bag-of-words of each paper’s abstract as its node attributes and regard the theme of paper as its label. To simulate the scenario that a venue or an organizer forbids others to cite its papers, we allow users to split this dataset by each node’s <strong>venue</strong> or the <strong>organizer</strong> of that venue.</li>
+  <li><strong>FedcSBM</strong><br />FedcSBM from cSBM [3] can produce the synthetic graph dataset. For more details, see FedGraph.</li>
+  <li><strong>FedCora</strong>, <strong>FedCiteSeer</strong>, <strong>FedPubMed</strong><br />FedCora, FedCiteSeer and FedPubMed are simulated federation datasets split from Cora [4], CiteSeer [5], PubMed [6] by <code class="language-plaintext highlighter-rouge">community_splitter</code> or <code class="language-plaintext highlighter-rouge">random_splitter</code>. For more details, see FedGraph.</li>
+</ul>
+
+<p><a name="xcd5t"></a></p>
+<h4 id="link-level-dataset">Link-level dataset</h4>
+
+<ul>
+  <li><strong>Ciao</strong><br />Ciao [7] is a federation recommendation dataset from <a href="https://arxiv.org/pdf/2104.07145v2.pdf">FedGraphNN</a>, and its task is link classification. For more details, see FedGraph.</li>
+  <li><strong>FedWN18</strong>, <strong>FedFB15K-237</strong><br />FedWN18 and FedFB15K-237 are simulated federation datasets split from WN18 and FB15K-237 [8] by <code class="language-plaintext highlighter-rouge">label_space_splitter</code>. For more details, see FedGraph.</li>
+</ul>
+
+<p><a name="xVvAd"></a></p>
+<h4 id="graph-level-dataset">Graph-level dataset</h4>
+
+<ul>
+  <li><strong>Multi-task dataset</strong><br />Multi_task dataset is a federation dataset contains several Sub-datasets named <code class="language-plaintext highlighter-rouge">graph_multi_domain_mol</code>, <code class="language-plaintext highlighter-rouge">graph_multi_domain_small</code>, <code class="language-plaintext highlighter-rouge">graph_multi_domain_mix</code>,  <code class="language-plaintext highlighter-rouge">graph_multi_domain_biochem</code>, and <code class="language-plaintext highlighter-rouge">graph_multi_domain_molv1</code>. In these datasets, each client holds some graphs from different domains from TUDataset [9], and their task is different from each other.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">graph_multi_domain_mol</code>: ‘MUTAG’, ‘BZR’, ‘COX2’, ‘DHFR’, ‘PTC_MR’, ‘AIDS’, ‘NCI1’</li>
+      <li><code class="language-plaintext highlighter-rouge">graph_multi_domain_small</code>: ‘MUTAG’, ‘BZR’, ‘COX2’, ‘DHFR’, ‘PTC_MR’, ‘ENZYMES’, ‘DD’, ‘PROTEINS’</li>
+      <li><code class="language-plaintext highlighter-rouge">graph_multi_domain_mix</code>: ‘MUTAG’, ‘BZR’, ‘COX2’, ‘DHFR’, ‘PTC_MR’, ‘AIDS’, ‘NCI1’, ‘ENZYMES’, ‘DD’, ‘PROTEINS’, ‘COLLAB’, ‘IMDB-BINARY’, ‘IMDB-MULTI’</li>
+      <li><code class="language-plaintext highlighter-rouge">graph_multi_domain_biochem</code>: ‘MUTAG’, ‘BZR’, ‘COX2’, ‘DHFR’, ‘PTC_MR’, ‘AIDS’, ‘NCI1’, ‘ENZYMES’, ‘DD’, ‘PROTEINS’</li>
+      <li><code class="language-plaintext highlighter-rouge">graph_multi_domain_molv1</code>: ‘MUTAG’, ‘BZR’, ‘COX2’, ‘DHFR’, ‘PTC_MR’, ‘AIDS’, ‘NCI1’, ‘Mutagenicity’, ‘NCI109’, ‘PTC_MM’, ‘PTC_FR’</li>
+    </ul>
+  </li>
+  <li><strong>FedHIV</strong>, <strong>FedProteins</strong>, <strong>FedIMDB</strong><br />FedHIV,  FedProteins and FedIMDB are simulated federation datasets split from HIV [10], Proteins [9], IMDB [9] by <code class="language-plaintext highlighter-rouge">instance_space_splitter</code>. For more details, see FedGraph.</li>
+</ul>
+
+<p><a name="EW19L"></a></p>
+<h3 id="recommendation-system">Recommendation System</h3>
+
+<ul>
+  <li><strong>MovieLens</strong><br />MovieLens [11] is a series of movie recommendation datasets collected from the website MovieLens. To support different federated settings (VFL/HFL) and various datasets, all the MovieLens datasets inherit two parent classes <code class="language-plaintext highlighter-rouge">VMFDataset</code> and <code class="language-plaintext highlighter-rouge">HMFDataset</code>, which specific the splitting of MF datasets (VFL or HFL).</li>
+</ul>
+
+<p><a name="GK2xc"></a></p>
+<h3 id="audio-and-speech">Audio and Speech</h3>
+
+<p>Coming soon…</p>
+
+<p><a name="HSzGF"></a></p>
+<h3 id="synthetic">Synthetic</h3>
+
+<ul>
+  <li><strong>Synthetic Mixture</strong><br />Synthetic_Mixture is a synthetic federated dataset from <a href="https://arxiv.org/pdf/2108.10252.pdf">FedEM</a> [12], and its task is binary classification. The data distribution of each client is the mixture of (M) underlying distributions.</li>
+</ul>
+
+<p><a name="UaFPw"></a></p>
+<h2 id="tools">Tools</h2>
+
+<p><a name="vU9eP"></a></p>
+<h3 id="splitter">Splitter</h3>
+
+<p>To generate simulated federation datasets, we provide <code class="language-plaintext highlighter-rouge">splitter</code> who are responsible for dispersing a given standalone dataset into multiple clients, with configurable statistical heterogeneity among them.</p>
+
+<p>For euclidean data:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">random_splitter</code><br />The data is randomly split into 𝑁 subsets with or without intersections.</li>
+  <li><code class="language-plaintext highlighter-rouge">label_space_splitter</code><br />It is designed to provide label distribution skew via latent Dirichlet allocation (LDA).</li>
+</ul>
+
+<p>For graph data:</p>
+
+<ul>
+  <li>Node-level task
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">community_splitter</code>:<br />Community detection algorithms such as Louvain are at first applied to partition a graph into several clusters.</li>
+      <li><code class="language-plaintext highlighter-rouge">random_splitter</code>:<br />The node-set of the original graph is randomly split into 𝑁 subsets with or without intersections.</li>
+    </ul>
+  </li>
+  <li>Link-level task
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">label_space_splitter</code>:<br />It is designed to provide label distribution skew via latent Dirichlet allocation (LDA).</li>
+    </ul>
+  </li>
+  <li>Graph-level task
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">instance_space_splitter</code>:<br />It is responsible for creating feature distribution skew (i.e., covariate shift).</li>
+      <li><code class="language-plaintext highlighter-rouge">multi_task_splitter</code>:<br />Different clients have different tasks.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><a name="imW5m"></a></p>
+<h2 id="how-to-use">How to use</h2>
+
+<p>For the built-in datasets, you can configure them via a <code class="language-plaintext highlighter-rouge">.yaml</code> file.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Dataset related options
+</span><span class="n">data</span><span class="p">:</span>
+	<span class="c1"># Root directory where the data stored
+</span>	<span class="n">root</span><span class="p">:</span> <span class="s">'data'</span>
+	<span class="c1"># Dataset name
+</span>	<span class="nb">type</span><span class="p">:</span> <span class="s">'femnist'</span>
+  <span class="c1"># Batch_size for DataLoader
+</span>	<span class="n">batch_size</span><span class="p">:</span> <span class="mi">64</span>
+  <span class="c1"># Drop last batch of DataLoader
+</span>	<span class="n">drop_last</span><span class="p">:</span> <span class="bp">False</span>
+  <span class="c1"># Shuffle the train DataLoader
+</span>	<span class="n">shuffle</span><span class="p">:</span> <span class="bp">True</span>
+  <span class="c1"># Transforms of data
+</span>	<span class="n">transforms</span><span class="p">:</span> <span class="s">''</span>
+  <span class="c1"># Subsample of total client
+</span>	<span class="n">subsample</span><span class="p">:</span> <span class="mf">1.0</span>
+  <span class="c1"># Train, valid, test splits
+</span>	<span class="n">splits</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
+	<span class="c1"># Splitter, if not simulated dataset, disabled.
+</span>  <span class="n">splitter</span><span class="p">:</span> <span class="s">'random'</span>
+</code></pre></div></div>
+
+<p><a name="Reference"></a></p>
+<h2 id="references">References</h2>
+
+<p>[1] Caldas, Sebastian, et al. “Leaf: A benchmark for federated settings.” <em>arXiv</em> 2018.</p>
+
+<p>[2] Tang, Jie, et al. “Arnetminer: extraction and mining of academic social networks.” <em>SIGKDD</em> 2008.</p>
+
+<p>[3] Deshpande, Yash, et al. “Contextual stochastic block models.” <em>NeurIPS</em> 2018.</p>
+
+<p>[4] McCallum, Andrew Kachites, et al. “Automating the construction of internet portals with machine learning.” <em>Information Retrieval</em> 2000</p>
+
+<p>[5] Giles, C. Lee, Kurt D. Bollacker, and Steve Lawrence. “CiteSeer: An automatic citation indexing system.” <em>Proceedings of the third ACM conference on Digital libraries</em>. 1998.</p>
+
+<p>[6] Sen, Prithviraj, et al. “Collective classification in network data.” <em>AI magazine</em> 2008.</p>
+
+<p>[7] Tang, Jiliang, Huiji Gao, and Huan Liu. “mTrust: Discerning multi-faceted trust in a connected world.” <em>WSDM</em> 2012.</p>
+
+<p>[8] Bordes, Antoine, et al. “Translating embeddings for modeling multi-relational data.” <em>NeurIPS</em> 2013.</p>
+
+<p>[9] Ivanov, Sergei, Sergei Sviridov, and Evgeny Burnaev. “Understanding isomorphism bias in graph data sets.” <em>arXiv</em> 2019.</p>
+
+<p>[10] Wu, Zhenqin, et al. “MoleculeNet: a benchmark for molecular machine learning.” <em>Chemical science</em> 2018.</p>
+
+<p>[11] Harper, F. Maxwell, and Joseph A. Konstan. “The movielens datasets: History and context.” <em>Acm transactions on interactive intelligent systems</em> 2015.</p>
+
+<p>[12] Marfoq, Othmane, et al. “Federated multi-task learning under a mixture of distributions.” <em>NeurIPS</em> 2021.</p>
+
+        </div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-03-30">March 30, 2022</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/docs/own-case/" class="pagination--pager" title="Start Your Own Case
+">Previous</a>
+    
+    
+      <a href="/docs/modelzoo/" class="pagination--pager" title="ModelZoo
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      <div align="center" style="margin: 1em 0;">
+        <ins class="adsbygoogle"
+             style="display:block; border-bottom: initial;"
+             data-ad-client="ca-pub-7328585512091257"
+             data-ad-slot="3049671934"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><div class="search-searchbar"></div>
+  <div class="search-hits"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <div class="footer-left-box">
+          <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/alibaba/FederatedScope" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://damo.alibaba.com/labs/data-analytics-and-intelligence" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i> Team page</a></li>
+        
+      
+        
+          <li><a href="https://join.slack.com/t/federatedscopeteam/shared_invite/zt-1apmfjqmc-hvpYbsWJdm7D93wPNXbqww" rel="nofollow noopener noreferrer"><i class="fab fa-slack" aria-hidden="true"></i> Slack</a></li>
+        
+      
+        
+          <li><a href="javascript:;" rel="nofollow noopener noreferrer"><i class="dingding" aria-hidden="true"></i> Join DingGroup 👉</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Data Analytics and Intelligence Lab (DAIL) of DAMO Academy. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+        </div>
+        <div class="footer-group-img-box">
+          <img class="footer-group-img" src="https://img.alicdn.com/imgextra/i2/O1CN01NSWjlJ1q8bliVtjRp_!!6000000005451-0-tps-924-926.jpg" alt="">
+        </div>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+<!-- Including InstantSearch.js library and styling -->
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3.3/dist/instantsearch-theme-algolia.min.css">
+
+<script>
+// Instanciating InstantSearch.js with Algolia credentials
+const search = instantsearch({
+  appId: 'QB6HVGBSBA',
+  apiKey: '9d5014e5bbc77372547bce778dfa5663',
+  indexName: 'minimal_mistakes',
+  searchParameters: {
+    restrictSearchableAttributes: [
+      'title',
+      'content'
+    ]
+  }
+});
+
+const hitTemplate = function(hit) {
+  const url = hit.url;
+  const title = hit._highlightResult.title.value;
+  const content = hit._highlightResult.html.value;
+
+  return `
+    <div class="list__item">
+      <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+        <h2 class="archive__item-title" itemprop="headline"><a href="${url}">${title}</a></h2>
+        <div class="archive__item-excerpt" itemprop="description">${content}</div>
+      </article>
+    </div>
+  `;
+}
+
+// Adding searchbar and results widgets
+search.addWidget(
+  instantsearch.widgets.searchBox({
+    container: '.search-searchbar',
+    poweredBy: true,
+    placeholder: 'Enter your search term...'
+  })
+);
+search.addWidget(
+  instantsearch.widgets.hits({
+    container: '.search-hits',
+    templates: {
+      item: hitTemplate,
+      empty: 'No results',
+    }
+  })
+);
+
+// Starting the search only when toggle is clicked
+$(document).ready(function () {
+  $(".search__toggle").on("click", function() {
+    if(!search.started) {
+      search.start();
+    }
+  });
+});
+</script>
+
+
+
+
+
+  <script>
+  window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+  ga('create','UA-2011187-3','auto');
+  ga('set', 'anonymizeIp', true);
+  ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async></script>
+
+
+
+
+
+
+
+
+<!-- Mathjax Support -->
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+    <style>
+      .google-auto-placed {
+        margin: 2em auto;
+      }
+    </style>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  </body>
+</html>
