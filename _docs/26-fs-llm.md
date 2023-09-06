@@ -29,7 +29,7 @@ In the tutorial, you will learn:
 - How to use built-in or create new fine-tuning datasets [[click]](#dataset)
 - How to use built-in evaluation tools [[click]](#evaluation)
 - How to adopt different federated fine-tuning PEFT algorithms [[click]](#algorithm)
-- How to enable different resource-efficiency operations [[click]](#fedalgo)
+- How to enable different resource-efficiency operations [[click]](#efficiency)
 - FAQ [[click]](#faq)
 - Citation [[click]](#citation)
 
